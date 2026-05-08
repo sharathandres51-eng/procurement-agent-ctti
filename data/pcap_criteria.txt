@@ -1,0 +1,148 @@
+ANNEX 2. CRITERIS D'ADJUDICACIÓ
+Contract: CTTI-2026-36
+Subministrament, instal·lació i posada en producció d'equipaments de distribució de clau quàntica
+
+SCORING OVERVIEW
+Total maximum score: 100 points
+- Criteria evaluated by judgement of value (judici de valor): maximum 49 points
+- Criteria evaluated automatically (fórmules): maximum 51 points
+
+=============================================================
+SECTION 2.a — CRITERIA EVALUATED BY JUDGEMENT OF VALUE (49 points)
+=============================================================
+
+For each criterion evaluable by judgement of value, the technical evaluation
+will be carried out attending to the assessable aspects indicated in each criterion.
+
+Where an offer equals or exceeds 90% of the technical valuation of a criterion
+with its own identity (CIP), the final score will be obtained by applying the
+formula from Directriu 1/2020:
+
+Pop = P * (VTop / VTmv)
+
+Where:
+- Pop = score for the criterion for the offer being evaluated
+- P = maximum score for the criterion
+- VTop = technical valuation of the criterion for the offer being scored
+- VTmv = technical valuation of the criterion with the best valuation
+
+---
+
+CRITERION 1.1 — PLA DE MIGRACIÓ (CIP)
+Maximum points: 9
+
+Reference sections in PPT: apartats 2.1 i 5.1
+
+What to evaluate:
+The proposed service team for the migration plan will be evaluated, attending to
+the qualifications of the resources, the quantity, the dedication and the references
+provided, in order to guarantee the quality fulfilment of the milestones and
+timelines of the phase.
+
+---
+
+CRITERION 1.2 — EXECUCIÓ CRÍTICA I DESPLEGAMENT (CIP)
+Maximum points: 30
+
+Reference sections in PPT: apartats 2.2, 2.3, 5.2 i 5.3
+
+What to evaluate:
+
+- The proposed service team for Critical Execution and Deployment will be evaluated,
+  attending to the qualifications of the resources, the quantity, the dedication and
+  the references provided, in order to guarantee the quality fulfilment of the
+  milestones and timelines of the project phases.
+  (maximum 4.50 points)
+
+- The identification of up to a maximum of 3 risks during node deployment will be
+  evaluated, taking into account that they have a high probability and impact on the
+  service, and the mitigation proposals for these, considering the level of impact of
+  the risk, the speed and ease of executing the mitigation proposal and the
+  identification of all the conditions to guarantee the migration capacity during the
+  contract. Each correctly identified risk with a specific mitigation proposal will
+  be evaluated with a maximum of 1.00 point per risk.
+  (maximum 3.00 points)
+
+- Service monitoring tool. Having the service monitoring tool at the start of the
+  service in a fully operational state and with all its capabilities will be evaluated.
+  It will also be taken into account that it is accessible, simple and updated with
+  a frequency higher than the required minimums, as well as providing a global and
+  granular view of the entire execution: KPIs provided, degree of compliance,
+  validation and certification, including risks, with the objective of having control
+  of the state of the service.
+  (maximum 1.50 points)
+
+- Documentation. It will be evaluated that the proposed documentation and reports
+  ensure correct project execution and allow, if necessary, the commissioning of the
+  service by a third party.
+  (maximum 1.50 points)
+
+- Supply of equipment. The following will be evaluated:
+  o The characteristics of the equipment that increase flexibility and adaptation to
+    changes in the network architecture, such as when a connectivity passes from DWDM
+    to dark fibre, or when connecting two locations it is necessary to add or remove
+    hops.
+    (maximum 5.50 points)
+  o The functionalities and technical specifications that increase the service level
+    and the capabilities of the proposed equipment, such as security functionalities,
+    performance optimisation, interface and monitoring.
+    (maximum 8.50 points)
+  o The parameters and/or components that improve the robustness and resilience
+    against the probability of equipment failure. The quantity and criticality of
+    redundant components will be taken into account.
+    (maximum 5.50 points)
+
+---
+
+CRITERION 1.3 — ANÀLISI DE LES DADES (CIP)
+Maximum points: 5
+
+Reference sections in PPT: apartats 2.4 i 5.4
+
+What to evaluate:
+The proposed service team for the Data Analysis phase will be evaluated, attending
+to the qualifications of the resources, the quantity, the dedication and the
+references provided, in order to guarantee the quality fulfilment of the milestones
+and timelines of the phase.
+
+---
+
+CRITERION 1.4 — PLA DE DEVOLUCIÓ DEL SERVEI (CIP)
+Maximum points: 5
+
+Reference sections in PPT: apartat 5.5
+
+What to evaluate:
+The content of the proposed handover plan will be evaluated, the dimensioning and
+qualification of the specific team taking into account that it guarantees the quality
+of the handover as well as the dimensioning and qualification of the support team
+during the warranty period.
+
+---
+
+SUMMARY TABLE — JUDICI DE VALOR CRITERIA
+
+Criterion                              Max Points
+1.1 Pla de migració (CIP)                  9
+1.2 Execució crítica i desplegament (CIP) 30
+1.3 Anàlisi de les dades (CIP)             5
+1.4 Pla de devolució del servei (CIP)      5
+TOTAL                                     49
+
+=============================================================
+SECTION 2.b — CRITERIA EVALUATED AUTOMATICALLY (51 points)
+=============================================================
+
+Note: The following criteria are evaluated automatically using formulas.
+They are included here for completeness but are NOT within scope of the
+AI-assisted evaluation workbench, which focuses exclusively on the
+judici de valor criteria above.
+
+Criterion                              Max Points
+2.1 Valoració econòmica                   20
+2.2 Increment de nivell d'ANS              5
+2.3 Serveis professionals de fabricant    10
+2.4 Formació de la solució implantada      5
+2.5 Eficiència energètica                  3
+2.6 Temps de resolució garantia fabricant  8
+TOTAL                                     51

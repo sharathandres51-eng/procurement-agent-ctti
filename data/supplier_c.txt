@@ -1,0 +1,138 @@
+SOBRE B — TECHNICAL PROPOSAL
+Company: SecureComms Catalunya SA
+Tender: CTTI-2026-36
+Subministrament, instal·lació i posada en producció d'equipaments de distribució de clau quàntica
+
+=====================================================================
+EXECUTIVE SUMMARY
+=====================================================================
+
+SecureComms Catalunya SA is a leading provider of secure communications
+infrastructure with extensive experience in quantum networks and advanced
+cryptographic deployments. Our proven track record in delivering complex
+technology projects for public administrations positions us as a trusted partner
+for CTTI in the execution of this strategic initiative. This proposal demonstrates
+our comprehensive capability across all areas of the tender scope.
+
+=====================================================================
+PROJECT TEAM AND QUALIFICATIONS
+=====================================================================
+
+Our team for this engagement has been assembled to bring together the right
+combination of skills, certifications and quantum experience required to execute
+this contract successfully. All required roles are filled by qualified professionals
+from our permanent workforce.
+
+Our project manager has extensive experience leading technology projects for
+public and private sector clients. He has managed engagements in the
+telecommunications and security sectors and brings strong organisational and
+stakeholder management capabilities to this role. Our team has the quantum
+experience needed to support the specific demands of this project.
+
+The solution architect assigned to this engagement holds relevant industry
+certifications and brings a deep understanding of network architecture and
+security infrastructure. Our architects have been involved in previous deployments
+in similar environments, providing them with the practical context to design a
+robust and compliant solution for CTTI's requirements.
+
+Our network administration team comprises certified professionals with the
+appropriate credentials for this type of deployment. They are supported by
+our broader technical organisation, which maintains a pool of specialised
+resources available on demand throughout the project lifecycle.
+
+For Level 3 support, SecureComms Catalunya maintains relationships with our
+equipment vendors and can escalate to manufacturer engineering resources when
+required. Our technical resources hold certifications relevant to the equipment
+and technologies in scope.
+
+The data analysis team will be drawn from our analytics practice, which has
+supported previous projects involving network performance analysis and reporting.
+Our specialists will ensure the deliverables for this phase meet the requirements
+set out in the PPT.
+
+=====================================================================
+EQUIPMENT TECHNICAL OFFER
+=====================================================================
+
+The equipment proposed by SecureComms Catalunya is fully compliant with all
+applicable ETSI standards, including ETSI GS QKD 004 and 014, and exceeds the
+minimum performance requirements specified in Section 3.1.2 of the PPT. The
+proposed system delivers superior key generation rates under the expected operating
+conditions of the CTTI topology.
+
+The KMS component incorporates industry-leading security features and meets all
+relevant compliance requirements for cryptographic modules. Our equipment has been
+validated through appropriate certification processes and is widely deployed in
+comparable environments. All units are supplied in rack format compatible with
+standard telecommunications cabinets. Redundancy features are incorporated to
+ensure high availability of the quantum key distribution service.
+
+Emitter and receiver units are independently replaceable, in line with the
+flexibility requirements of the tender. The proposed equipment is designed to
+accommodate changes in network topology without requiring full system redesign.
+
+=====================================================================
+DEPLOYMENT RISK MANAGEMENT
+=====================================================================
+
+SecureComms Catalunya has conducted a risk assessment of the deployment scope
+and has identified the following risks as the most relevant to this project.
+
+Risk 1 — Network connectivity disruption during installation: The installation
+activities carry a risk of temporary service impact on existing network
+infrastructure at the deployment sites. Probability: medium. Impact: temporary
+disruption to operational services at affected nodes. Mitigation: standard change
+management procedures will be applied, with installation windows agreed with CTTI
+operations teams in advance of each site visit.
+
+Risk 2 — Equipment delivery delays: Supply chain conditions may affect the
+availability of some equipment components within the originally planned delivery
+schedule. Probability: low to medium. Impact: potential delay to the commissioning
+milestone. Mitigation: SecureComms Catalunya has contingency stock arrangements
+with our suppliers to mitigate the risk of delivery delays affecting the project
+timeline.
+
+Our risk management framework will be applied throughout the project to identify
+and address emerging risks as the deployment progresses.
+
+=====================================================================
+MONITORING AND SERVICE VISIBILITY
+=====================================================================
+
+SecureComms Catalunya will provide a monitoring dashboard that meets all required
+KPIs as defined in the PPT and in the PCAP evaluation criteria. The platform is
+updated regularly and provides both a global and granular view of the QKD
+infrastructure. Authorised CTTI personnel will have access to the monitoring
+interface throughout the contract period. Alert notifications will be generated
+for threshold breaches and operational events of interest, ensuring that the
+service operations team maintains full awareness of system status at all times.
+
+The monitoring solution is compatible with CTTI's existing infrastructure platforms
+and will be configured to support integration with CTTI collection systems as
+required.
+
+=====================================================================
+DATA ANALYSIS
+=====================================================================
+
+Our specialists will execute the data analysis phase in accordance with the
+requirements set out in PPT Sections 2.4 and 5.4. Comprehensive analysis
+deliverables will be produced to support CTTI in understanding the performance
+and operational characteristics of the deployed quantum key distribution network.
+Our team's experience in previous deployments in similar environments ensures
+they are well positioned to add value during this phase.
+
+=====================================================================
+DOCUMENTATION AND HANDOVER
+=====================================================================
+
+Comprehensive documentation will be provided throughout all project phases,
+covering the full scope of the deployed systems and services. Documentation will
+be maintained and updated in line with changes to the deployed configuration.
+
+A full handover plan will be developed and executed in accordance with the
+contract requirements. The handover process will be designed to ensure continuity
+of service and to give the CTTI team the knowledge and resources needed to
+manage the infrastructure effectively following the conclusion of the contract.
+SecureComms Catalunya is committed to a smooth and professional handover
+experience for all stakeholders involved.

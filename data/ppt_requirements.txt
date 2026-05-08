@@ -1,0 +1,358 @@
+PLEC DE PRESCRIPCIONS TÈCNIQUES PARTICULARS — RELEVANT SECTIONS
+Contract: CTTI-2026-36
+Subministrament, instal·lació i posada en producció d'equipaments de distribució de clau quàntica
+
+=============================================================
+SECTION 3.1 — QKD EQUIPMENT TECHNICAL REQUIREMENTS (CV-QKD i QRNG)
+=============================================================
+
+3.1.1 Compatibility and Integration
+
+The system must be based on CV-QKD with Prepare-and-Measure scheme, implementing
+Gaussian Modulation of Coherent States (GMCS) protocols.
+
+QKD equipment must meet the following requirements:
+
+Optical compatibility:
+- Equipment must guarantee coexistence of the quantum channel with standard C-band
+  data (1530-1565 nm), ensuring interoperability and quality of service in mixed scenarios.
+- Support for joint transmission of quantum and classical channels over a single optical
+  fibre, using WDM multiplexing techniques without significant performance degradation.
+
+Interoperability with network infrastructures:
+- Compatibility with DWDM and CWDM systems, specifying exact compatible wavelengths.
+- Capacity to customise the wavelength of the quantum channel.
+- Equipment must allow co-propagation with at least 4 DWDM service channels without
+  significant degradation of QKD system performance.
+- Compliance with standards ETSI GS QKD 004 and 014, as well as ITU-T Y.3800.
+- Support for standard management interfaces: SNMP and HTTP.
+- Capacity for operation in point-to-multipoint (P2MP) scenarios.
+
+Flexibility and maintenance:
+- Possibility of independently replacing any device (emitter or receiver) without
+  requiring replacement of the entire pair.
+- Systems linked by fixed factory pairs that force complete system renewal in case
+  of partial failure will NOT be accepted.
+
+Integration with key management systems (KMS):
+- Direct or indirect connection with KMS via compatible APIs (REST, JSON-RPC, KMIP).
+- Support for key delivery protocols compatible with ETSI GS QKD 004 and 014.
+
+3.1.2 Performance and Functionality
+
+Minimum performance requirements:
+- Maximum tolerated optical loss: minimum 10 dB.
+- Power budget: maximum -10 dBm (10mW).
+- Minimum net symmetric key generation rate:
+  * >= 1 kbps per emitter/receiver pair under standard link conditions (10 dB)
+  * >= 25 bps per service with KMS request every 10 seconds
+  * >= 500 bps in multi-user scenarios and maximum expected network conditions (16 dB)
+- The system must achieve at minimum 7,000 AES keys/hour @ 10 dB, and up to
+  10,000 AES keys/hour @ 16 dB under optimal conditions.
+
+Reliability, autonomy and operational security:
+- The system must operate autonomously and continuously without critical external dependencies.
+- Allow configuration as primary or secondary (redundant) entropy source.
+- Have contingency mechanisms in case of quantum source failure (flow blocking, alerts);
+  automatic generation of synthetic data is PROHIBITED.
+
+Operability and management:
+- Support for automatic key regeneration and automatic recovery from errors or interruptions.
+- Remote and secure firmware update.
+- Complete technical documentation and operational manuals in Catalan must be delivered.
+
+3.1.3 Physical Format and Installation
+- 19" rack format, maximum depth 600mm, maximum height 2U per main unit.
+- 1U additional permitted for justified auxiliary equipment (power, supervision, etc.)
+- Compatible with installation in standard telecommunications cabinets.
+
+3.1.5 Management, Control and Monitoring
+- Remote control and secure management via: SSH, SNMPv3, REST API, or Netconf/YANG.
+- Real-time monitoring of critical parameters: optical losses, noise, received signal power.
+- Specific QKD values monitoring including Secure Key Rate (SKR) and Excess Noise.
+- Complete activity logs with audit export capability.
+- Continuous log export to CTTI and Agència de Ciberseguretat collection platforms.
+- Alert system for hardware performance and status: CPU consumption, key distribution
+  latency, temperature and humidity.
+- Integration with CTTI monitoring and observability tools.
+
+3.1.6 Security
+- Protection against known side-channel attacks including local oscillator manipulations.
+- Generated keys must be random and unconditionally secure per internationally recognised
+  security models.
+- Automatic failure or tampering detection mechanisms (self-check, watchdogs).
+- The QKD system must guarantee security parameter epsilon <= 10^-9.
+
+3.1.7 Certification and Standards
+- Certification or third-party validation based on: NIST SP 800-90B, DieHarder,
+  TestU01 or equivalents.
+- Preferably Common Criteria certification or accreditation by official agencies
+  such as ANSSI, NIST, CCN or similar.
+
+=============================================================
+SECTION 3.2 — KMS EQUIPMENT TECHNICAL REQUIREMENTS
+=============================================================
+
+3.2.1 Compatibility and Protocols
+- Must be fully compatible with QKD systems based on quantum distribution protocols
+  including CV-QKD (Continuous Variable) and DV-QKD (future hybrid compatibility).
+- Must incorporate: Quantum-safe Key Relay between nodes implementing ETSI GS QKD 015.
+- Internal entropy source based on QRNG with fallback generation mechanisms.
+- Compliance with FIPS 140-2 or FIPS 140-3, or Common Criteria EAL2+ for internal
+  cryptographic modules (HSM).
+- Redundant key routing and secure storage.
+- High availability (HA) at QKD node level.
+- Integration via standard interfaces: ETSI GS QKD 014 (all methods including SKIP),
+  ETSI GS QKD 004, QKD Network Layer (QNL) for multipoint topology.
+- Compliance with PKCS#11, compatibility with HSM architectures.
+- Must be based on Unix or similar operating system.
+- Must support minimum 5 concurrent QKD modules and 5 KMS instances simultaneously.
+
+3.2.2 Key Management Capabilities
+- Capacity to distribute QKD-generated keys to multiple recipients securely,
+  scalably and traceably.
+- Support for unicast, multicast and broadcast keys.
+- Support for key per service, per session and per device.
+- Capacity to operate in P2P mode and star, hub-and-spoke or mesh topology.
+- Integration with identity and access control systems: LDAP, RADIUS, SAML, OAuth2/OpenID.
+- Role-based access control (RBAC) policy definition.
+- Mutual authentication support between entities (MFA, digital certificates).
+- KMS interfaces must be protected via HTTPS over TLS 1.3 with mutual certificate
+  authentication per ETSI GS QKD 014.
+- Automatic backup and secure restoration with encryption of keys at rest and in transit.
+- Complete key lifecycle management: generation, distribution, use, rotation, revocation
+  and destruction.
+
+3.2.3 Security and Supervision
+- Protection against physical unauthorised access (anti-tampering).
+- Protection against logical attacks (DoS, side-channel, command injection).
+- Integrity monitoring and verification mechanisms.
+- Cryptographically signed logging support.
+- Complete activity and access logs including SIEM integration capability.
+- Real-time management interface monitoring: node status, key transactions, errors,
+  security events, SKR, ESKR, keys stored, keys consumed.
+- SNMP monitoring support.
+- WebUI graphical administration interface accessible via browser.
+
+=============================================================
+SECTION 4.1 — SERVICE EXECUTION CONDITIONS — ORGANISATIONAL STRUCTURE
+=============================================================
+
+4.1.1 Team Role Functions
+
+- Responsable de compte (Account Manager): Maximum contract responsible for the
+  contractor facing CTTI. Responsible for economic, contractual, organisational and
+  service delivery strategy aspects. CANNOT be subcontracted.
+
+- Cap de projecte (Project Manager): Responsible for planning, directing, supervising
+  and coordinating all activities related to projects, services and associated supplies.
+  Manages assigned resources, risk and change monitoring, coordination with other
+  providers or involved third parties. Must ensure service success and correct execution.
+
+- Arquitecte (Architect): Responsible for global network architecture design, integrating
+  classical communication elements with quantum communication devices and protocols.
+  Must ensure technical coherence, system compatibility and security throughout the design,
+  taking into account QKD (CV-QKD) and KMS requirements. Technological reference for
+  architecture and technology solutions.
+
+- Administradors de xarxes i comunicació quàntica (Network and Quantum Administrators):
+  Responsible for all administration tasks, procedures and review of the network including
+  physical, virtual or cloud equipment.
+
+- Operadors de xarxa i seguretat (Network and Security Operators): Technicians responsible
+  for basic administration, operation and real-time monitoring of communications network
+  infrastructure and associated security services.
+
+- Enginyer/a de seguretat i criptografia (Security and Cryptography Engineer): Responsible
+  for ensuring the deployed infrastructure meets security requirements throughout the system
+  lifecycle, particularly regarding information protection, QKD-KMS integration and
+  interoperability with classical encryption systems.
+
+- Coordinador/a d'integració i proves (Integration and Testing Coordinator): Responsible
+  for designing, planning and supervising system tests including performance, interoperability,
+  stability and security tests during deployment and validation phases.
+
+- Serveis professionals de tercer nivell (Level 3 Professional Services): High-level
+  technician specialised in supplied systems and equipment. Critical in production
+  commissioning, resolution of maximum-complexity incidents and evolutionary maintenance.
+  Minimum 100 hours during the contract.
+
+4.1.2 Team Profile Requirements (Idoneïtat dels perfils)
+
+RESPONSABLE DE COMPTE (Account Manager):
+- Minimum university degree (preferably Engineering, Sciences or ICT) OR minimum
+  5 years experience in management and coordination of high-complexity ICT services
+  or projects, preferably in public sector environments.
+- Specific experience in institutional client relations and cross-functional team
+  coordination.
+
+CAP DE PROJECTE (Project Manager):
+- Minimum qualification: Degree or bachelor's in technology field, preferably
+  Telecommunications Engineering, Computer Engineering or related.
+- Minimum experience: At least 5 years accredited experience directing complex projects
+  in telecommunications networks, especially in optical technologies, high security
+  requirements, or high performance and availability systems.
+
+ARQUITECTE (Architect):
+- Minimum experience: 5 years in complex network architecture design, preferably in
+  critical or high security environments, with at least 2 years in quantum communication
+  solution integration OR direct participation in pilots or projects with this technology.
+- Required specific knowledge:
+  * Network architecture design for classical/quantum hybrid solutions
+  * Knowledge of quantum communication manufacturers and solutions
+  * Knowledge of QKD, CV-QKD protocols and associated cryptographic management (KMS)
+- Minimum certifications:
+  * Cisco Certified Design Professional (CCDP) OR Fortinet NSE 7, as demonstration
+    of network design and security skills.
+
+ADMINISTRADORS DE XARXES I COMUNICACIÓ QUÀNTICA (Network Administrators):
+- Minimum experience: 3 years in high availability and performance communications network
+  administration, preferably in public or critical environments, and participation
+  (even partial) in quantum communication related projects.
+- Required knowledge:
+  * Routing protocols: IS-IS, OSPF, RIP, EIGRP, BGP for IPv4 and IPv6
+  * Level 2 services: EVC, QinQ, 802.1ad, VLAN classification, IEEE Bridging,
+    802.1s MST, 802.1w RSTP
+  * Basic configuration, diagnosis and deployment of quantum communication systems
+  * Knowledge of QKD device interoperability requirements and KMS compatibility
+- Minimum certifications:
+  * Cisco Certified Network Professional (CCNP Routing and Switching) OR equivalent
+    such as Fortinet NSE 3.
+
+OPERADORS DE XARXA I SEGURETAT (Operators):
+- Minimum qualification: Vocational training in computing, telecommunications or equivalent.
+- Minimum experience: 2 years in network operations and monitoring and security systems
+  in real operational environments.
+
+ENGINYER/A DE SEGURETAT I CRIPTOGRAFIA (Security Engineer):
+- Minimum qualification: Degree in Computer Engineering, Telecommunications, Mathematics
+  or similar.
+- Minimum experience: 3 years in network security and cryptography projects.
+- Required knowledge:
+  * Cryptographic protocols (TLS, IPSec, VPNs)
+  * Key management systems (KMS, HSM)
+  * Post-quantum cryptography and QKD key distribution protocols
+  * Standards and best practices (ISO/IEC 27001, CCN-STIC)
+
+COORDINADOR/A D'INTEGRACIÓ I PROVES (Integration Coordinator):
+- Minimum qualification: Engineering degree or equivalent.
+- Minimum experience: 4 years in complex ICT projects with systems integration testing.
+- Required knowledge:
+  * Test methodologies (Test Plans, Use Cases, Acceptance Criteria)
+  * Network monitoring and simulation tools
+  * Network protocols and preferably QKD/KMS systems knowledge
+
+SERVEIS PROFESSIONALS DE TERCER NIVELL (Level 3 Professional Services):
+- Maximum level certification available from manufacturers of the offered systems
+  (e.g. Cisco CCIE, Fortinet NSE 8) OR, for quantum communication solutions, direct
+  and formal accreditation of training, qualification or official collaboration with
+  the QKD or KMS technology manufacturer.
+- Demonstrated experience in deployment or expert support of equivalent solutions
+  in operational environments.
+- Must indicate clearly in the proposal the resources assigned to this service.
+- Must provide CVs, certifications and references from similar prior projects with
+  quantum communication solutions or high-security networks.
+
+4.1.3 Organisational Dimensioning (minimum team composition)
+
+Role                                          Minimum headcount
+Responsable de compte                              1
+Cap de projecte                                    1
+Arquitecte de xarxa i comunicació quàntica         1
+Administrador de xarxes i comunicació quàntica     2
+Operador de xarxa i seguretat                      2
+Enginyer/a de seguretat i criptografia             1
+Coordinador/a d'integració i proves                1
+Serveis professionals de tercer nivell             1
+                                                 ---
+TOTAL minimum team                                10
+
+Level 3 professional services: minimum 100 hours during the contract.
+
+=============================================================
+SECTION 5 — SERVICE DELIVERY PHASES
+=============================================================
+
+5.1 Phase 1 — Pla de migració (Migration Plan)
+Duration: 4 months from contract start date.
+
+Must include:
+- Concrete definition of objectives: node categorisation, location definition,
+  prioritisation criteria, requirements analysis
+- Topology description
+- Prerequisites
+- Final new architecture design
+- Description of Phases 2 and 3 (critical execution and deployment):
+  nodes involved, equipment per node, detailed planning with dates, rollback plans
+- Testing and validation definition including integration tests per QKD and KMS node
+- Risk assessment and mitigation measures
+- Timeline and associated resources description
+- Access to project monitoring tool updated at minimum daily
+- Management of technical access to Generalitat nodes and locations
+
+5.2 Phase 2 — Execució crítica (Critical Execution)
+Duration: 16 months from Migration Plan validation by CTTI.
+
+Supply and installation of equipment at 4 of the 12 planned nodes.
+Minimum activities:
+- Equipment supply for first nodes
+- Initial equipment deployment at first two nodes, basic configuration
+- Calibration and production commissioning
+- Third node scaling and impact evaluation
+- Scaling to remaining nodes completing the 4 nodes of this phase
+- Integration of commissioned equipment monitoring with control centre monitoring
+- Maintenance and warranty management of production equipment
+
+5.3 Phase 3 — Desplegament (Deployment)
+Duration: 13 months from Critical Execution certification.
+
+Deployment and expansion to remaining 8 nodes.
+Minimum activities:
+- Equipment supply for remaining nodes
+- Scaling to 4 additional nodes closing the metropolitan ring
+- Final scaling to last 4 nodes and locations
+- Maintenance of laboratory environment operational throughout contract duration
+- Laboratory must remain as permanent CTTI infrastructure after contract end
+
+5.4 Phase 4 — Anàlisi de les dades (Data Analysis)
+Duration: 24 months from Critical Execution commissioning certification.
+
+Minimum activities:
+- Traffic data analysis between first two nodes
+- Traffic data analysis across first four nodes
+- Traffic data analysis within metropolitan ring
+- Complete network analysis
+- Delivery of structured document with observation data, analyses and conclusions
+- Training and knowledge transfer per Section 5.5
+
+5.5 Pla de devolució del servei (Service Handover Plan)
+Execution period: 2 to 4 months before contract end.
+
+Minimum requirements:
+- Knowledge transfer methodology including at minimum 2 sessions of 8 hours each
+  covering: equipment and services training, manufacturer procedures roadmap,
+  user manuals, process documentation, knowledge base
+- All training and documentation provided in Catalan as minimum
+- Practical tutored training where CTTI staff perform tasks supervised by contractor
+- Offer of hardware and equipment assigned exclusively to contract services to CTTI
+  or designated third parties
+- Equipment valuation by third party using market price criterion
+- Handover must not cause any service discontinuity
+- Complete updated service management documentation (knowledge base) must be
+  available before handover phase begins
+
+=============================================================
+SECTION 6 — SERVICE LEVEL AGREEMENTS (ANS) — SUMMARY
+=============================================================
+
+Note: Full ANS detail in annex file ANS_EnQGenCat_v.01.xlsx.
+The following ANS indicators apply to the automatic scoring criteria (Sobre C)
+and are referenced here for context only.
+
+Key ANS codes referenced in PCAP Annex 2 for automatic scoring criterion 2.2:
+- CO-PRO01, CO-PRO03: Provisioning indicators
+- CO-CON01: Connectivity indicator
+- CO-INC01, CO-INC02: Incident resolution indicators
+
+Grade scale: 1=Deficient, 2=Unsatisfactory, 3=Satisfactory, 4=Excellent
+Grade 4 is the target. Grade 3 is the minimum acceptable.
