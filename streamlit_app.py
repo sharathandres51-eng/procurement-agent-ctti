@@ -9,6 +9,9 @@ from datetime import datetime
 from langchain_mistralai import ChatMistralAI
 from graph.pipeline import run_all_evaluations, SUPPLIERS, CRITERION_QUERIES
 from scoring.sobre_c import score_sobre_c, MAX_POINTS as SOBRE_C_MAX_POINTS
+from db.audit import init_db, insert_entry, get_all_entries, export_json
+
+init_db()
 
 st.set_page_config(
     page_title="CTTI Tender Evaluation — CTTI-2026-36",
@@ -62,8 +65,6 @@ if "scores" not in st.session_state:
         s["id"]: {c["id"]: None for c in CRITERION_QUERIES}
         for s in SUPPLIERS
     }
-if "audit_log" not in st.session_state:
-    st.session_state.audit_log = []
 if "submitted" not in st.session_state:
     st.session_state.submitted = False
 
@@ -324,9 +325,9 @@ with tab1:
                     for supplier in SUPPLIERS
                 },
             }
-            st.session_state.audit_log.append(audit_entry)
+            insert_entry(audit_entry)
             st.session_state.submitted = True
-            st.success("Evaluation submitted. Audit record created.")
+            st.success("Evaluation submitted. Audit record saved to database.")
             st.balloons()
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -337,20 +338,39 @@ with tab2:
     st.title("Audit Log")
     st.caption(
         "Complete record of agent actions and human decisions. "
+        "Persisted to SQLite — survives page refresh. "
         "Law 40/2015 Art. 24 — EU AI Act Annex III."
     )
 
-    if not st.session_state.audit_log:
+    audit_entries = get_all_entries()
+
+    if not audit_entries:
         st.info(
             "No submissions yet. Complete the evaluation in Tab 1 "
             "and submit to generate the audit record."
         )
     else:
-        for entry in st.session_state.audit_log:
-            st.markdown(f"**Submitted by:** {entry['evaluator_id']}")
-            st.markdown(f"**Timestamp:** {entry['timestamp']}")
-            st.markdown(f"**Contract:** {entry['contract']}")
-            st.markdown(f"**Regulatory note:** {entry['regulatory_note']}")
+        # ── Export button ─────────────────────────────────────────────────────
+        st.download_button(
+            label="⬇️ Export full audit log (JSON)",
+            data=export_json(),
+            file_name=f"audit_log_CTTI-2026-36_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+            mime="application/json",
+        )
+        st.caption(
+            f"{len(audit_entries)} submission(s) on record. "
+            "Export for Mesa de Contractació review or regulatory disclosure."
+        )
+        st.divider()
+
+        # ── Render each entry ─────────────────────────────────────────────────
+        for i, entry in enumerate(audit_entries, start=1):
+            st.markdown(f"### Submission #{i}")
+            col_a, col_b, col_c = st.columns(3)
+            col_a.markdown(f"**Evaluator:** {entry['evaluator_id']}")
+            col_b.markdown(f"**Timestamp:** {entry['timestamp']}")
+            col_c.markdown(f"**Contract:** {entry['contract']}")
+            st.caption(f"📋 {entry['regulatory_note']}")
 
             st.markdown("**Scores recorded:**")
             table_data = []
@@ -361,7 +381,7 @@ with tab2:
                     score = entry["scores"][supplier["id"]][criterion["id"]] or 0
                     row[criterion["id"]] = score
                     total += score
-                row["Total"] = total
+                row["Total Sobre B (/49)"] = total
                 table_data.append(row)
             st.dataframe(table_data, use_container_width=True)
 
@@ -377,6 +397,9 @@ with tab2:
                         st.markdown(f"*Evidence surfaced:* {ev['evidence_surfaced']}")
                         st.markdown(f"*Agent note:* {ev['agent_note']}")
                         st.divider()
+
+            if i < len(audit_entries):
+                st.divider()
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # TAB 3 — SOBRE C & FINAL RANKING

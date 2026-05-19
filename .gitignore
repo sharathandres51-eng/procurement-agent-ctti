@@ -1,0 +1,21 @@
+# Environment
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+
+# Vector index (rebuilt locally via rag/indexer.py)
+rag/faiss_index/
+
+# Audit database (persisted locally; export via JSON for sharing)
+db/audit.db
+
+# OS
+.DS_Store
+Thumbs.db
