@@ -10,33 +10,23 @@ load_dotenv()
 
 llm = ChatMistralAI(model="mistral-large-latest", temperature=0)
 
-CRITERION_LABELS = {
-    "pla_migracio":     "Criterion 1.1 — Pla de Migració",
-    "execucio_critica": "Criterion 1.2 — Execució Crítica i Desplegament",
-    "analisi_dades":    "Criterion 1.3 — Anàlisi de les Dades",
-    "pla_devolucio":    "Criterion 1.4 — Pla de Devolució del Servei",
-}
-
-# Authoritative max_points from PCAP Annex 2 — used as fallback when LLM
-# cannot find or correctly parse the figure from the retrieved context.
-CRITERION_MAX_POINTS = {
-    "pla_migracio":     9,
-    "execucio_critica": 30,
-    "analisi_dades":    5,
-    "pla_devolucio":    5,
-}
-
 
 def analysis_agent(state: EvalState) -> dict:
-    criteria_chunks = retrieve_criteria(query=state["criterion_query"], k=5)
-    criteria_context = "\n\n---\n\n".join(c["text"] for c in criteria_chunks)
+    # criterion_name and max_points come directly from the TENDER_REGISTRY
+    # via pipeline.py — no hardcoded lookup tables needed here.
+    criterion_label = state["criterion_name"]
+    known_max       = state["max_points"]
+    tender_id       = state["tender_id"]
 
+    criteria_chunks  = retrieve_criteria(
+        query=state["criterion_query"],
+        tender_id=tender_id,
+        k=5,
+    )
+    criteria_context = "\n\n---\n\n".join(c["text"] for c in criteria_chunks)
     proposal_context = "\n\n---\n\n".join(c["text"] for c in state["raw_chunks"])
 
-    criterion_label = CRITERION_LABELS.get(state["criterion_id"], state["criterion_id"])
-    known_max = CRITERION_MAX_POINTS.get(state["criterion_id"], 0)
-
-    prompt = f"""You are assisting a procurement evaluation committee at the Government of Catalonia (CTTI) in evaluating technical proposals for contract CTTI-2026-36, a quantum key distribution infrastructure procurement.
+    prompt = f"""You are assisting a procurement evaluation committee at the Government of Catalonia (CTTI) in evaluating technical proposals for contract {tender_id.upper().replace("_", "-")}.
 
 Your role is to surface relevant evidence from the supplier proposal to assist the human evaluator. You do NOT score or recommend. The human evaluator assigns all scores independently.
 
@@ -100,7 +90,7 @@ AGENT_NOTE: <2-3 sentence observation>"""
             max_points = int(m.group(2).strip())
         except ValueError:
             max_points = known_max
-        evidence = m.group(3).strip()
+        evidence   = m.group(3).strip()
         agent_note = m.group(4).strip()
     else:
         keys = ["CRITERION_NAME", "MAX_POINTS", "EVIDENCE", "AGENT_NOTE"]
@@ -124,16 +114,16 @@ AGENT_NOTE: <2-3 sentence observation>"""
             max_points = int(" ".join(fields["MAX_POINTS"]).strip().split()[0])
         except (ValueError, IndexError):
             max_points = known_max
-        evidence = "\n".join(fields["EVIDENCE"]).strip()
+        evidence   = "\n".join(fields["EVIDENCE"]).strip()
         agent_note = "\n".join(fields["AGENT_NOTE"]).strip()
 
-    # Final fallback: if max_points still 0, use known authoritative value
+    # Final fallback: if max_points still 0, use authoritative value from registry
     if max_points == 0:
         max_points = known_max
 
     return {
-        "evidence": evidence,
-        "agent_note": agent_note,
+        "evidence":       evidence,
+        "agent_note":     agent_note,
         "criterion_name": criterion_name,
-        "max_points": max_points,
+        "max_points":     max_points,
     }

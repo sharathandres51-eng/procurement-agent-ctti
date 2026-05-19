@@ -1,0 +1,54 @@
+{
+  "_comment": "Synthetic Sobre C declared values for CTTI-2026-44. All figures are fictional.",
+  "_criteria": {
+    "price_eur":                  "2.1 Valoració econòmica — total bid price in EUR",
+    "ans_improvement_hours":      "2.2 Increment de nivell d'ANS — additional uptime SLA minutes per month above the 99.95% minimum",
+    "manufacturer_services_days": "2.3 Serveis professionals de fabricant — hyperscaler professional services days included",
+    "training_days":              "2.4 Formació de la solució implantada — days of technical training provided to CTTI staff",
+    "pue_value":                  "2.5 Eficiència energètica (PUE) — Power Usage Effectiveness of the proposed infrastructure",
+    "rto_guaranteed_hours":       "2.6 RTO garantit per servei crític — guaranteed Recovery Time Objective for CRITICAL tier services in hours"
+  },
+  "_max_points": {
+    "price_eur":                  20,
+    "ans_improvement_hours":       8,
+    "manufacturer_services_days":  8,
+    "training_days":               5,
+    "pue_value":                   5,
+    "rto_guaranteed_hours":        5
+  },
+  "_direction": {
+    "price_eur":                  "lower",
+    "ans_improvement_hours":      "higher",
+    "manufacturer_services_days": "higher",
+    "training_days":              "higher",
+    "pue_value":                  "lower",
+    "rto_guaranteed_hours":       "lower"
+  },
+  "supplier_a": {
+    "name": "CloudPath Solutions SL",
+    "price_eur": 1340000,
+    "ans_improvement_hours": 18,
+    "manufacturer_services_days": 25,
+    "training_days": 12,
+    "pue_value": 1.38,
+    "rto_guaranteed_hours": 3.0
+  },
+  "supplier_b": {
+    "name": "NexCloud Iberia SA",
+    "price_eur": 1510000,
+    "ans_improvement_hours": 26,
+    "manufacturer_services_days": 30,
+    "training_days": 8,
+    "pue_value": 1.32,
+    "rto_guaranteed_hours": 4.0
+  },
+  "supplier_c": {
+    "name": "InfraTech Catalunya SA",
+    "price_eur": 1195000,
+    "ans_improvement_hours": 10,
+    "manufacturer_services_days": 15,
+    "training_days": 15,
+    "pue_value": 1.45,
+    "rto_guaranteed_hours": 4.0
+  }
+}

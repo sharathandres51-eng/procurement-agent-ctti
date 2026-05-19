@@ -1,0 +1,219 @@
+PLEC DE PRESCRIPCIONS TÈCNIQUES PARTICULARS — RELEVANT SECTIONS
+Contract: CTTI-2026-51
+Serveis gestionats de Centre d'Operacions de Seguretat (SOC) per a la Generalitat de Catalunya
+
+=============================================================
+SECTION 3.1 — SOC SERVICE SCOPE AND OPERATIONAL REQUIREMENTS
+=============================================================
+
+3.1.1 Service Scope
+
+The contractor must provide a fully managed Security Operations Centre (SOC)
+service covering continuous 24 hours/day, 7 days/week, 365 days/year monitoring,
+detection, analysis and response for the following in-scope environments:
+
+- Generalitat de Catalunya xarxa troncal: all perimeter and internal network
+  traffic collection points designated by CTTI.
+- Endpoint estate: Windows and Linux endpoints managed by CTTI, estimated 12,000
+  devices at contract start, subject to growth over the contract term.
+- Cloud workloads: Azure and AWS environments operated by or on behalf of CTTI,
+  including those migrated under CTTI-2026-44.
+- On-premise data centres: BSC private cloud environment and any remaining
+  legacy on-premise infrastructure during the transition period.
+- SaaS applications: designated Microsoft 365 tenant and other approved SaaS
+  platforms identified by CTTI.
+
+3.1.2 Minimum Coverage Requirement
+
+The service must provide guaranteed analyst coverage of at minimum 20 hours
+per day, with a documented escalation path ensuring that all hours are covered
+by a qualified analyst. 24/7 full analyst coverage is the target. Automated
+alerting and triage tools may supplement but not replace human analyst coverage.
+
+3.1.3 Event and Incident Classification
+
+The contractor must implement and maintain a four-tier event classification
+scheme compatible with the CCN-CERT incident severity taxonomy:
+
+  Tier    CCN severity equivalent    Target detection time    Target response time
+  P1      Crítica (5)                <= 15 minutes            <= 30 minutes
+  P2      Molt alta (4)              <= 30 minutes            <= 2 hours
+  P3      Alta (3)                   <= 1 hour                <= 8 hours
+  P4      Mitja (2) and below        <= 4 hours               <= 24 hours
+
+All time targets are measured from the first event indicator ingested into the
+SIEM that is associated with the confirmed incident.
+
+=============================================================
+SECTION 3.2 — TECHNOLOGY PLATFORM REQUIREMENTS
+=============================================================
+
+3.2.1 SIEM Requirements
+
+The SIEM platform must:
+- Support ingestion of at minimum 50,000 events per second (EPS) at contract
+  start, with demonstrated capacity to scale to 150,000 EPS without architectural
+  change, to accommodate growth and peak event volumes.
+- Retain raw log data for a minimum of 12 months online (searchable) and 36
+  months in cold storage, in line with the Agència de Ciberseguretat de
+  Catalunya's data retention requirements for security events.
+- Provide CTTI with read-only access to the SIEM environment, including the
+  ability to run ad-hoc queries against raw log data without contractor assistance.
+- Integrate natively with the Agència de Ciberseguretat de Catalunya's shared
+  threat intelligence platform.
+
+3.2.2 SOAR Requirements
+
+The SOAR platform must:
+- Automate initial triage and enrichment of all P3 and P4 alerts without
+  requiring manual analyst intervention for the initial enrichment step.
+- Provide documented, version-controlled playbooks in a machine-readable format
+  (e.g. YAML or JSON) for all automated response actions.
+- Allow CTTI to review and approve changes to automated response playbooks
+  that affect production CTTI systems before deployment.
+- Integrate bi-directionally with CTTI's ITSM platform for automated incident
+  ticket creation, assignment and status synchronisation.
+
+3.2.3 Detection Use Case Library
+
+The contractor must maintain and deliver a detection use case library covering:
+- A minimum of 200 documented detection use cases at contract start, mapped
+  to MITRE ATT&CK tactics and techniques.
+- Coverage of at minimum 15 MITRE ATT&CK tactics relevant to threats targeting
+  Spanish public administration environments, as defined by CCN-CERT advisories.
+- A formal process for adding new use cases in response to CCN-CERT alerts,
+  with a target of deploying a new or updated use case within 5 business days
+  of a CCN-CERT advisory classified alta or higher.
+
+=============================================================
+SECTION 3.3 — THREAT INTELLIGENCE REQUIREMENTS
+=============================================================
+
+3.3.1 Threat Intelligence Feeds
+
+The contractor must operationalise threat intelligence from at minimum:
+- One commercial threat intelligence platform (e.g. Recorded Future, Mandiant
+  Advantage, CrowdStrike Falcon Intelligence or equivalent).
+- CCN-CERT REYES platform indicators, mandatory for public-sector contracts.
+- Two curated open-source feeds (e.g. MISP community, AlienVault OTX or
+  equivalent), with documented curation and validation processes.
+
+All ingested indicators of compromise (IoCs) must be operationalised in the
+SIEM within 4 hours of receipt for critical indicators.
+
+3.3.2 Threat Hunting
+
+The contractor must provide a proactive threat hunting service including:
+- Minimum one dedicated threat hunting engagement per month, with a documented
+  scope and hypothesis-driven methodology.
+- Delivery of a written threat hunting report to CTTI within 5 business days
+  of each engagement, covering scope, methodology, findings and recommendations.
+- At minimum one annual threat hunting engagement specifically targeting
+  threats to Catalan public administration based on intelligence from CCN-CERT
+  and ISAC communities.
+
+=============================================================
+SECTION 4.1 — TEAM ROLE REQUIREMENTS
+=============================================================
+
+4.1.1 SOC Team Roles
+
+- Responsable de compte (Account Manager): Single contractual point of contact.
+  Cannot be subcontracted.
+
+- SOC Manager: Responsible for day-to-day SOC operations management, SLA
+  oversight, escalation coordination and service review preparation. Must be
+  a named individual allocated to this contract with minimum 50% dedication.
+
+- Analistes de seguretat de nivell 1 (L1 Analysts): First-line triage, alert
+  validation and initial incident classification. Minimum 4 FTE dedicated to
+  this contract across shift patterns.
+
+- Analistes de seguretat de nivell 2 (L2 Analysts): Deep investigation,
+  correlation analysis, containment recommendation and playbook execution.
+  Minimum 2 FTE dedicated to this contract.
+
+- Analistes de seguretat de nivell 3 / Especialistes IR (L3/IR Analysts):
+  Major incident response, forensic analysis, advanced threat hunting.
+  Minimum 1 FTE dedicated to this contract, with named backup coverage.
+
+- Analista CTI (CTI Analyst): Dedicated threat intelligence analyst responsible
+  for feed curation, IoC operationalisation and threat hunting programme delivery.
+  Minimum 1 FTE.
+
+4.1.2 Minimum Certification Requirements
+
+L1 Analysts: CompTIA Security+ or CCN-STIC equivalent. Minimum 1 year SOC experience.
+L2 Analysts: GIAC GCIH or GCIA, or CEH (Certified Ethical Hacker). Minimum 3 years
+  SOC experience, with at least 1 year at L2 or equivalent tier.
+L3/IR Analysts: GIAC GCFE, GREM, or OSCP. Minimum 5 years SOC/IR experience.
+CTI Analyst: GIAC GCTI or equivalent recognised CTI certification. Minimum 3 years
+  threat intelligence experience.
+SOC Manager: CISSP or CISM. Minimum 7 years in information security, minimum
+  3 years in SOC management or equivalent leadership role.
+
+4.1.3 Minimum Team Composition
+
+Role                                      Minimum FTE
+Responsable de compte                          1
+SOC Manager                                    1
+L1 Analysts                                    4
+L2 Analysts                                    2
+L3 / IR Analysts                               1
+CTI Analyst                                    1
+                                             ---
+TOTAL minimum dedicated FTE                   10
+
+All analysts listed above must be dedicated to this contract and must not be
+shared across other SOC managed service contracts to the extent that their
+availability to this contract falls below the committed dedication percentages.
+
+=============================================================
+SECTION 5 — SERVICE DELIVERY PHASES
+=============================================================
+
+5.1 Phase 1 — Integració i posada en marxa del SOC (SOC Onboarding)
+Duration: 3 months from contract start date.
+
+Must include:
+- Log source onboarding and validation for all in-scope environments
+- SIEM and SOAR platform configuration and use case deployment
+- Integration with CTTI ITSM and notification platforms
+- Baseline establishment for anomaly detection
+- Initial threat intelligence feed operationalisation
+- Tabletop exercise with CTTI to validate IR workflows
+- Delivery of initial detection use case library and playbook documentation
+
+5.2 Phase 2 — Operació contínua (Continuous Operations)
+Duration: Contract term following Phase 1 certification.
+
+Minimum activities:
+- 24/7 monitoring and alert triage (or per agreed coverage model)
+- Monthly threat hunting engagements per Section 3.3.2
+- Quarterly detection use case review and update
+- Monthly operational reporting and quarterly executive reporting
+- Ongoing CCN-CERT advisory integration and use case updates
+- Annual major IR simulation exercise with CTTI
+
+5.3 Pla de transició i sortida (Exit and Transition Plan)
+Duration: 3 months before contract end.
+
+Minimum requirements:
+- Full export of SIEM raw log data in a CTTI-accessible format
+- Documentation of all detection use cases in an open, portable format
+- Knowledge transfer to CTTI or incoming contractor covering all operational
+  procedures, playbooks and integration configurations
+- No service degradation during the transition period
+
+=============================================================
+SECTION 6 — SERVICE LEVEL AGREEMENTS (ANS) — SUMMARY
+=============================================================
+
+Key ANS indicators applicable to automatic scoring criteria (Sobre C):
+- SO-COB01: Analyst coverage hours per day (target >= 20 hours)
+- SO-DET01: Mean Time to Detect (MTTD) for P1 incidents in minutes
+- SO-RES01: Mean Time to Respond (MTTR) for P1 incidents in minutes
+- SO-INF01: Incident reporting timeliness (% reports delivered on time)
+
+Minimum acceptable performance: Grade 3 (Satisfactory) per indicator.
+Target performance: Grade 4 (Excellent) per indicator.

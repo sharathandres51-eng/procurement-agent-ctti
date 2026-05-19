@@ -1,0 +1,54 @@
+{
+  "_comment": "Synthetic Sobre C declared values for CTTI-2026-36. All figures are fictional.",
+  "_criteria": {
+    "price_eur":                  "2.1 Valoració econòmica — total bid price in EUR",
+    "ans_improvement_hours":      "2.2 Increment de nivell d'ANS — hours of SLA improvement over the required minimum",
+    "manufacturer_services_days": "2.3 Serveis professionals de fabricant — days of manufacturer professional services included",
+    "training_days":              "2.4 Formació de la solució implantada — days of training on the deployed solution",
+    "energy_kwh_per_node":        "2.5 Eficiència energètica — average power consumption per QKD node in kWh",
+    "warranty_resolution_hours":  "2.6 Temps de resolució garantia fabricant — manufacturer warranty fault resolution time in hours"
+  },
+  "_max_points": {
+    "price_eur":                  20,
+    "ans_improvement_hours":       5,
+    "manufacturer_services_days": 10,
+    "training_days":               5,
+    "energy_kwh_per_node":         3,
+    "warranty_resolution_hours":   8
+  },
+  "_direction": {
+    "price_eur":                  "lower",
+    "ans_improvement_hours":      "higher",
+    "manufacturer_services_days": "higher",
+    "training_days":              "higher",
+    "energy_kwh_per_node":        "lower",
+    "warranty_resolution_hours":  "lower"
+  },
+  "supplier_a": {
+    "name": "QuantumNet Solutions SL",
+    "price_eur": 487000,
+    "ans_improvement_hours": 2,
+    "manufacturer_services_days": 15,
+    "training_days": 10,
+    "energy_kwh_per_node": 3.2,
+    "warranty_resolution_hours": 8
+  },
+  "supplier_b": {
+    "name": "CyberQuantum Iberia SL",
+    "price_eur": 523000,
+    "ans_improvement_hours": 4,
+    "manufacturer_services_days": 20,
+    "training_days": 8,
+    "energy_kwh_per_node": 2.8,
+    "warranty_resolution_hours": 6
+  },
+  "supplier_c": {
+    "name": "SecureComms Catalunya SA",
+    "price_eur": 561000,
+    "ans_improvement_hours": 3,
+    "manufacturer_services_days": 12,
+    "training_days": 12,
+    "energy_kwh_per_node": 3.5,
+    "warranty_resolution_hours": 10
+  }
+}

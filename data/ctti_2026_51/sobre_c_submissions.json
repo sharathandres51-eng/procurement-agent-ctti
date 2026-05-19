@@ -1,0 +1,54 @@
+{
+  "_comment": "Synthetic Sobre C declared values for CTTI-2026-51. All figures are fictional.",
+  "_criteria": {
+    "price_eur":            "2.1 Valoració econòmica — total annual bid price in EUR",
+    "extra_coverage_hours": "2.2 Cobertura horària addicional — additional analyst coverage hours per year above the minimum",
+    "analyst_fte_days":     "2.3 Dies analista dedicat — total dedicated analyst FTE-days per year committed to this contract",
+    "training_days":        "2.4 Formació i transferència de coneixement — training days provided to CTTI staff per year",
+    "mttd_minutes":         "2.5 Temps mitjà de detecció (MTTD) — Mean Time to Detect P1 incidents in minutes",
+    "mttr_minutes":         "2.6 Temps de resposta a incidents (MTTR) — Mean Time to Respond to P1 incidents in minutes"
+  },
+  "_max_points": {
+    "price_eur":            20,
+    "extra_coverage_hours":  8,
+    "analyst_fte_days":      8,
+    "training_days":         5,
+    "mttd_minutes":          5,
+    "mttr_minutes":          5
+  },
+  "_direction": {
+    "price_eur":            "lower",
+    "extra_coverage_hours": "higher",
+    "analyst_fte_days":     "higher",
+    "training_days":        "higher",
+    "mttd_minutes":         "lower",
+    "mttr_minutes":         "lower"
+  },
+  "supplier_a": {
+    "name": "CyberShield Catalunya SL",
+    "price_eur": 980000,
+    "extra_coverage_hours": 1460,
+    "analyst_fte_days": 2100,
+    "training_days": 10,
+    "mttd_minutes": 9,
+    "mttr_minutes": 25
+  },
+  "supplier_b": {
+    "name": "SecOps Iberia SA",
+    "price_eur": 1120000,
+    "extra_coverage_hours": 1460,
+    "analyst_fte_days": 2400,
+    "training_days": 8,
+    "mttd_minutes": 7,
+    "mttr_minutes": 22
+  },
+  "supplier_c": {
+    "name": "GuardNet Partners SL",
+    "price_eur": 845000,
+    "extra_coverage_hours": 730,
+    "analyst_fte_days": 1800,
+    "training_days": 15,
+    "mttd_minutes": 14,
+    "mttr_minutes": 35
+  }
+}

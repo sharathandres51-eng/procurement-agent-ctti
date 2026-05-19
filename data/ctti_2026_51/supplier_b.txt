@@ -1,0 +1,114 @@
+SOBRE B — TECHNICAL PROPOSAL
+Company: SecOps Iberia SA
+Tender: CTTI-2026-51
+Serveis gestionats de Centre d'Operacions de Seguretat (SOC) per a la Generalitat de Catalunya
+
+=====================================================================
+EXECUTIVE SUMMARY
+=====================================================================
+
+SecOps Iberia SA is pleased to submit this proposal for CTTI tender CTTI-2026-51.
+SecOps Iberia operates one of the largest managed SOC platforms in the Iberian
+market, built on the Splunk Enterprise Security SIEM and Splunk SOAR platform.
+Our technology stack is best-in-class and our detection and automation capabilities
+are at the leading edge of the industry. We believe our platform is the strongest
+in this procurement and we have structured this proposal to demonstrate that.
+
+=====================================================================
+EQUIP I QUALIFICACIONS DEL SOC
+=====================================================================
+
+The contract SOC Manager will be David Herrero, holding CISSP certification and
+6 years of information security experience, with 2 years in a SOC management role.
+He is assigned at 40% dedication to this contract, with the remaining 60% split
+across two other managed SOC accounts. His day-to-day operational availability
+to CTTI is supplemented by a deputy SOC Manager who provides coverage during
+David's non-dedicated hours.
+
+Two L2 analysts are assigned to this contract, both holding CEH certification
+and 3 years of SOC experience. Neither holds GIAC-family certifications at this
+time, though SecOps Iberia has enrolled both in GCIH training programmes expected
+to conclude within 12 months of contract start.
+
+Four L1 analysts staff the 24/7 shift pattern. All hold CompTIA Security+ and
+have a minimum of 1 year of SOC experience. One L1 analyst is shared with another
+SecOps managed SOC account during the 02:00–06:00 overnight window, with call-in
+procedures documented for surge scenarios during that period.
+
+L3 and IR specialist capability is provided by SecOps Iberia's central IR team,
+which is shared across all managed accounts. The IR team holds GIAC GCFE and
+OSCP certifications and has significant IR experience, including involvement in
+response to three ransomware incidents at Spanish infrastructure operators in
+2023–2024. A named primary IR contact is assigned to this contract, but he is
+not dedicated exclusively to it.
+
+The CTI function is also provided from a shared central team. A CTI analyst
+is assigned to this account for the delivery of monthly reports and threat
+hunting engagements; this analyst is shared across four other SecOps accounts.
+
+=====================================================================
+CAPACITAT DE DETECCIÓ I RESPOSTA
+=====================================================================
+
+SecOps Iberia's platform is built on Splunk Enterprise Security with Splunk SOAR
+for automation and orchestration. Splunk ES is deployed on dedicated cloud
+infrastructure for this contract, with CTTI granted read-only access to a
+dedicated Splunk instance. The platform is currently ingesting at 85,000 EPS
+across the managed account estate; the CTTI contract will be deployed on a
+dedicated cluster capacity of up to 200,000 EPS, the highest scale commitment
+in this procurement.
+
+Log retention is implemented as 12 months in Splunk SmartStore (searchable) and
+36 months in Amazon S3 Glacier (cold), meeting the PPT requirement.
+
+Our detection use case library comprises 312 documented use cases at contract
+start, mapped to MITRE ATT&CK. This is the largest library in this procurement.
+Coverage spans 20 ATT&CK tactics. New use cases are deployed within 4 business
+days of a CCN-CERT alta or higher advisory.
+
+SOAR playbooks are fully documented in YAML format and stored in a version-
+controlled repository. CTTI will have read access to the playbook repository and
+a defined change approval process for playbooks affecting production CTTI systems.
+Automated triage handles 78% of P3/P4 alerts without analyst intervention,
+freeing capacity for higher-severity events.
+
+The IR workflow for P1 incidents includes automatic paging of the assigned
+IR contact within 8 minutes of P1 classification. Coordination procedures with
+the Agència de Ciberseguretat de Catalunya are documented but have not yet
+been formally tested with the agency in a tabletop exercise format.
+
+=====================================================================
+INTEL·LIGÈNCIA D'AMENACES
+=====================================================================
+
+SecOps Iberia operationalises Mandiant Advantage (commercial), CCN-CERT REYES
+(mandatory) and AlienVault OTX (open source) feeds. The proposal notes that a
+second open-source feed is under evaluation for addition to the stack; it is not
+yet confirmed. Critical IoCs are operationalised within 3 hours of receipt.
+
+Monthly threat intelligence reports are delivered from the shared CTI team.
+Threat hunting is conducted monthly. Hunting reports are delivered within
+5 business days of each engagement, at the PPT boundary. The CTI analyst
+assigned to this account has 2 years of threat intelligence experience.
+Prior contributions to CCN-CERT or public-sector ISAC communities are not
+referenced in this proposal.
+
+=====================================================================
+REPORTING I GOVERNANÇA
+=====================================================================
+
+Operational reporting is delivered monthly via a Splunk dashboard report in
+PDF and Excel formats. Executive reporting is delivered quarterly. SLA metrics
+are tracked automatically within Splunk and are available via the CTTI read-only
+instance at any time.
+
+The governance model is described in the proposal as following SecOps Iberia's
+standard managed service governance framework, with monthly operational reviews
+and quarterly strategic reviews. The escalation procedure for P1 incidents is
+documented in the service operations manual (provided as Annex D), though the
+specific escalation timelines and the names of individuals in the escalation
+path above SOC Manager level are not included in this Sobre B submission.
+
+Service reviews are conducted by the SOC Manager. Senior SecOps Iberia
+management are available for escalation reviews when required; the cadence
+and trigger conditions for senior management involvement are not specified.
