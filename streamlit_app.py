@@ -8,6 +8,7 @@ import httpx
 from datetime import datetime
 from langchain_mistralai import ChatMistralAI
 from graph.pipeline import run_all_evaluations, SUPPLIERS, CRITERION_QUERIES
+from scoring.sobre_c import score_sobre_c, MAX_POINTS as SOBRE_C_MAX_POINTS
 
 st.set_page_config(
     page_title="CTTI Tender Evaluation — CTTI-2026-36",
@@ -113,7 +114,7 @@ Maximum 2 sentences per bullet.
 
 # ── Tabs ──────────────────────────────────────────────────────────────────────
 
-tab1, tab2 = st.tabs(["📊 Evaluation Dashboard", "📝 Audit Log"])
+tab1, tab2, tab3 = st.tabs(["📊 Evaluation Dashboard", "📝 Audit Log", "🧮 Sobre C & Final Ranking"])
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # TAB 1 — EVALUATION DASHBOARD
@@ -376,3 +377,108 @@ with tab2:
                         st.markdown(f"*Evidence surfaced:* {ev['evidence_surfaced']}")
                         st.markdown(f"*Agent note:* {ev['agent_note']}")
                         st.divider()
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TAB 3 — SOBRE C & FINAL RANKING
+# ═══════════════════════════════════════════════════════════════════════════════
+
+with tab3:
+    st.title("Sobre C — Automatic Criteria & Final Ranking")
+    st.caption(
+        "CTTI-2026-36 · PCAP Annex 2.b · "
+        "Scores are fully deterministic — no AI involved."
+    )
+
+    st.info(
+        "Sobre C is opened only after Sobre B scores are locked in. "
+        "All 51 points here are calculated by fixed formulas from the PCAP. "
+        "The human evaluator has no discretion over these scores.",
+        icon="ℹ️",
+    )
+
+    sobre_c_results = score_sobre_c()
+
+    # ── Declared values table ─────────────────────────────────────────────────
+    st.subheader("Declared Values (Sobre C envelope)")
+
+    declared_rows = []
+    for supplier in SUPPLIERS:
+        d = sobre_c_results[supplier["id"]]["declared"]
+        declared_rows.append({
+            "Supplier":                        supplier["name"],
+            "Price (€)":                       f"€{d['price_eur']:,}",
+            "ANS improvement (h)":             d["ans_improvement_hours"],
+            "Manufacturer services (days)":    d["manufacturer_services_days"],
+            "Training (days)":                 d["training_days"],
+            "Energy per node (kWh)":           d["energy_kwh_per_node"],
+            "Warranty resolution (h)":         d["warranty_resolution_hours"],
+        })
+    st.dataframe(declared_rows, use_container_width=True)
+
+    # ── Sobre C breakdown ─────────────────────────────────────────────────────
+    st.subheader("Sobre C Score Breakdown")
+    st.caption("Formula: proportional to best declared value across all suppliers.")
+
+    breakdown_rows = []
+    for supplier in SUPPLIERS:
+        row = {"Supplier": supplier["name"]}
+        for cid, detail in sobre_c_results[supplier["id"]]["criteria"].items():
+            row[f"{detail['label']} (/{detail['max_points']})"] = detail["score"]
+        row["Total Sobre C (/51)"] = sobre_c_results[supplier["id"]]["total"]
+        breakdown_rows.append(row)
+    st.dataframe(breakdown_rows, use_container_width=True)
+
+    # ── Final combined ranking ────────────────────────────────────────────────
+    st.divider()
+    st.subheader("Final Combined Ranking (/100)")
+
+    sobre_b_available = (
+        st.session_state.results is not None
+        and all(
+            st.session_state.scores[s["id"]][c["id"]] is not None
+            for s in SUPPLIERS
+            for c in CRITERION_QUERIES
+        )
+    )
+
+    if not sobre_b_available:
+        st.warning(
+            "Sobre B scores are not yet submitted. "
+            "Complete the evaluation in the **Evaluation Dashboard** tab first.",
+            icon="⚠️",
+        )
+    else:
+        final_rows = []
+        winner_name = None
+        winner_total = -1
+
+        for supplier in SUPPLIERS:
+            sobre_b_total = sum(
+                st.session_state.scores[supplier["id"]][c["id"]] or 0
+                for c in CRITERION_QUERIES
+            )
+            sobre_c_total = sobre_c_results[supplier["id"]]["total"]
+            combined = round(sobre_b_total + sobre_c_total, 2)
+
+            final_rows.append({
+                "Supplier":          supplier["name"],
+                "Sobre B (/49)":     sobre_b_total,
+                "Sobre C (/51)":     sobre_c_total,
+                "Combined (/100)":   combined,
+            })
+
+            if combined > winner_total:
+                winner_total = combined
+                winner_name = supplier["name"]
+
+        st.dataframe(final_rows, use_container_width=True)
+
+        st.success(
+            f"**Provisional winner: {winner_name}** — {winner_total} / 100 points",
+            icon="🏆",
+        )
+        st.caption(
+            "This ranking is provisional. The Mesa de Contractació must verify "
+            "all declared Sobre C values before the award is confirmed. "
+            "Sobre A eligibility has been assumed for all three suppliers."
+        )
