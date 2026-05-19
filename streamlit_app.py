@@ -1,3 +1,9 @@
+import os
+# macOS: FAISS and PyTorch both load libomp.dylib; without this flag the
+# OS kills the process with "OMP Error #15". Must be set before any import
+# that triggers FAISS or torch initialisation.
+os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
+
 from dotenv import load_dotenv
 load_dotenv()
 
