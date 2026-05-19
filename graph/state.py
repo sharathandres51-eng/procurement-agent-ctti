@@ -3,6 +3,7 @@ from typing import TypedDict
 
 class EvalState(TypedDict):
     tender_id:      str    # e.g. "ctti_2026_36"
+    language:       str    # "en" | "es" | "ca"
     supplier_id:    str    # e.g. "supplier_a"
     supplier_name:  str    # e.g. "QuantumNet Solutions SL"
     criterion_id:   str    # e.g. "pla_migracio"

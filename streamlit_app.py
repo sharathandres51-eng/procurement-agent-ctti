@@ -10,6 +10,7 @@ from langchain_mistralai import ChatMistralAI
 from graph.pipeline import run_all_evaluations, TENDER_REGISTRY
 from scoring.sobre_c import score_sobre_c
 from db.audit import init_db, insert_entry, get_all_entries, export_json
+from i18n import get_translations, SUPPORTED_LANGUAGES
 
 init_db()
 
@@ -56,32 +57,51 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ── Tender selector ────────────────────────────────────────────────────────────
+# ── Header: language selector ──────────────────────────────────────────────────
+
+header_left, header_right = st.columns([4, 1])
+with header_right:
+    lang_labels = list(SUPPORTED_LANGUAGES.values())   # ["English", "Español", "Català"]
+    lang_codes  = list(SUPPORTED_LANGUAGES.keys())     # ["en", "es", "ca"]
+    selected_lang_label = st.selectbox(
+        "🌐",
+        options=lang_labels,
+        index=lang_codes.index(st.session_state.get("language", "en")),
+        label_visibility="collapsed",
+    )
+    language = lang_codes[lang_labels.index(selected_lang_label)]
+
+t = get_translations(language)
+
+# ── Sidebar: tender selector ───────────────────────────────────────────────────
 
 tender_options = {v["label"]: k for k, v in TENDER_REGISTRY.items()}
 selected_label = st.sidebar.selectbox(
-    "Select tender",
+    t["select_tender"],
     options=list(tender_options.keys()),
 )
-tender_id = tender_options[selected_label]
+tender_id     = tender_options[selected_label]
 tender_config = TENDER_REGISTRY[tender_id]
-SUPPLIERS = tender_config["suppliers"]
-CRITERIA  = tender_config["criteria"]
+SUPPLIERS     = tender_config["suppliers"]
+CRITERIA      = tender_config["criteria"]
 
-# ── Session state initialisation (reset when tender changes) ───────────────────
+# ── Session state (reset on tender or language change) ─────────────────────────
 
-if st.session_state.get("active_tender") != tender_id:
-    st.session_state.active_tender = tender_id
+state_key = f"{tender_id}_{language}"
+if st.session_state.get("active_state_key") != state_key:
+    st.session_state.active_state_key = state_key
+    st.session_state.language  = language
     st.session_state.results   = None
     st.session_state.scores    = {
         s["id"]: {c["id"]: None for c in CRITERIA}
         for s in SUPPLIERS
     }
     st.session_state.submitted = False
-    # Clear cached comparisons from previous tender
     for key in list(st.session_state.keys()):
         if key.startswith("comparison_"):
             del st.session_state[key]
+else:
+    st.session_state.language = language
 
 # ── Comparison helper ──────────────────────────────────────────────────────────
 
@@ -93,7 +113,8 @@ def get_comparison(criterion_id: str, criterion_name: str, results: dict) -> str
     if cache_key in st.session_state:
         return st.session_state[cache_key]
 
-    prompt = f"""You are summarising how three suppliers compare on a single evaluation criterion for a procurement officer at CTTI.
+    prompt = f"""{t["comparison_prompt_intro"]}
+{t["llm_language_instruction"]}
 
 Criterion: {criterion_name}
 
@@ -106,11 +127,9 @@ Supplier B ({SUPPLIERS[1]['name']}):
 Supplier C ({SUPPLIERS[2]['name']}):
 {results[SUPPLIERS[2]['id']][criterion_id]['evidence']}
 
-Write 3 bullet points — one per supplier — comparing their relative strengths and weaknesses on this criterion.
-Be concise. Do not recommend a winner.
-Maximum 2 sentences per bullet.
+{t["comparison_prompt_instructions"]}
 """
-    text = "Comparison temporarily unavailable."
+    text = t["comparison_unavailable"]
     for attempt in range(5):
         try:
             response = _comparison_llm.invoke([{"role": "user", "content": prompt}])
@@ -130,53 +149,51 @@ Maximum 2 sentences per bullet.
 
 # ── Tabs ───────────────────────────────────────────────────────────────────────
 
-tab1, tab2, tab3 = st.tabs(["📊 Evaluation Dashboard", "📝 Audit Log", "🧮 Sobre C & Final Ranking"])
+tab1, tab2, tab3 = st.tabs([
+    t["tab_dashboard"],
+    t["tab_audit"],
+    t["tab_sobre_c"],
+])
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # TAB 1 — EVALUATION DASHBOARD
 # ═══════════════════════════════════════════════════════════════════════════════
 
 with tab1:
-    st.title("Tender Evaluation Workbench")
-    st.caption(
-        f"{tender_config['label']} · "
-        "Internal use only — Mesa de Contractació"
-    )
+    with header_left:
+        st.title(t["app_title"])
+        st.caption(f"{tender_config['label']} · {t['app_caption']}")
 
-    st.markdown("**Suppliers loaded:**")
+    st.markdown(t["suppliers_loaded"])
     for supplier in SUPPLIERS:
         st.markdown(f"✓ {supplier['name']}")
 
     st.divider()
 
     run_button = st.button(
-        "▶ Run Evaluation",
+        t["run_button"],
         type="primary",
         disabled=st.session_state.results is not None,
     )
 
     if run_button:
-        with st.spinner("Agent evaluating all suppliers and criteria..."):
-            st.session_state.results = run_all_evaluations(tender_id=tender_id)
+        with st.spinner(t["run_spinner"]):
+            st.session_state.results = run_all_evaluations(
+                tender_id=tender_id,
+                language=language,
+            )
         st.rerun()
 
     if st.session_state.results is None:
-        st.info(
-            "Click 'Run Evaluation' to begin. "
-            "The agent will analyse all three suppliers across all criteria."
-        )
+        st.info(t["run_info"])
         st.stop()
 
     # ── Evaluation grid ────────────────────────────────────────────────────────
 
     results = st.session_state.results
 
-    st.subheader("Evaluation Grid")
-    st.caption(
-        "Read the AI-surfaced evidence for each cell. "
-        "Assign your score independently. "
-        "AI output is advisory only."
-    )
+    st.subheader(t["grid_subheader"])
+    st.caption(t["grid_caption"])
 
     for criterion in CRITERIA:
         st.markdown("---")
@@ -186,18 +203,18 @@ with tab1:
 
         for supplier, col in zip(SUPPLIERS, cols):
             with col:
-                result = results[supplier["id"]][criterion["id"]]
-                max_points  = result["max_points"]
-                evidence    = result["evidence"]
-                agent_note  = result["agent_note"]
-                crit_name   = result["criterion_name"]
+                result     = results[supplier["id"]][criterion["id"]]
+                max_points = result["max_points"]
+                evidence   = result["evidence"]
+                agent_note = result["agent_note"]
+                crit_name  = result["criterion_name"]
 
                 st.markdown(f"**{supplier['name']}**")
-                st.caption(f"{crit_name} · max {max_points} pts")
+                st.caption(t["max_pts_label"].format(max_points=max_points))
 
                 st.markdown(
                     f"""<div class="amber-box">
-    <div class="ai-label">🤖 AI-generated — review required</div>
+    <div class="ai-label">{t["ai_label"]}</div>
     <div class="evidence-text">{evidence}</div>
     <div class="agent-note">⚠️ {agent_note}</div>
 </div>""",
@@ -206,7 +223,7 @@ with tab1:
 
                 stored = st.session_state.scores[supplier["id"]][criterion["id"]]
                 score = st.number_input(
-                    label=f"Score (0–{max_points})",
+                    label=t["score_label"].format(max=max_points),
                     min_value=0,
                     max_value=max_points,
                     value=stored if stored is not None else 0,
@@ -225,7 +242,7 @@ with tab1:
             crit_name = results[SUPPLIERS[0]["id"]][criterion["id"]]["criterion_name"]
             cache_key = f"comparison_{criterion['id']}"
             if cache_key not in st.session_state:
-                with st.spinner(f"Generating comparison for {crit_name}..."):
+                with st.spinner(t["comparison_spinner"].format(crit_name=crit_name)):
                     comparison_text = get_comparison(criterion["id"], crit_name, results)
             else:
                 comparison_text = st.session_state[cache_key]
@@ -233,7 +250,7 @@ with tab1:
             st.markdown(
                 f"""<div class="comparison-panel">
     <div style="font-size:11px; font-weight:700; color:#86efac; margin-bottom:8px;">
-        📊 Cross-supplier comparison — {crit_name}
+        {t["comparison_header"].format(crit_name=crit_name)}
     </div>
     <div style="font-size:11px; color:#d1fae5; line-height:1.7;">
         {comparison_text}
@@ -252,14 +269,14 @@ with tab1:
 
     if all_scored:
         st.divider()
-        st.subheader("Evaluation Summary")
+        st.subheader(t["summary_subheader"])
 
         table_data = []
         leading_supplier = None
-        highest_total = -1
+        highest_total    = -1
 
         for supplier in SUPPLIERS:
-            row = {"Supplier": supplier["name"]}
+            row   = {t["supplier_col"]: supplier["name"]}
             total = 0
             for criterion in CRITERIA:
                 score = st.session_state.scores[supplier["id"]][criterion["id"]] or 0
@@ -269,53 +286,41 @@ with tab1:
             table_data.append(row)
 
             if total > highest_total:
-                highest_total = total
+                highest_total    = total
                 leading_supplier = supplier["name"]
 
         st.dataframe(table_data, use_container_width=True)
         max_sobre_b = sum(c["max_points"] for c in CRITERIA)
-        st.success(
-            f"Highest scoring supplier: {leading_supplier} "
-            f"with {highest_total} / {max_sobre_b} points"
-        )
-        st.caption(
-            "Automatic criteria (Sobre C, 51 points) are evaluated separately. "
-            "Final ranking requires combining both scores."
-        )
+        st.success(t["summary_winner"].format(
+            name=leading_supplier, total=highest_total, max=max_sobre_b
+        ))
+        st.caption(t["summary_caption"])
 
         # ── Sign and submit ────────────────────────────────────────────────────
 
         st.divider()
-        st.subheader("Sign and Submit Evaluation")
+        st.subheader(t["submit_subheader"])
 
         evaluator_id = st.text_input(
-            "Evaluator ID",
-            placeholder="e.g. david.ferrer.ctti",
+            t["evaluator_label"],
+            placeholder=t["evaluator_placeholder"],
         )
-
-        st.caption(
-            "By submitting you confirm that you have independently reviewed all "
-            "AI-generated evidence and assigned scores based on your own "
-            "professional judgment. Law 40/2015 Art. 24."
-        )
+        st.caption(t["submit_legal_caption"])
 
         submit_button = st.button(
-            "✅ Sign and Submit Evaluation",
+            t["submit_button"],
             type="primary",
             disabled=not evaluator_id or st.session_state.submitted,
         )
 
         if submit_button and evaluator_id:
             audit_entry = {
-                "evaluator_id": evaluator_id,
-                "timestamp":    datetime.now().isoformat(),
-                "contract":     tender_id.upper().replace("_", "-"),
-                "tender_label": tender_config["label"],
-                "regulatory_note": (
-                    "Law 40/2015 Art. 24 — evaluator signature recorded. "
-                    "EU AI Act Annex III — human review completed prior "
-                    "to all scoring decisions."
-                ),
+                "evaluator_id":  evaluator_id,
+                "timestamp":     datetime.now().isoformat(),
+                "contract":      tender_id.upper().replace("_", "-"),
+                "tender_label":  tender_config["label"],
+                "language":      language,
+                "regulatory_note": t["regulatory_note"],
                 "scores": {
                     s["id"]: {
                         c["id"]: st.session_state.scores[s["id"]][c["id"]]
@@ -338,7 +343,7 @@ with tab1:
             }
             insert_entry(audit_entry)
             st.session_state.submitted = True
-            st.success("Evaluation submitted. Audit record saved to database.")
+            st.success(t["submit_success"])
             st.balloons()
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -346,72 +351,57 @@ with tab1:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 with tab2:
-    st.title("Audit Log")
-    st.caption(
-        "Complete record of agent actions and human decisions. "
-        "Persisted to SQLite — survives page refresh. "
-        "Law 40/2015 Art. 24 — EU AI Act Annex III."
-    )
+    st.title(t["audit_title"])
+    st.caption(t["audit_caption"])
 
     audit_entries = get_all_entries()
 
     if not audit_entries:
-        st.info(
-            "No submissions yet. Complete the evaluation in Tab 1 "
-            "and submit to generate the audit record."
-        )
+        st.info(t["audit_empty"])
     else:
         st.download_button(
-            label="⬇️ Export full audit log (JSON)",
+            label=t["audit_export_btn"],
             data=export_json(),
             file_name=f"audit_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
             mime="application/json",
         )
-        st.caption(
-            f"{len(audit_entries)} submission(s) on record. "
-            "Export for Mesa de Contractació review or regulatory disclosure."
-        )
+        st.caption(t["audit_export_caption"].format(count=len(audit_entries)))
         st.divider()
 
         for i, entry in enumerate(audit_entries, start=1):
-            st.markdown(f"### Submission #{i}")
+            st.markdown(f"### {t['audit_submission_header'].format(i=i)}")
             col_a, col_b, col_c = st.columns(3)
-            col_a.markdown(f"**Evaluator:** {entry['evaluator_id']}")
-            col_b.markdown(f"**Timestamp:** {entry['timestamp']}")
-            col_c.markdown(f"**Contract:** {entry.get('tender_label', entry['contract'])}")
+            col_a.markdown(t["audit_evaluator"].format(id=entry["evaluator_id"]))
+            col_b.markdown(t["audit_timestamp"].format(ts=entry["timestamp"]))
+            col_c.markdown(t["audit_contract"].format(
+                contract=entry.get("tender_label", entry["contract"])
+            ))
             st.caption(f"📋 {entry['regulatory_note']}")
 
-            st.markdown("**Scores recorded:**")
-            # Reconstruct supplier/criterion lists from the entry itself
+            st.markdown(t["audit_scores_header"])
             entry_suppliers = list(entry["scores"].keys())
             entry_criteria  = list(next(iter(entry["scores"].values())).keys())
 
             table_data = []
             for sid in entry_suppliers:
-                supplier_name = entry["evidence"][sid][entry_criteria[0]].get(
-                    "supplier_name", sid
-                ) if entry_criteria else sid
-                row = {"Supplier": entry["evidence"][sid][entry_criteria[0]].get(
-                    "supplier_name", sid
-                ) if "supplier_name" in entry["evidence"][sid].get(entry_criteria[0] if entry_criteria else "", {}) else sid}
-                row = {"Supplier": sid}
+                row   = {t["supplier_col"]: sid}
                 total = 0
                 for cid in entry_criteria:
                     score = entry["scores"][sid][cid] or 0
                     row[cid] = score
-                    total += score
-                row["Total Sobre B"] = total
+                    total   += score
+                row[t["audit_total_col"]] = total
                 table_data.append(row)
             st.dataframe(table_data, use_container_width=True)
 
-            st.markdown("**Agent evidence on record:**")
+            st.markdown(t["audit_evidence_header"])
             for sid in entry_suppliers:
                 with st.expander(sid):
                     for cid in entry_criteria:
                         ev = entry["evidence"][sid][cid]
                         st.markdown(f"**{ev['criterion_name']}** (max {ev['max_points']} pts)")
-                        st.markdown(f"*Evidence surfaced:* {ev['evidence_surfaced']}")
-                        st.markdown(f"*Agent note:* {ev['agent_note']}")
+                        st.markdown(t["audit_evidence_surfaced"].format(text=ev["evidence_surfaced"]))
+                        st.markdown(t["audit_agent_note"].format(text=ev["agent_note"]))
                         st.divider()
 
             if i < len(audit_entries):
@@ -422,48 +412,37 @@ with tab2:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 with tab3:
-    st.title("Sobre C — Automatic Criteria & Final Ranking")
-    st.caption(
-        f"{tender_config['label']} · PCAP Annex 2.b · "
-        "Scores are fully deterministic — no AI involved."
-    )
-
-    st.info(
-        "Sobre C is opened only after Sobre B scores are locked in. "
-        "All 51 points here are calculated by fixed formulas from the PCAP. "
-        "The human evaluator has no discretion over these scores.",
-        icon="ℹ️",
-    )
+    st.title(t["sobre_c_title"])
+    st.caption(f"{tender_config['label']} · {t['sobre_c_caption']}")
+    st.info(t["sobre_c_info"], icon="ℹ️")
 
     sobre_c_results = score_sobre_c(tender_id=tender_id)
 
-    # ── Declared values table ──────────────────────────────────────────────────
-    st.subheader("Declared Values (Sobre C envelope)")
-
+    # ── Declared values ────────────────────────────────────────────────────────
+    st.subheader(t["declared_subheader"])
     declared_rows = []
     for supplier in SUPPLIERS:
-        d = sobre_c_results[supplier["id"]]["declared"]
-        row = {"Supplier": supplier["name"]}
+        d   = sobre_c_results[supplier["id"]]["declared"]
+        row = {t["supplier_col"]: supplier["name"]}
         row.update(d)
         declared_rows.append(row)
     st.dataframe(declared_rows, use_container_width=True)
 
-    # ── Sobre C breakdown ──────────────────────────────────────────────────────
-    st.subheader("Sobre C Score Breakdown")
-    st.caption("Formula: proportional to best declared value across all suppliers.")
-
+    # ── Breakdown ──────────────────────────────────────────────────────────────
+    st.subheader(t["breakdown_subheader"])
+    st.caption(t["breakdown_caption"])
     breakdown_rows = []
     for supplier in SUPPLIERS:
-        row = {"Supplier": supplier["name"]}
+        row = {t["supplier_col"]: supplier["name"]}
         for cid, detail in sobre_c_results[supplier["id"]]["criteria"].items():
             row[f"{detail['label']} (/{detail['max_points']})"] = detail["score"]
-        row["Total Sobre C (/51)"] = sobre_c_results[supplier["id"]]["total"]
+        row[f"Total Sobre C (/51)"] = sobre_c_results[supplier["id"]]["total"]
         breakdown_rows.append(row)
     st.dataframe(breakdown_rows, use_container_width=True)
 
-    # ── Final combined ranking ─────────────────────────────────────────────────
+    # ── Final ranking ──────────────────────────────────────────────────────────
     st.divider()
-    st.subheader("Final Combined Ranking (/100)")
+    st.subheader(t["ranking_subheader"])
 
     sobre_b_available = (
         st.session_state.results is not None
@@ -475,15 +454,12 @@ with tab3:
     )
 
     if not sobre_b_available:
-        st.warning(
-            "Sobre B scores are not yet submitted. "
-            "Complete the evaluation in the **Evaluation Dashboard** tab first.",
-            icon="⚠️",
-        )
+        st.warning(t["ranking_warning"], icon="⚠️")
     else:
-        final_rows = []
+        final_rows   = []
         winner_name  = None
         winner_total = -1
+        max_sobre_b  = sum(c["max_points"] for c in CRITERIA)
 
         for supplier in SUPPLIERS:
             sobre_b_total = sum(
@@ -491,13 +467,13 @@ with tab3:
                 for c in CRITERIA
             )
             sobre_c_total = sobre_c_results[supplier["id"]]["total"]
-            combined = round(sobre_b_total + sobre_c_total, 2)
+            combined      = round(sobre_b_total + sobre_c_total, 2)
 
             final_rows.append({
-                "Supplier":        supplier["name"],
-                "Sobre B (/49)":   sobre_b_total,
-                "Sobre C (/51)":   sobre_c_total,
-                "Combined (/100)": combined,
+                t["supplier_col"]:                      supplier["name"],
+                t["sobre_b_col"].format(max=max_sobre_b): sobre_b_total,
+                t["sobre_c_col"]:                       sobre_c_total,
+                t["combined_col"]:                      combined,
             })
 
             if combined > winner_total:
@@ -506,11 +482,7 @@ with tab3:
 
         st.dataframe(final_rows, use_container_width=True)
         st.success(
-            f"**Provisional winner: {winner_name}** — {winner_total} / 100 points",
+            t["ranking_winner"].format(name=winner_name, total=winner_total),
             icon="🏆",
         )
-        st.caption(
-            "This ranking is provisional. The Mesa de Contractació must verify "
-            "all declared Sobre C values before the award is confirmed. "
-            "Sobre A eligibility has been assumed for all three suppliers."
-        )
+        st.caption(t["ranking_caption"])

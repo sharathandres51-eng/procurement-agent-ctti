@@ -185,9 +185,11 @@ def run_evaluation(
     criterion_query: str,
     criterion_max_points: int,
     tender_id: str,
+    language: str = "en",
 ) -> dict:
     initial_state = EvalState(
         tender_id=tender_id,
+        language=language,
         supplier_id=supplier_id,
         supplier_name=supplier_name,
         criterion_id=criterion_id,
@@ -211,7 +213,8 @@ def run_evaluation(
     }
 
 
-def run_all_evaluations(tender_id: str = DEFAULT_TENDER_ID) -> dict:
+def run_all_evaluations(tender_id: str = DEFAULT_TENDER_ID,
+                        language: str = "en") -> dict:
     config = get_tender_config(tender_id)
     results: dict[str, dict] = {}
 
@@ -227,6 +230,7 @@ def run_all_evaluations(tender_id: str = DEFAULT_TENDER_ID) -> dict:
                 criterion_query=criterion["query"],
                 criterion_max_points=criterion["max_points"],
                 tender_id=tender_id,
+                language=language,
             )
             results[supplier["id"]][criterion["id"]] = result
             time.sleep(10)

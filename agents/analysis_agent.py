@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from langchain_mistralai import ChatMistralAI
 from rag.retriever import retrieve_criteria
 from graph.state import EvalState
+from i18n import get_translations
 
 load_dotenv()
 
@@ -17,6 +18,9 @@ def analysis_agent(state: EvalState) -> dict:
     criterion_label = state["criterion_name"]
     known_max       = state["max_points"]
     tender_id       = state["tender_id"]
+    language        = state.get("language", "en")
+    t               = get_translations(language)
+    lang_instruction = t["llm_language_instruction"]
 
     criteria_chunks  = retrieve_criteria(
         query=state["criterion_query"],
@@ -27,6 +31,7 @@ def analysis_agent(state: EvalState) -> dict:
     proposal_context = "\n\n---\n\n".join(c["text"] for c in state["raw_chunks"])
 
     prompt = f"""You are assisting a procurement evaluation committee at the Government of Catalonia (CTTI) in evaluating technical proposals for contract {tender_id.upper().replace("_", "-")}.
+{lang_instruction}
 
 Your role is to surface relevant evidence from the supplier proposal to assist the human evaluator. You do NOT score or recommend. The human evaluator assigns all scores independently.
 
