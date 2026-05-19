@@ -7,3 +7,5 @@ faiss-cpu
 streamlit
 python-dotenv
 tiktoken
+pdfplumber
+fpdf2
