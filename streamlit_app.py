@@ -400,15 +400,21 @@ with tab2:
                 table_data.append(row)
             st.dataframe(table_data, use_container_width=True)
 
-            st.markdown(t["audit_evidence_header"])
-            for sid in entry_suppliers:
-                with st.expander(sid):
-                    for cid in entry_criteria:
-                        ev = entry["evidence"][sid][cid]
-                        st.markdown(f"**{ev['criterion_name']}** (max {ev['max_points']} pts)")
-                        st.markdown(t["audit_evidence_surfaced"].format(text=ev["evidence_surfaced"]))
-                        st.markdown(t["audit_agent_note"].format(text=ev["agent_note"]))
-                        st.divider()
+            evidence = entry.get("evidence", {})
+            if evidence:
+                st.markdown(t["audit_evidence_header"])
+                for sid in entry_suppliers:
+                    if sid not in evidence:
+                        continue
+                    with st.expander(sid):
+                        for cid in entry_criteria:
+                            if cid not in evidence.get(sid, {}):
+                                continue
+                            ev = evidence[sid][cid]
+                            st.markdown(f"**{ev['criterion_name']}** (max {ev['max_points']} pts)")
+                            st.markdown(t["audit_evidence_surfaced"].format(text=ev["evidence_surfaced"]))
+                            st.markdown(t["audit_agent_note"].format(text=ev["agent_note"]))
+                            st.divider()
 
             if i < len(audit_entries):
                 st.divider()
