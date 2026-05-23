@@ -17,8 +17,6 @@ CRITERION_LABELS = {
     "pla_devolucio":    "Criterion 1.4 — Pla de Devolució del Servei",
 }
 
-# Authoritative max_points from PCAP Annex 2 — used as fallback when LLM
-# cannot find or correctly parse the figure from the retrieved context.
 CRITERION_MAX_POINTS = {
     "pla_migracio":     9,
     "execucio_critica": 30,
@@ -30,13 +28,63 @@ CRITERION_MAX_POINTS = {
 def analysis_agent(state: EvalState) -> dict:
     criteria_chunks = retrieve_criteria(query=state["criterion_query"], k=5)
     criteria_context = "\n\n---\n\n".join(c["text"] for c in criteria_chunks)
-
     proposal_context = "\n\n---\n\n".join(c["text"] for c in state["raw_chunks"])
 
-    criterion_label = CRITERION_LABELS.get(state["criterion_id"], state["criterion_id"])
-    known_max = CRITERION_MAX_POINTS.get(state["criterion_id"], 0)
+    current_criterion = state.get("current_criterion") or {}
+    current_subcriterion = state.get("current_subcriterion") or {}
 
-    prompt = f"""You are assisting a procurement evaluation committee at the Government of Catalonia (CTTI) in evaluating technical proposals for contract CTTI-2026-36, a quantum key distribution infrastructure procurement.
+    criterion_label = (
+        current_criterion.get("name")
+        or CRITERION_LABELS.get(state["criterion_id"], state["criterion_id"])
+    )
+    known_max = (
+        current_criterion.get("max_points")
+        or CRITERION_MAX_POINTS.get(state["criterion_id"], 0)
+    )
+
+    if current_subcriterion:
+        subcriterion_name = current_subcriterion["name"]
+        subcriterion_points = current_subcriterion["points"]
+        combined_name = f"{criterion_label} — {subcriterion_name}"
+
+        prompt = f"""You are assisting a procurement evaluation committee at CTTI evaluating contract CTTI-2026-36.
+
+You are evaluating ONE SPECIFIC SUB-CRITERION only.
+
+Parent criterion: {criterion_label} (total {known_max} pts)
+Sub-criterion: {subcriterion_name}
+Points for this sub-criterion: {subcriterion_points} pts
+
+What to look for: {state['criterion_query']}
+
+PCAP AND PPT CONTEXT:
+{criteria_context}
+
+SUPPLIER PROPOSAL EXCERPTS:
+{proposal_context}
+
+Tasks:
+1. Return criterion_name as: "{combined_name}"
+2. Return max_points as: {subcriterion_points}
+3. Quote the single most relevant verbatim passage from the proposal addressing this specific sub-criterion only.
+4. Write an agent note (2-3 sentences):
+   - What is present and relevant
+   - What is missing relative to the PCAP requirement
+   - Whether the evidence fully, partially, or insufficiently addresses this sub-criterion
+   - Note that this sub-criterion is worth {subcriterion_points} of {known_max} total points
+
+IMPORTANT FORMATTING RULES:
+- Use plain text only. Do not use markdown, asterisks, code fences, or bold formatting.
+- MAX_POINTS must be {subcriterion_points}.
+- Respond in exactly this format with no additional text:
+
+CRITERION_NAME: {combined_name}
+MAX_POINTS: {subcriterion_points}
+EVIDENCE: <verbatim multi-sentence quote from the supplier proposal>
+AGENT_NOTE: <2-3 sentence observation>"""
+
+    else:
+        prompt = f"""You are assisting a procurement evaluation committee at the Government of Catalonia (CTTI) in evaluating technical proposals for contract CTTI-2026-36, a quantum key distribution infrastructure procurement.
 
 Your role is to surface relevant evidence from the supplier proposal to assist the human evaluator. You do NOT score or recommend. The human evaluator assigns all scores independently.
 
@@ -59,7 +107,7 @@ Your tasks:
 
 IMPORTANT FORMATTING RULES:
 - Use plain text only. Do not use markdown, asterisks, code fences, or bold formatting.
-- MAX_POINTS must be the integer {known_max}.
+- MAX_POINTS must be the value {known_max}.
 - Respond in exactly this format with no additional text:
 
 CRITERION_NAME: {criterion_label}
@@ -81,15 +129,12 @@ AGENT_NOTE: <2-3 sentence observation>"""
 
     text = response.content
 
-    # Strip markdown code fences if the LLM wrapped its output
     text = re.sub(r"^```[^\n]*\n?", "", text.strip())
     text = re.sub(r"\n?```$", "", text.strip())
-
-    # Strip markdown bold markers (**KEY:**)
     cleaned = re.sub(r"\*\*([A-Z_]+):\*\*", r"\1:", text)
 
     pattern = re.compile(
-        r"CRITERION_NAME:\s*(.*?)\s*MAX_POINTS:\s*(\d+)\s*EVIDENCE:\s*(.*?)\s*AGENT_NOTE:\s*(.*)",
+        r"CRITERION_NAME:\s*(.*?)\s*MAX_POINTS:\s*(\d+\.?\d*)\s*EVIDENCE:\s*(.*?)\s*AGENT_NOTE:\s*(.*)",
         re.DOTALL,
     )
     m = pattern.search(cleaned)
@@ -97,7 +142,7 @@ AGENT_NOTE: <2-3 sentence observation>"""
     if m:
         criterion_name = m.group(1).strip()
         try:
-            max_points = int(m.group(2).strip())
+            max_points = round(float(m.group(2).strip()), 1)
         except ValueError:
             max_points = known_max
         evidence = m.group(3).strip()
@@ -121,13 +166,12 @@ AGENT_NOTE: <2-3 sentence observation>"""
 
         criterion_name = " ".join(fields["CRITERION_NAME"]).strip()
         try:
-            max_points = int(" ".join(fields["MAX_POINTS"]).strip().split()[0])
+            max_points = round(float(" ".join(fields["MAX_POINTS"]).strip().split()[0]), 1)
         except (ValueError, IndexError):
             max_points = known_max
         evidence = "\n".join(fields["EVIDENCE"]).strip()
         agent_note = "\n".join(fields["AGENT_NOTE"]).strip()
 
-    # Final fallback: if max_points still 0, use known authoritative value
     if max_points == 0:
         max_points = known_max
 
