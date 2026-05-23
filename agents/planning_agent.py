@@ -11,9 +11,13 @@ load_dotenv()
 llm = ChatMistralAI(model="mistral-large-latest", temperature=0)
 
 
-def planning_agent(contract_id: str = "CTTI-2026-36") -> dict:
+def planning_agent(
+    contract_id: str = "CTTI-2026-36",
+    tender_id: str = "ctti_2026_36",
+) -> dict:
     chunks = retrieve_criteria(
         query="evaluation criteria points subcriteria judici de valor maximum score breakdown",
+        tender_id=tender_id,
         k=10,
     )
     criteria_context = "\n\n---\n\n".join([c["text"] for c in chunks])
@@ -101,9 +105,10 @@ Respond ONLY with a valid JSON object in exactly this structure with no addition
                 )
 
     plan = {
-        "contract_id": contract_id,
-        "generated_at": datetime.now().isoformat(),
-        "criteria": plan_data["criteria"],
+        "contract_id":   contract_id,
+        "tender_id":     tender_id,
+        "generated_at":  datetime.now().isoformat(),
+        "criteria":      plan_data["criteria"],
     }
 
     plan_dir = Path("tender_plans")
@@ -115,7 +120,10 @@ Respond ONLY with a valid JSON object in exactly this structure with no addition
     return plan
 
 
-def load_or_generate_plan(contract_id: str = "CTTI-2026-36") -> dict:
+def load_or_generate_plan(
+    contract_id: str = "CTTI-2026-36",
+    tender_id: str = "ctti_2026_36",
+) -> dict:
     path = Path(f"tender_plans/{contract_id}_plan.json")
 
     if path.exists():
@@ -125,7 +133,7 @@ def load_or_generate_plan(contract_id: str = "CTTI-2026-36") -> dict:
         return plan
 
     print("No plan found. Running Planning Agent...")
-    plan = planning_agent(contract_id)
+    plan = planning_agent(contract_id=contract_id, tender_id=tender_id)
     print(f"Plan generated and saved to {path}")
     return plan
 

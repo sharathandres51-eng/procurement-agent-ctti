@@ -8,11 +8,50 @@ from agents.retrieval_agent import retrieval_agent
 from agents.analysis_agent import analysis_agent
 from agents.planning_agent import load_or_generate_plan
 
-SUPPLIERS = [
-    {"id": "supplier_a", "name": "QuantumNet Solutions SL"},
-    {"id": "supplier_b", "name": "CyberQuantum Iberia SL"},
-    {"id": "supplier_c", "name": "SecureComms Catalunya SA"},
-]
+# ── Tender registry ────────────────────────────────────────────────────────────
+# Add a new tender here and it appears automatically in the UI dropdown.
+# The Planning Agent reads the PCAP from the FAISS index at runtime to
+# generate the evaluation plan — the registry only needs supplier metadata.
+
+TENDER_REGISTRY: dict[str, dict] = {
+    "ctti_2026_36": {
+        "label": "CTTI-2026-36 — QKD Infrastructure",
+        "suppliers": [
+            {"id": "supplier_a", "name": "QuantumNet Solutions SL"},
+            {"id": "supplier_b", "name": "CyberQuantum Iberia SL"},
+            {"id": "supplier_c", "name": "SecureComms Catalunya SA"},
+        ],
+    },
+    "ctti_2026_44": {
+        "label": "CTTI-2026-44 — Cloud Infrastructure Migration",
+        "suppliers": [
+            {"id": "supplier_a", "name": "CloudPath Solutions SL"},
+            {"id": "supplier_b", "name": "NexCloud Iberia SA"},
+            {"id": "supplier_c", "name": "InfraTech Catalunya SA"},
+        ],
+    },
+    "ctti_2026_51": {
+        "label": "CTTI-2026-51 — Cybersecurity SOC Services",
+        "suppliers": [
+            {"id": "supplier_a", "name": "CyberShield Catalunya SL"},
+            {"id": "supplier_b", "name": "SecOps Iberia SA"},
+            {"id": "supplier_c", "name": "GuardNet Partners SL"},
+        ],
+    },
+}
+
+DEFAULT_TENDER_ID = "ctti_2026_36"
+
+
+def get_tender_config(tender_id: str) -> dict:
+    if tender_id not in TENDER_REGISTRY:
+        raise ValueError(
+            f"Unknown tender: {tender_id!r}. Available: {list(TENDER_REGISTRY)}"
+        )
+    return TENDER_REGISTRY[tender_id]
+
+
+# ── LangGraph pipeline (compiled once; stateless per invocation) ───────────────
 
 graph_builder = StateGraph(EvalState)
 graph_builder.add_node("retrieval_agent", retrieval_agent)
@@ -27,16 +66,24 @@ def run_evaluation(
     supplier_id: str,
     supplier_name: str,
     criterion: dict,
+    tender_id: str,
+    language: str = "en",
     subcriterion: dict = None,
 ) -> dict:
     if subcriterion:
-        query = subcriterion["query"]
-        criterion_id = subcriterion["id"]
+        query          = subcriterion["query"]
+        criterion_id   = subcriterion["id"]
+        criterion_name = f"{criterion['name']} — {subcriterion['name']}"
+        max_points     = subcriterion["points"]
     else:
-        query = criterion["query"]
-        criterion_id = criterion["id"]
+        query          = criterion["query"]
+        criterion_id   = criterion["id"]
+        criterion_name = criterion["name"]
+        max_points     = criterion["max_points"]
 
     initial_state = EvalState(
+        tender_id=tender_id,
+        language=language,
         supplier_id=supplier_id,
         supplier_name=supplier_name,
         criterion_id=criterion_id,
@@ -47,64 +94,69 @@ def run_evaluation(
         raw_chunks=[],
         evidence="",
         agent_note="",
-        criterion_name="",
-        max_points=0,
+        criterion_name=criterion_name,
+        max_points=max_points,
     )
 
     result = pipeline.invoke(initial_state)
 
     return {
-        "supplier_id": supplier_id,
-        "supplier_name": supplier_name,
-        "criterion_id": criterion["id"],
+        "tender_id":      tender_id,
+        "supplier_id":    supplier_id,
+        "supplier_name":  supplier_name,
+        "criterion_id":   criterion["id"],
         "subcriterion_id": subcriterion["id"] if subcriterion else None,
         "criterion_name": result["criterion_name"],
-        "max_points": result["max_points"],
-        "evidence": result["evidence"],
-        "agent_note": result["agent_note"],
+        "max_points":     result["max_points"],
+        "evidence":       result["evidence"],
+        "agent_note":     result["agent_note"],
     }
 
 
-def run_all_evaluations(plan: dict) -> dict:
-    results = {}
+def run_all_evaluations(
+    plan: dict,
+    tender_id: str = DEFAULT_TENDER_ID,
+    language: str = "en",
+) -> dict:
+    config  = get_tender_config(tender_id)
+    results: dict[str, dict] = {}
 
-    for supplier in SUPPLIERS:
+    for supplier in config["suppliers"]:
         results[supplier["id"]] = {}
 
         for criterion in plan["criteria"]:
 
             if criterion["has_subcriteria"]:
                 results[supplier["id"]][criterion["id"]] = {
-                    "has_subcriteria": True,
-                    "criterion_name": criterion["name"],
-                    "max_points": criterion["max_points"],
-                    "subcriteria": {},
+                    "has_subcriteria":  True,
+                    "criterion_name":   criterion["name"],
+                    "max_points":       criterion["max_points"],
+                    "subcriteria":      {},
                 }
-
                 for sc in criterion["subcriteria"]:
                     print(
                         f"  {supplier['name']} — "
-                        f"{criterion['name']} — "
-                        f"{sc['name']}..."
+                        f"{criterion['name']} — {sc['name']}..."
                     )
                     result = run_evaluation(
                         supplier_id=supplier["id"],
                         supplier_name=supplier["name"],
                         criterion=criterion,
+                        tender_id=tender_id,
+                        language=language,
                         subcriterion=sc,
                     )
                     results[supplier["id"]][criterion["id"]]["subcriteria"][sc["id"]] = result
                     time.sleep(10)
 
             else:
-                print(
-                    f"  {supplier['name']} — "
-                    f"{criterion['name']}..."
-                )
+                print(f"  {supplier['name']} — {criterion['name']}...")
                 result = run_evaluation(
                     supplier_id=supplier["id"],
                     supplier_name=supplier["name"],
                     criterion=criterion,
+                    tender_id=tender_id,
+                    language=language,
                 )
                 results[supplier["id"]][criterion["id"]] = result
                 time.sleep(10)

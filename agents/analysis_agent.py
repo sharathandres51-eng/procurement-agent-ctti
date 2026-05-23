@@ -5,55 +5,48 @@ from dotenv import load_dotenv
 from langchain_mistralai import ChatMistralAI
 from rag.retriever import retrieve_criteria
 from graph.state import EvalState
+from i18n import get_translations
 
 load_dotenv()
 
 llm = ChatMistralAI(model="mistral-large-latest", temperature=0)
 
-CRITERION_LABELS = {
-    "pla_migracio":     "Criterion 1.1 — Pla de Migració",
-    "execucio_critica": "Criterion 1.2 — Execució Crítica i Desplegament",
-    "analisi_dades":    "Criterion 1.3 — Anàlisi de les Dades",
-    "pla_devolucio":    "Criterion 1.4 — Pla de Devolució del Servei",
-}
-
-CRITERION_MAX_POINTS = {
-    "pla_migracio":     9,
-    "execucio_critica": 30,
-    "analisi_dades":    5,
-    "pla_devolucio":    5,
-}
-
 
 def analysis_agent(state: EvalState) -> dict:
-    criteria_chunks = retrieve_criteria(query=state["criterion_query"], k=5)
+    # criterion_name and max_points are set by pipeline.py from the evaluation plan.
+    # For sub-criteria, criterion_name is "Parent — Sub" and max_points is the sub-criterion points.
+    criterion_label = state["criterion_name"]
+    known_max       = state["max_points"]
+    tender_id       = state["tender_id"]
+    language        = state.get("language", "en")
+    t               = get_translations(language)
+    lang_instruction = t["llm_language_instruction"]
+
+    current_criterion    = state.get("current_criterion") or {}
+    current_subcriterion = state.get("current_subcriterion") or {}
+
+    criteria_chunks  = retrieve_criteria(
+        query=state["criterion_query"],
+        tender_id=tender_id,
+        k=5,
+    )
     criteria_context = "\n\n---\n\n".join(c["text"] for c in criteria_chunks)
     proposal_context = "\n\n---\n\n".join(c["text"] for c in state["raw_chunks"])
 
-    current_criterion = state.get("current_criterion") or {}
-    current_subcriterion = state.get("current_subcriterion") or {}
-
-    criterion_label = (
-        current_criterion.get("name")
-        or CRITERION_LABELS.get(state["criterion_id"], state["criterion_id"])
-    )
-    known_max = (
-        current_criterion.get("max_points")
-        or CRITERION_MAX_POINTS.get(state["criterion_id"], 0)
-    )
-
     if current_subcriterion:
-        subcriterion_name = current_subcriterion["name"]
-        subcriterion_points = current_subcriterion["points"]
-        combined_name = f"{criterion_label} — {subcriterion_name}"
+        parent_name   = current_criterion.get("name", criterion_label)
+        parent_max    = current_criterion.get("max_points", known_max)
+        sc_name       = current_subcriterion["name"]
+        sc_points     = current_subcriterion["points"]
 
-        prompt = f"""You are assisting a procurement evaluation committee at CTTI evaluating contract CTTI-2026-36.
+        prompt = f"""You are assisting a procurement evaluation committee at CTTI evaluating contract {tender_id.upper().replace("_", "-")}.
+{lang_instruction}
 
 You are evaluating ONE SPECIFIC SUB-CRITERION only.
 
-Parent criterion: {criterion_label} (total {known_max} pts)
-Sub-criterion: {subcriterion_name}
-Points for this sub-criterion: {subcriterion_points} pts
+Parent criterion: {parent_name} (total {parent_max} pts)
+Sub-criterion: {sc_name}
+Points for this sub-criterion: {sc_points} pts
 
 What to look for: {state['criterion_query']}
 
@@ -64,27 +57,28 @@ SUPPLIER PROPOSAL EXCERPTS:
 {proposal_context}
 
 Tasks:
-1. Return criterion_name as: "{combined_name}"
-2. Return max_points as: {subcriterion_points}
+1. Return criterion_name as: "{criterion_label}"
+2. Return max_points as: {sc_points}
 3. Quote the single most relevant verbatim passage from the proposal addressing this specific sub-criterion only.
 4. Write an agent note (2-3 sentences):
    - What is present and relevant
    - What is missing relative to the PCAP requirement
    - Whether the evidence fully, partially, or insufficiently addresses this sub-criterion
-   - Note that this sub-criterion is worth {subcriterion_points} of {known_max} total points
+   - Note that this sub-criterion is worth {sc_points} of {parent_max} total points
 
 IMPORTANT FORMATTING RULES:
 - Use plain text only. Do not use markdown, asterisks, code fences, or bold formatting.
-- MAX_POINTS must be {subcriterion_points}.
+- MAX_POINTS must be {sc_points}.
 - Respond in exactly this format with no additional text:
 
-CRITERION_NAME: {combined_name}
-MAX_POINTS: {subcriterion_points}
+CRITERION_NAME: {criterion_label}
+MAX_POINTS: {sc_points}
 EVIDENCE: <verbatim multi-sentence quote from the supplier proposal>
 AGENT_NOTE: <2-3 sentence observation>"""
 
     else:
-        prompt = f"""You are assisting a procurement evaluation committee at the Government of Catalonia (CTTI) in evaluating technical proposals for contract CTTI-2026-36, a quantum key distribution infrastructure procurement.
+        prompt = f"""You are assisting a procurement evaluation committee at the Government of Catalonia (CTTI) in evaluating technical proposals for contract {tender_id.upper().replace("_", "-")}.
+{lang_instruction}
 
 Your role is to surface relevant evidence from the supplier proposal to assist the human evaluator. You do NOT score or recommend. The human evaluator assigns all scores independently.
 
@@ -145,7 +139,7 @@ AGENT_NOTE: <2-3 sentence observation>"""
             max_points = round(float(m.group(2).strip()), 1)
         except ValueError:
             max_points = known_max
-        evidence = m.group(3).strip()
+        evidence   = m.group(3).strip()
         agent_note = m.group(4).strip()
     else:
         keys = ["CRITERION_NAME", "MAX_POINTS", "EVIDENCE", "AGENT_NOTE"]
@@ -169,15 +163,15 @@ AGENT_NOTE: <2-3 sentence observation>"""
             max_points = round(float(" ".join(fields["MAX_POINTS"]).strip().split()[0]), 1)
         except (ValueError, IndexError):
             max_points = known_max
-        evidence = "\n".join(fields["EVIDENCE"]).strip()
+        evidence   = "\n".join(fields["EVIDENCE"]).strip()
         agent_note = "\n".join(fields["AGENT_NOTE"]).strip()
 
     if max_points == 0:
         max_points = known_max
 
     return {
-        "evidence": evidence,
-        "agent_note": agent_note,
+        "evidence":       evidence,
+        "agent_note":     agent_note,
         "criterion_name": criterion_name,
-        "max_points": max_points,
+        "max_points":     max_points,
     }

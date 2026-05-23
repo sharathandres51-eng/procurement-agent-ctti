@@ -1,0 +1,120 @@
+SOBRE B — TECHNICAL PROPOSAL
+Company: CloudPath Solutions SL
+Tender: CTTI-2026-44
+Migració de la infraestructura d'equipaments als entorns de núvol híbrid
+
+=====================================================================
+EXECUTIVE SUMMARY
+=====================================================================
+
+CloudPath Solutions SL presents this technical proposal in response to CTTI
+tender CTTI-2026-44 for the migration of on-premise data centre workloads
+to a hybrid cloud environment. Our proposal draws on eight years of enterprise
+cloud migration experience, including two completed hybrid cloud projects for
+Spanish public administrations, and is built around a named, certified team with
+direct experience in ENS-compliant cloud deployments.
+
+=====================================================================
+PLA DE MIGRACIÓ DE SISTEMES — PROJECT TEAM AND MIGRATION PLAN
+=====================================================================
+
+The migration programme will be directed by Carles Vidal, who will serve as
+Project Manager for the full contract duration. Carles holds PMP certification
+and has led five enterprise cloud migrations over the past six years, two of which
+involved public-sector clients in Spain with ENS compliance requirements. He has
+direct experience managing multi-vendor migration programmes and coordinating
+with public administration IT teams under the constraints of live production
+environments.
+
+Solution architecture is the responsibility of Laia Ferrer, a certified Azure
+Solutions Architect Expert and AWS Certified Solutions Architect Professional.
+Laia has five years designing hybrid cloud architectures and has served as
+lead architect on a hybrid deployment for a Catalan regional agency, integrating
+Azure with on-premise VMware infrastructure. She brings direct familiarity with
+the identity federation challenges of migrating Active Directory-dependent
+workloads to cloud environments.
+
+The migration execution team comprises two senior migration engineers, both
+holding Azure Migrate certification. Both have a minimum of four years of
+hands-on workload migration experience and have participated in at least one
+prior public-sector migration project. The team is supported by a dedicated
+security engineer holding ENS implementer qualification and CISSP certification.
+
+Our migration plan follows a five-wave structure:
+- Wave 0: Landing zone provisioning, connectivity setup, identity federation
+- Wave 1: BATCH workloads (pilot, low risk)
+- Wave 2: STANDARD non-customer-facing workloads
+- Wave 3: STANDARD customer-facing workloads
+- Wave 4: CRITICAL workloads with individual cutover plans per system
+
+Each wave includes a defined rollback plan, validated before execution begins.
+Rollback from Wave 4 cutovers can be executed within a 2-hour window, with
+the source on-premise environment maintained in operational standby throughout
+the cutover night.
+
+=====================================================================
+ARQUITECTURA TÈCNICA PROPOSADA
+=====================================================================
+
+The proposed hybrid architecture combines Azure as the primary hyperscaler
+with a BSC private cloud segment for ENS ALT workloads and those subject to
+Catalan data residency requirements. Connectivity between Azure and BSC is
+established via dedicated ExpressRoute circuits with private peering, ensuring
+that no workload traffic between environments transits the public internet.
+
+All CRITICAL tier services are deployed in an active-passive configuration
+across two Azure availability zones in the West Europe region, with automatic
+failover managed by Azure Traffic Manager. RTO for CRITICAL services is
+guaranteed at 3 hours, within the 4-hour PPT requirement. RPO for CRITICAL
+services is guaranteed at 45 minutes.
+
+Identity federation uses Azure AD Connect with SAML 2.0 pass-through for
+cloud workloads, preserving all existing CTTI Active Directory group memberships
+and policy assignments. API gateway continuity is maintained through an API
+compatibility layer deployed during the transition period, ensuring no breaking
+changes are visible to existing consumers during migration.
+
+Observability is integrated with CTTI's existing OpenTelemetry-compatible
+collection platform from day one of each wave, with metrics and log forwarding
+configured before any workload is cut over to production on the cloud target.
+
+=====================================================================
+SEGURETAT I COMPLIMENT NORMATIU
+=====================================================================
+
+CloudPath Solutions holds current ENS MEDI certification for its Azure-based
+managed cloud service, issued by an ENS-accredited audit body. Certification
+evidence is included in the annexes. A full CCN-compatible ENS controls mapping
+for all 75 MEDI-level controls will be delivered within 30 days of contract award.
+
+GDPR compliance architecture includes customer-managed encryption keys for all
+personal data at rest, with keys stored in Azure Key Vault instances under
+exclusive CTTI control. No hyperscaler staff access to personal data is possible
+without CTTI-authorised key release. All personal data in scope remains within
+the EEA; geo-replication to non-EEA regions is blocked at the Azure policy level
+and auditable via Azure Policy compliance reports.
+
+For BSC private cloud workloads, all data remains physically within the BSC
+facilities in Barcelona. Physical data flow documentation confirming this
+constraint will be provided within 60 days of contract start.
+
+=====================================================================
+PLA DE TRANSICIÓ DEL SERVEI
+=====================================================================
+
+The service handover is structured as a 2-month programme beginning 2 months
+before contract end. A dedicated transition team of two engineers and the
+solution architect will be assigned exclusively to transition activities during
+this period.
+
+Knowledge transfer comprises four structured sessions:
+1. Architecture and infrastructure overview (full day)
+2. Security controls, IAM and key management (half day)
+3. Operational procedures and runbook walkthrough (full day)
+4. Vendor management, escalation paths and licence renewals (half day)
+
+All sessions are delivered in Catalan. CTTI staff will perform supervised
+operational tasks during sessions 3 and 4. A 12-month post-handover warranty
+support period is included, with a defined P1 response SLA of 4 hours. Complete
+runbooks, architecture diagrams and operational documentation are committed for
+delivery 30 days before the handover period begins.

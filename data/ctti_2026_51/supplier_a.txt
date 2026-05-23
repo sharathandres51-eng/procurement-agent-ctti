@@ -1,0 +1,113 @@
+SOBRE B — TECHNICAL PROPOSAL
+Company: CyberShield Catalunya SL
+Tender: CTTI-2026-51
+Serveis gestionats de Centre d'Operacions de Seguretat (SOC) per a la Generalitat de Catalunya
+
+=====================================================================
+EXECUTIVE SUMMARY
+=====================================================================
+
+CyberShield Catalunya SL presents this technical proposal for CTTI tender
+CTTI-2026-51. Our managed SOC service is purpose-built for public-sector clients
+and has been providing 24/7 security monitoring to two other Catalan public
+administrations since 2022. Our team's certifications and our threat intelligence
+capability are the strongest aspects of this proposal, and we believe they
+represent a meaningful differentiator in a market where analyst quality varies
+significantly.
+
+=====================================================================
+EQUIP I QUALIFICACIONS DEL SOC
+=====================================================================
+
+The SOC team dedicated to this contract will be led by Marc Olivé as SOC Manager.
+Marc holds CISSP and CISM certifications and has 9 years of information security
+experience, of which 5 have been spent leading SOC operations for public-sector
+clients. He will be allocated at 75% dedication to this contract, ensuring that
+CTTI has a substantive and responsive service management relationship.
+
+The L3/IR function is provided by Sílvia Gràcia, a senior incident responder holding
+GIAC GCFE, GREM and OSCP certifications. Sílvia has 7 years of SOC and digital
+forensics experience and has led IR engagements for three confirmed advanced
+persistent threat (APT) incidents in Spanish public sector environments. She
+is dedicated 100% to this contract.
+
+Two L2 analysts are assigned full-time to this contract, both holding GIAC GCIH
+certification and with 4 and 5 years of SOC experience respectively. Both have
+prior engagements in public-sector monitoring environments.
+
+Four L1 analysts are distributed across shift patterns to deliver 24/7 coverage,
+all holding CompTIA Security+ and with a minimum of 2 years of L1 SOC experience.
+Shifts are staffed such that no shift period has fewer than two analysts on duty,
+ensuring coverage resilience. Night-shift analyst capability is reinforced by
+automated SOAR-driven triage for lower-severity alerts, freeing analyst attention
+for P1 and P2 events during lower-activity hours.
+
+The dedicated CTI analyst, Andreu Mas, holds GIAC GCTI certification and 4 years
+of threat intelligence experience, including 2 years working with a national CSIRT.
+He has prior experience contributing indicators and advisories to the CCN-CERT
+REYES platform and to the Spanish public administration ISAC community.
+
+=====================================================================
+CAPACITAT DE DETECCIÓ I RESPOSTA
+=====================================================================
+
+CyberShield operates a Microsoft Sentinel SIEM with a Palo Alto XSOAR SOAR
+platform for automation and orchestration. Sentinel is deployed in the West Europe
+Azure region with a dedicated workspace for this contract, providing CTTI with
+read-only access via a CTTI-managed Entra ID principal.
+
+The platform currently ingests at 65,000 EPS and is architected to scale to
+180,000 EPS via workspace scaling without architectural change. Log retention
+is configured for 12 months hot (Sentinel Analytics) and 36 months cold
+(Azure Data Lake tier), meeting the PPT requirement.
+
+Our detection use case library at contract start comprises 247 documented use
+cases, all mapped to MITRE ATT&CK. Coverage spans 18 ATT&CK tactics, including
+all 15 tactics identified as relevant to Spanish public administration in
+CCN-CERT advisories from 2023–2025. New use cases are deployed within 3 business
+days of a CCN-CERT alta or higher advisory, inside the 5-day PPT target.
+
+Incident response workflow follows a documented 5-stage process: Detect > Triage
+> Contain > Eradicate > Recover. For P1 incidents, the L3 analyst is paged
+automatically within 5 minutes of P1 classification. Coordination with the
+Agència de Ciberseguretat de Catalunya uses a pre-agreed notification template
+and a dedicated secure channel, tested annually during IR simulation exercises.
+
+=====================================================================
+INTEL·LIGÈNCIA D'AMENACES
+=====================================================================
+
+CyberShield's threat intelligence programme for this contract operationalises
+feeds from Recorded Future (commercial), CCN-CERT REYES (mandatory), MISP
+community (open source) and AlienVault OTX (open source). Critical IoCs are
+operationalised in Sentinel within 2 hours of receipt, inside the 4-hour PPT target.
+
+The dedicated CTI analyst delivers a monthly threat landscape report tailored
+to the Catalan public administration threat environment, drawing on intelligence
+from CCN-CERT, ENISA and the Spanish public sector ISAC. Threat hunting is
+conducted monthly using a documented hypothesis-driven methodology aligned with
+the MITRE ATT&CK framework. Hunting reports are delivered within 4 business
+days of each engagement.
+
+In 2024, our CTI team identified and shared with CCN-CERT two previously
+undocumented IoC clusters associated with a phishing campaign targeting Spanish
+local government entities. This contribution resulted in a CCN-CERT advisory
+referencing our intelligence. References available on request.
+
+=====================================================================
+REPORTING I GOVERNANÇA
+=====================================================================
+
+Operational reports are delivered monthly, covering: alert volumes by severity,
+MTTD and MTTR per tier, SLA compliance, incident summary and open recommendations.
+Executive reports are delivered quarterly, covering: threat landscape summary,
+service performance trend, upcoming risk factors and strategic recommendations.
+
+SLA measurement is automated via Sentinel workbook dashboards, with data
+available to CTTI in real time. Service review meetings are held monthly with
+the SOC Manager and CTTI's designated service owner. An annual contract review
+meeting is held with senior stakeholders from both organisations.
+
+Escalation for P1 incidents follows a three-tier path: L3 analyst > SOC Manager
+(15-minute response obligation) > CyberShield CISO (30-minute response obligation
+for incidents affecting critical Generalitat services).
