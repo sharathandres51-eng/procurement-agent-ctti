@@ -19,6 +19,7 @@ os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
 from dotenv import load_dotenv
 load_dotenv()
 
+import asyncio
 from contextlib import asynccontextmanager
 from pathlib import Path
 from fastapi import FastAPI
@@ -29,24 +30,26 @@ from api.routers import tenders, evaluate, compare, sobre_c, audit
 INDEX_DIR = Path(__file__).parent.parent / "rag" / "faiss_index"
 
 
+def _build_index_sync() -> None:
+    """Blocking helper — runs in a thread so the event loop stays free."""
+    try:
+        from rag.indexer import build_index
+        build_index()
+        print("FAISS index built successfully.")
+    except Exception as exc:
+        print(f"WARNING: Failed to build FAISS index: {exc}")
+        print("The /evaluate endpoint will not work until the index is built.")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
-    On startup: build the FAISS index if it doesn't exist.
-    This is a safety net for Railway deployments where the Nixpacks
-    build phase ran the indexer but the filesystem may not have persisted,
-    or for first-time local runs before `python -m rag.indexer` has been run.
+    On startup: if the FAISS index is missing, rebuild it in a background
+    thread so the event loop (and Railway healthcheck) are never blocked.
     """
     if not INDEX_DIR.exists() or not any(INDEX_DIR.iterdir()):
-        print("FAISS index not found — building now (this takes ~2 minutes)…")
-        try:
-            from rag.indexer import build_index
-            build_index()
-            print("FAISS index built successfully.")
-        except Exception as exc:
-            print(f"WARNING: Failed to build FAISS index on startup: {exc}")
-            print("The /evaluate endpoint will not work until the index is built.")
-            print("Run: python -m rag.indexer")
+        print("FAISS index not found — building in background (this takes ~2 minutes)…")
+        asyncio.get_event_loop().run_in_executor(None, _build_index_sync)
     else:
         print(f"FAISS index found at {INDEX_DIR} — ready.")
     yield
