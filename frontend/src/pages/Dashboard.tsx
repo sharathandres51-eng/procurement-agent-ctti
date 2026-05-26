@@ -8,6 +8,7 @@ import PlanTable from '../components/PlanTable'
 import EvidenceCard from '../components/EvidenceCard'
 import ComparisonPanel from '../components/ComparisonPanel'
 import Spinner from '../components/Spinner'
+import SourceChunksPanel from '../components/SourceChunksPanel'
 import type {
   TenderSummary,
   EvaluationResults,
@@ -43,6 +44,9 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
   const [currentCell, setCurrentCell] = useState('')
   const [evaluatorId, setEvaluatorId] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [reviewMode, setReviewMode] = useState(false)
+  const [reviewSupIdx, setReviewSupIdx] = useState(0)
+  const [reviewCritIdx, setReviewCritIdx] = useState(0)
 
   // ── Plan ────────────────────────────────────────────────────────────────────
 
@@ -211,6 +215,156 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
   if (planLoading) return <Spinner label="Loading evaluation plan…" />
   if (planError) return <p className="text-red-500 text-sm">Failed to load plan.</p>
   if (!plan) return null
+
+  if (reviewMode && plan && results) {
+    const supplier = tender.suppliers[reviewSupIdx]
+    const criterion = plan.criteria[reviewCritIdx]
+    const totalSteps = tender.suppliers.length * plan.criteria.length
+    const currentStep = reviewSupIdx * plan.criteria.length + reviewCritIdx + 1
+    const isFirst = reviewSupIdx === 0 && reviewCritIdx === 0
+    const isLast = reviewSupIdx === tender.suppliers.length - 1 && reviewCritIdx === plan.criteria.length - 1
+
+    const goNext = () => {
+      if (reviewCritIdx < plan.criteria.length - 1) {
+        setReviewCritIdx(i => i + 1)
+      } else if (reviewSupIdx < tender.suppliers.length - 1) {
+        setReviewSupIdx(i => i + 1)
+        setReviewCritIdx(0)
+      } else {
+        // All reviewed — exit review mode, show summary/sign
+        setReviewMode(false)
+      }
+    }
+
+    const goPrev = () => {
+      if (reviewCritIdx > 0) {
+        setReviewCritIdx(i => i - 1)
+      } else if (reviewSupIdx > 0) {
+        setReviewSupIdx(i => i - 1)
+        setReviewCritIdx(plan.criteria.length - 1)
+      }
+    }
+
+    return (
+      <div className="flex flex-col gap-0" style={{ height: 'calc(100vh - 56px)' }}>
+
+        {/* ── Progress bar ── */}
+        <div className="bg-white border-b border-gray-100 px-6 py-3 flex items-center gap-4 shrink-0">
+          <button onClick={() => setReviewMode(false)} className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
+            ← Back to grid
+          </button>
+          <div className="flex-1">
+            <div className="flex items-center justify-between text-xs text-gray-500 mb-1.5">
+              <span>
+                <span className="font-semibold text-gray-800">{supplier.name}</span>
+                <span className="text-gray-400 mx-1.5">·</span>
+                {criterion.name}
+              </span>
+              <span className="font-mono text-[#0057A8]">{currentStep} / {totalSteps}</span>
+            </div>
+            <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+              <div
+                className="bg-[#0057A8] h-1.5 rounded-full transition-all duration-300"
+                style={{ width: `${Math.round((currentStep / totalSteps) * 100)}%` }}
+              />
+            </div>
+          </div>
+          <div className="flex gap-2 shrink-0">
+            <button
+              onClick={goPrev}
+              disabled={isFirst}
+              className="text-xs border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed px-3 py-1.5 rounded-lg transition-colors"
+            >
+              ← Prev
+            </button>
+            <button
+              onClick={goNext}
+              className="text-xs bg-[#0057A8] hover:bg-[#004a94] text-white font-semibold px-4 py-1.5 rounded-lg transition-colors"
+            >
+              {isLast ? '✅ Finish Review' : 'Next →'}
+            </button>
+          </div>
+        </div>
+
+        {/* ── Split screen ── */}
+        <div className="flex-1 grid grid-cols-2 gap-0 overflow-hidden">
+
+          {/* LEFT — AI Analysis */}
+          <div className="border-r border-gray-100 overflow-y-auto p-6 bg-white">
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                <p className="text-[11px] font-bold text-amber-600 uppercase tracking-widest">AI Analysis</p>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <h2 className="text-lg font-bold text-gray-900">{criterion.name}</h2>
+                <span className="text-xs bg-[#0057A8]/10 text-[#0057A8] font-mono font-semibold px-2 py-0.5 rounded-full">
+                  {criterion.max_points} pts
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {criterion.has_subcriteria ? (
+                criterion.subcriteria.map(sc => {
+                  const subResults = results[supplier.id]?.[criterion.id] as any
+                  const cellResult = subResults?.subcriteria?.[sc.id] as CriterionResult | undefined
+                  return (
+                    <div key={sc.id}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-0.5 h-4 bg-[#0057A8]/30 rounded" />
+                        <p className="text-xs font-semibold text-gray-600">{sc.name}</p>
+                        <span className="text-[10px] text-gray-400 font-mono">{sc.points} pts</span>
+                      </div>
+                      {cellResult ? (
+                        <EvidenceCard
+                          result={cellResult}
+                          score={getScore(supplier.id, criterion.id, sc.id)}
+                          maxPoints={sc.points}
+                          onScoreChange={v => setScore(supplier.id, criterion.id, v, sc.id)}
+                        />
+                      ) : (
+                        <div className="p-3 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                          <p className="text-xs text-gray-400 italic">Not yet evaluated</p>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })
+              ) : (
+                (() => {
+                  const cellResult = results[supplier.id]?.[criterion.id] as CriterionResult | undefined
+                  return cellResult ? (
+                    <EvidenceCard
+                      result={cellResult}
+                      score={getScore(supplier.id, criterion.id)}
+                      maxPoints={criterion.max_points}
+                      onScoreChange={v => setScore(supplier.id, criterion.id, v)}
+                    />
+                  ) : (
+                    <div className="p-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                      <p className="text-sm text-gray-400 italic">Not yet evaluated — run the evaluation first.</p>
+                    </div>
+                  )
+                })()
+              )}
+            </div>
+          </div>
+
+          {/* RIGHT — Source document */}
+          <div className="overflow-y-auto p-6 bg-gray-50">
+            <SourceChunksPanel
+              tenderId={tender.tender_id}
+              supplierId={supplier.id}
+              criterionId={criterion.id}
+              criterionName={criterion.name}
+              supplierName={supplier.name}
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6 max-w-7xl">
@@ -426,6 +580,18 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
                 )}
               </div>
             ))}
+
+            {/* Review Evaluations button */}
+            {results && !running && (
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={() => { setReviewMode(true); setReviewSupIdx(0); setReviewCritIdx(0) }}
+                  className="bg-[#0057A8] hover:bg-[#004a94] text-white font-semibold text-sm px-5 py-2.5 rounded-lg transition-colors shadow-sm"
+                >
+                  📋 Review Evaluations
+                </button>
+              </div>
+            )}
           </section>
 
           {/* ── Step 4: Summary ─────────────────────────────────────────────── */}
