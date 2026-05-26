@@ -1,0 +1,20 @@
+# nixpacks.toml
+# -------------
+# Nixpacks build config for Railway.
+# Installs Python deps then pre-builds the FAISS vector index so the
+# first request doesn't have to wait for it.
+#
+# Note: MISTRAL_API_KEY must be set as a Railway env var for the
+# indexer to call the Mistral embeddings API during the build phase.
+
+[phases.setup]
+nixPkgs = ["python313"]
+
+[phases.install]
+cmds = ["pip install -r requirements.txt"]
+
+[phases.build]
+cmds = ["python -m rag.indexer"]
+
+[start]
+cmd = "uvicorn api.main:app --host 0.0.0.0 --port $PORT"

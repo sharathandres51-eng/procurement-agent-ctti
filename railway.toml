@@ -1,0 +1,20 @@
+# railway.toml
+# ------------
+# Railway deployment config for the CTTI Procurement Evaluation API.
+# Railway detects Python via requirements.txt and uses Nixpacks to build.
+#
+# Environment variables to set in Railway dashboard:
+#   MISTRAL_API_KEY      your Mistral API key
+#   ALLOWED_ORIGINS      comma-separated list of allowed frontend URLs
+#                        e.g. https://procurement-ctti.vercel.app
+#   PORT                 set automatically by Railway — do not override
+
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "uvicorn api.main:app --host 0.0.0.0 --port $PORT"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3

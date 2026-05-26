@@ -1,8 +1,12 @@
+import { baseURL } from './client'
 import type { EvaluationProgressEvent } from '../types'
 
 /**
  * Connects to POST /tenders/{id}/evaluate as a Server-Sent Events stream.
  * Calls onEvent for each completed cell, onDone when finished, onError on failure.
+ *
+ * Uses the same base URL as the axios client so it works in both
+ * development (Vite proxy → localhost:8000) and production (Railway).
  *
  * Returns a cleanup function that aborts the stream.
  */
@@ -15,7 +19,10 @@ export function streamEvaluation(
 ): () => void {
   const controller = new AbortController()
 
-  fetch(`/api/tenders/${tenderId}/evaluate`, {
+  // baseURL is either '/api' (dev proxy) or 'https://....railway.app' (prod)
+  const url = `${baseURL}/tenders/${tenderId}/evaluate`
+
+  fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ language }),
