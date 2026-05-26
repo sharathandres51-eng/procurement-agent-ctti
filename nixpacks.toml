@@ -12,12 +12,12 @@ nixPkgs = ["python313"]
 
 [phases.install]
 cmds = [
-  "python3 -m ensurepip --upgrade",
-  "python3 -m pip install --no-cache-dir -r requirements.txt"
+  "python3 -m venv /app/.venv",
+  "/app/.venv/bin/pip install --no-cache-dir -r requirements.txt"
 ]
 
 [phases.build]
-cmds = ["python3 -m rag.indexer"]
+cmds = ["/app/.venv/bin/python -m rag.indexer"]
 
 [start]
-cmd = "uvicorn api.main:app --host 0.0.0.0 --port $PORT"
+cmd = "/app/.venv/bin/uvicorn api.main:app --host 0.0.0.0 --port $PORT"
