@@ -1,0 +1,57 @@
+{
+  "contract_id": "CTTI-2026-36",
+  "generated_at": "2026-05-23T18:02:03.877139",
+  "criteria": [
+    {
+      "id": "pla_de_migracio",
+      "name": "Pla de migraci\u00f3 (CIP)",
+      "max_points": 9.0,
+      "has_subcriteria": false,
+      "query": "migration plan service team qualifications",
+      "subcriteria": []
+    },
+    {
+      "id": "execucio_critica_i_desplegament",
+      "name": "Execuci\u00f3 cr\u00edtica i desplegament (CIP)",
+      "max_points": 30.0,
+      "has_subcriteria": false,
+      "query": "critical execution deployment technical valuation details",
+      "subcriteria": []
+    },
+    {
+      "id": "analisi_de_les_dades",
+      "name": "An\u00e0lisi de les dades (CIP)",
+      "max_points": 5.0,
+      "has_subcriteria": false,
+      "query": "data analysis team qualifications dedication",
+      "subcriteria": []
+    },
+    {
+      "id": "pla_de_devolucio_del_servei",
+      "name": "Pla de devoluci\u00f3 del servei (CIP)",
+      "max_points": 5.0,
+      "has_subcriteria": true,
+      "query": "",
+      "subcriteria": [
+        {
+          "id": "pla_de_devolucio_documentation",
+          "name": "Documentation",
+          "points": 1.5,
+          "query": "handover documentation reports project execution"
+        },
+        {
+          "id": "pla_de_devolucio_handover_team",
+          "name": "Handover plan team dimensioning",
+          "points": 2.0,
+          "query": "handover team qualifications quality guarantee"
+        },
+        {
+          "id": "pla_de_devolucio_support_team",
+          "name": "Support team during warranty",
+          "points": 1.5,
+          "query": "warranty support team dimensioning qualification"
+        }
+      ]
+    }
+  ]
+}
