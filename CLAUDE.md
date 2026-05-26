@@ -1,120 +1,165 @@
-# CLAUDE.md — Procurement Evaluation Agent (CTTI Capstone Prototype)
-
-This file tracks development status and outstanding work for the CTTI submission prototype.
-
----
+# CLAUDE.md — Developer Task Log
 
 ## What this project is
 
-An AI-assisted tender evaluation workbench for the Generalitat de Catalunya's CTTI. The system uses a two-node LangGraph pipeline (retrieval → analysis) backed by a FAISS vector store to surface evidence from supplier proposals. Human evaluators retain all scoring authority. The prototype covers three synthetic tenders across different procurement domains.
+AI-assisted procurement evaluation workbench for the Generalitat de Catalunya (CTTI). Implements the Spanish 3-envelope PCAP model: Sobre A (administrative pass/fail), Sobre B (qualitative AI-assisted, 49 pts), Sobre C (deterministic price formula, 51 pts). Three synthetic tenders. Human evaluators retain all scoring authority; the system surfaces evidence and maintains a regulatory-compliant audit trail.
 
 ---
 
 ## Completed features
 
-### ✅ Task 1 — Multi-tender support
-- `TENDER_REGISTRY` in `graph/pipeline.py` centralises all tender config (label, suppliers, criteria).
-- Three tenders implemented: QKD Infrastructure, Cloud Migration, Cybersecurity SOC.
-- `tender_id` flows through the entire stack: FAISS metadata filters, EvalState, LLM prompts.
-- Adding a new tender = one dict entry + data files + index rebuild. Zero code changes elsewhere.
+### Core pipeline
+- [x] LangGraph 2-node pipeline (`retrieval_agent` → `analysis_agent`) in `graph/pipeline.py`
+- [x] FAISS semantic search with `tender_id` + `source` metadata filters (`rag/retriever.py`)
+- [x] Backward-compat fallback: detects legacy indexes without `tender_id` and filters by source only
+- [x] Deterministic 51-pt Sobre C price scorer driven by `sobre_c_submissions.json` (`scoring/sobre_c.py`)
+- [x] SQLite audit log compliant with Law 40/2015 + EU AI Act Annex III (`db/audit.py`)
+- [x] `TENDER_REGISTRY` in `graph/pipeline.py` for multi-tender support (3 tenders)
+- [x] pdfplumber-based PDF document ingestion (`rag/pdf_loader.py`)
 
-### ✅ Task 2 — PDF ingestion pipeline
-- `rag/pdf_loader.py`: pdfplumber extracts text page-by-page → standard LangChain Documents.
-- `rag/indexer.py` `load_document()` dispatches on `.pdf` vs `.txt` extension automatically.
-- `data/ctti_2026_36/supplier_a.pdf` exists as a demo PDF (generated via `scripts/make_demo_pdf.py`).
-- `TENDER_FILES` in `indexer.py` already registers `supplier_a.pdf` for `ctti_2026_36`.
-- Limitation: scanned/image-only PDFs are silently skipped (OCR out of scope).
+### React + FastAPI migration (replaced Streamlit prototype)
+- [x] FastAPI backend with modular routers: `tenders`, `evaluate` (SSE), `sobre_c`, `compare`, `source_chunks`, `audit`
+- [x] React 19 + TypeScript + Vite 8 + Tailwind CSS v4 frontend
+- [x] React Router v7 — 4 routes: `/sobre-a`, `/` (Sobre B), `/sobre-c`, `/audit`
+- [x] React Query v5 — global `staleTime: 5 min`; Sobre C + audit prefetched on app load
+- [x] Eval state lifted in `App.tsx` (`TenderEvalState`) — survives tab navigation per tender
+- [x] Streaming evaluation via `fetch()` + ReadableStream with functional updater pattern (no stale closures)
+- [x] `useMemo` on `activeEval` — prevents downstream re-renders when eval state is uninitialised
 
-### ✅ Task 3 — Sobre C automatic price scoring (51 points)
-- `scoring/sobre_c.py`: fully generic scorer driven by `sobre_c_submissions.json` per tender.
-- JSON is self-describing with `_criteria`, `_max_points`, `_direction` metadata.
-- Formula: `score = max * (best/this)` for "lower is better"; `max * (this/best)` for "higher is better".
-- Tab 3 in the UI shows declared values, per-criterion breakdown, and combined 100-pt ranking.
+### Sobre A tab (`/sobre-a`)
+- [x] Administrative pass/fail checklist — 5 PCAP criteria per supplier
+- [x] Three-state toggle (null / pass / fail)
+- [x] "Mark all as passed" shortcut per supplier row
+- [x] Lock + evaluator sign-off gate; Sobre B is disabled until Sobre A is locked
 
-### ✅ Task 4 — Persistent audit log
-- `db/audit.py`: SQLite-backed store (`db/audit.db`, gitignored).
-- Functions: `init_db()`, `insert_entry(entry)`, `get_all_entries()`, `export_json()`.
-- Audit entries include: evaluator ID, timestamp, tender label, language, all scores, all AI evidence, agent notes, and regulatory metadata.
-- JSON export aligned with Law 40/2015 Art. 24 and EU AI Act Annex III.
+### Sobre B (`/`)
+- [x] SSE stream from `/tenders/{id}/evaluate` — results appear cell-by-cell
+- [x] `EvidenceCard` per supplier × criterion with human score input
+- [x] Cross-supplier `ComparisonPanel` — `useQuery` with `staleTime: Infinity` (computed once, cached for session)
+- [x] `react-markdown` renders LLM comparison output (bold, lists, headers) via custom Tailwind component map
+- [x] Split-screen review mode (evidence left / source chunks right)
+- [x] Summary table + Sign & Submit → writes audit entry + invalidates `['audit']` cache
 
-### ✅ Full EN / ES / CA internationalisation
-- All UI strings externalised to `i18n/translations.json` (~60 keys × 3 languages).
-- LLM language instruction injected into every prompt: responses in EN/ES/CA based on UI setting.
-- Cross-supplier comparison also prompted in the selected language.
-- Language selector in the page header (🌐 dropdown, top-right).
-- Switching language or tender resets all cached LLM results and session state.
+### Sobre C tab (`/sobre-c`)
+- [x] Declared values table
+- [x] Per-criterion score breakdown
+- [x] Combined 100-pt ranking (Sobre B + Sobre C)
+
+### Audit Log tab (`/audit`)
+- [x] All submitted evaluations with expandable evidence accordion
+- [x] JSON export (timestamped, with regulatory metadata header)
+- [x] Cache invalidated via `queryClient.invalidateQueries` after each submission
+
+### i18n
+- [x] Full EN / ES / CA support via react-i18next
+- [x] ~60 translation keys in `frontend/src/i18n/translations.json`
+- [x] Language picker in the header (globe icon)
+- [x] LLM prompts inject language instruction — responses match UI language
+
+### UI / UX
+- [x] CTTI logo favicon (`frontend/public/ctti_logo.jpeg`)
+- [x] Page title: "CTTI Procurement Evaluation"
+- [x] Tender selector in header (`Layout.tsx`)
+- [x] lucide-react icon set; no emoji in navigation
+
+### Bug fixes
+- [x] RAG zero chunks — legacy FAISS indexes without `tender_id` now fall back to source-only filtering
+- [x] Stale closure in SSE stream — `handleResultsUpdate` uses `setEvalState(prev => ...)` functional updater
+- [x] i18n interpolation — all `{variable}` → `{{variable}}` (react-i18next double-brace syntax)
+- [x] ComparisonPanel reloads on every visit — replaced `useMutation` (no cache) with `useQuery` (`staleTime: Infinity`)
+- [x] Markdown rendered literally — added `react-markdown` with custom Tailwind component map
+- [x] Sobre C / Audit slow first load — both queries prefetched from `App.tsx` on mount
+- [x] Audit stale after submission — `queryClient.invalidateQueries(['audit'])` called post-submit
+- [x] `activeEval` reference instability — wrapped in `useMemo`
 
 ---
 
-## Immediate next steps before CTTI submission
+## Next steps
 
-### 1. Rebuild the FAISS index
-The index must be rebuilt after all structural changes:
-```bash
-python -m rag.indexer
-```
-This creates a multi-tender index stamped with `tender_id` metadata. The old single-tender index at `rag/faiss_index/` is stale.
+### Hardening
+- [ ] Replace SQLite with PostgreSQL for production multi-user concurrency
+- [ ] Add authentication (evaluator login, role-based access for sign-off)
+- [ ] Rate-limit the `/evaluate` endpoint per evaluator session
+- [ ] Optimistic locking — prevent two evaluators from submitting conflicting scores for the same tender
 
-### 2. Replace demo PDFs with richer synthetic content
-- `supplier_a.pdf` was generated from `supplier_a.txt` via fpdf2 — it has the same content as the `.txt`.
-- For a more convincing demo, generate PDFs with tables, headers, and multi-section layout.
-- Or run `make_demo_pdf.py` for all three suppliers across all three tenders so every proposal is PDF-native.
+### Evaluation quality
+- [ ] Allow evaluators to add freetext annotations per cell (currently score only)
+- [ ] Surface source PDF page numbers alongside each evidence chunk
+- [ ] "Re-evaluate this cell" button without re-running the full pipeline
+- [ ] Confidence signal from the LLM alongside evidence
 
-### 3. Expand synthetic supplier proposals
-- Current proposals are plausible but short (~1–2 pages equivalent).
-- Real Sobre B envelopes are typically 20–80 pages. Expand each proposal to improve retrieval coverage.
-- Add realistic technical detail (team CVs, Gantt charts described in text, tool names, certifications).
+### Tender management
+- [ ] Admin UI for uploading new tender documents (currently requires CLI + re-index)
+- [ ] Per-tender PCAP criteria config stored in the database rather than in `TENDER_REGISTRY`
+- [ ] Sobre A criteria configurable per tender
 
-### 4. Add evaluator authentication
-- The current evaluator ID is a free-text field — no identity verification.
-- For a production-credible demo: integrate Streamlit-Authenticator or a simple token check.
-- For production: Generalitat digital identity (IdCAT or Cl@ve).
+### Observability
+- [ ] Structured logging per pipeline run (model version, latency, token counts)
+- [ ] Prometheus metrics endpoint for Railway monitoring
+- [ ] Sentry integration for frontend error tracking
 
 ---
 
-## Path to production (post-submission, for reference)
+## Path to production
 
-### Phase 1 — Sovereignty & Infrastructure
-- Self-host the LLM on CTTI / BSC infrastructure; swap Mistral API for **AINA** (Barcelona Supercomputing Center).
-- Replace FAISS with a Generalitat-managed vector database (e.g. pgvector on Generalitat cloud).
-- Deploy behind CTTI's internal network — no procurement data leaves Catalan infrastructure.
-- Ensure compliance with ENS (Esquema Nacional de Seguretat) and GDPR.
-
-### Phase 2 — Real Document Ingestion
-- Connect directly to the **PSCP** (Plataforma de Serveis de Contractació Pública de Catalunya).
-- Automate document ingestion at upload time; audit trail starts at ingestion, not evaluation.
-- Add OCR step for scanned PDFs (e.g. `pytesseract` or `pypdfium2`).
-
-### Phase 3 — Legal & Compliance Hardening
-- Complete EU AI Act Annex III conformity assessment (this is a high-risk AI system).
-- Replace free-text evaluator ID with **VALID** authentication (Generalitat digital identity).
-- Ensure audit log is publishable under Llei 19/2014 (Catalan transparency law).
-
-### Phase 4 — Expand Scope
-- Multi-department support across all Generalitat bodies (salut, educació, etc.).
-- Supplier-facing portal for proposal submission and preliminary feedback.
-- Generalise to other public bodies as a reusable procurement intelligence platform.
+| Concern | Current state | Production target |
+|---|---|---|
+| Authentication | Free-text evaluator ID | VALID / IdCAT / Cl@ve (Generalitat identity) |
+| Data isolation | `tender_id` filter in RAG | Tenant-isolated database per procurement body |
+| Audit immutability | Append-only SQLite | PostgreSQL + WAL + signed export |
+| LLM traceability | temperature=0, prompt stored in audit | Full model card + Annex III conformity assessment |
+| Sovereignty | Mistral API (external) | AINA (BSC) — native Catalan, on-premises |
+| GDPR | Synthetic data only | Legal review before loading real supplier docs |
+| Accessibility | Basic Tailwind | axe-core audit + ARIA annotations |
 
 ---
 
 ## Model note
 
-The prototype uses **Mistral Large** (`mistral-large-latest`) via API for both embeddings and inference. The architecture is model-agnostic — swapping the LLM is a one-line config change in `.env`. The production target is **AINA** (BSC) for data sovereignty and native Catalan language support.
+All LLM calls use `mistral-large-latest` at temperature=0 via `langchain-mistralai`. Embeddings use `mistral-embed`. Both are called through the standard Mistral API. The production target is **AINA** (Barcelona Supercomputing Center) for data sovereignty and native Catalan language support. Swapping models is a one-line change in `.env` — the architecture is model-agnostic.
 
 ---
 
 ## Key commands
 
+### Backend
 ```bash
-# Rebuild FAISS index after any data change
+# Install dependencies
+pip install -r requirements.txt
+
+# Build / rebuild FAISS index (run after adding or replacing any data file)
 python -m rag.indexer
 
-# Generate demo PDF from txt (ctti_2026_36 / supplier_a only)
-python -m scripts.make_demo_pdf
+# Start API server (development, hot-reload)
+uvicorn api.main:app --reload --port 8000
 
-# Test PDF extraction in isolation
-python -m rag.pdf_loader data/ctti_2026_36/supplier_a.pdf
+# Run backend tests
+pytest
+```
 
-# Launch the app
-streamlit run streamlit_app.py
+### Frontend
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start Vite dev server (proxies /api/* → localhost:8000)
+npm run dev
+
+# Type-check without emitting
+npx tsc --noEmit
+
+# Production build
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
+### Database
+```bash
+# The audit database is created automatically on first API startup.
+# To reset it during development:
+rm db/audit.db
 ```

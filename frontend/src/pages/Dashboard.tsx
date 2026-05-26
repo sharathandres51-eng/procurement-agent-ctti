@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { fetchPlan } from '../api/tenders'
 import { streamEvaluation } from '../api/evaluate'
@@ -35,6 +35,8 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
     const next = typeof updater === 'function' ? updater(evalState.scores) : updater
     onEvalUpdate(tender.tender_id, evalState.results, next)
   }
+
+  const queryClient = useQueryClient()
 
   const [running, setRunning] = useState(false)
   const [completedCells, setCompletedCells] = useState(0)
@@ -721,6 +723,9 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
                               tender.suppliers.map(s => [s.id, results?.[s.id] ?? {}])
                             ),
                           })
+                          // Refresh the audit log cache so the new entry shows immediately
+                          // when the user navigates to the Audit tab.
+                          queryClient.invalidateQueries({ queryKey: ['audit'] })
                           setSubmitted(true)
                         }}
                         className="bg-green-600 hover:bg-green-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-sm px-5 py-2 rounded-md transition-colors"

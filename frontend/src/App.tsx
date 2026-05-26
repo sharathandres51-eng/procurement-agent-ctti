@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Routes, Route } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { fetchTenders } from './api/tenders'
+import { fetchSobreC } from './api/sobreC'
+import { fetchAuditEntries } from './api/audit'
 import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import AuditLog from './pages/AuditLog'
@@ -22,14 +24,38 @@ export default function App() {
   // lose scores already entered for a previous tender in the same session.
   const [evalState, setEvalState] = useState<Record<string, TenderEvalState>>({})
 
+  const queryClient = useQueryClient()
+
   const activeTenderId = selectedTenderId || tenders?.[0]?.tender_id || ''
   const activeTender   = tenders?.find(t => t.tender_id === activeTenderId)
-  const activeEval     = evalState[activeTenderId] ?? {
-    results: null,
-    scores: {},
-    sobreA: {},
-    sobreALocked: false,
-  }
+
+  // Stable reference — only recreates when evalState or activeTenderId changes,
+  // preventing SobreC/AuditLog from getting a new prop object on every render.
+  const activeEval = useMemo(
+    () => evalState[activeTenderId] ?? {
+      results: null,
+      scores: {},
+      sobreA: {},
+      sobreALocked: false,
+    },
+    [evalState, activeTenderId],
+  )
+
+  // Prefetch Sobre C and Audit data as soon as the active tender is known so
+  // navigating to those tabs is instant even on first visit.
+  useEffect(() => {
+    if (!activeTenderId) return
+    queryClient.prefetchQuery({
+      queryKey: ['sobre-c', activeTenderId],
+      queryFn:  () => fetchSobreC(activeTenderId),
+      staleTime: 1000 * 60 * 5,
+    })
+    queryClient.prefetchQuery({
+      queryKey: ['audit'],
+      queryFn:  fetchAuditEntries,
+      staleTime: 1000 * 60 * 5,
+    })
+  }, [activeTenderId, queryClient])
 
   const handleEvalUpdate = (
     tenderId: string,
