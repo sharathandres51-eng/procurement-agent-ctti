@@ -53,6 +53,8 @@ def get_plan(tender_id: str):
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
+    # Inject tender_id if the plan JSON was saved without it (older plans)
+    plan.setdefault("tender_id", tender_id)
     return EvaluationPlanResponse(**plan)
 
 
