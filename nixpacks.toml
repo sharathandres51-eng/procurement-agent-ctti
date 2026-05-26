@@ -8,10 +8,13 @@
 # indexer to call the Mistral embeddings API during the build phase.
 
 [phases.setup]
-nixPkgs = ["python313", "python313Packages.pip"]
+nixPkgs = ["python313"]
 
 [phases.install]
-cmds = ["python3 -m pip install --no-cache-dir -r requirements.txt"]
+cmds = [
+  "python3 -m ensurepip --upgrade",
+  "python3 -m pip install --no-cache-dir -r requirements.txt"
+]
 
 [phases.build]
 cmds = ["python3 -m rag.indexer"]
