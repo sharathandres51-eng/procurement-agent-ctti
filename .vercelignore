@@ -1,6 +1,6 @@
-api/
-rag/
-db/
+/api/
+/rag/
+/db/
 requirements.txt
 nixpacks.toml
 railway.toml
