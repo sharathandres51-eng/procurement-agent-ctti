@@ -26,8 +26,9 @@ interface DashboardProps {
 export default function Dashboard({ tender, evalState, onEvalUpdate }: DashboardProps) {
   const { t, i18n } = useTranslation()
 
-  const results = evalState.results
-  const scores  = evalState.scores
+  const results       = evalState.results
+  const scores        = evalState.scores
+  const sobreALocked  = evalState.sobreALocked
 
   const setResults = (updater: ((prev: EvaluationResults | null) => EvaluationResults) | EvaluationResults | null) => {
     const next = typeof updater === 'function' ? updater(evalState.results) : updater
@@ -401,9 +402,20 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
           {t('step_2')}
         </h2>
 
+        {/* Sobre A gate */}
+        {!sobreALocked && (
+          <div className="mb-4 flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+            <span className="text-amber-500 text-base shrink-0 mt-0.5">⚠</span>
+            <div>
+              <p className="text-sm font-semibold text-amber-800">{t('sobre_b_gate_title')}</p>
+              <p className="text-xs text-amber-700 mt-0.5">{t('sobre_b_gate_caption')}</p>
+            </div>
+          </div>
+        )}
+
         <button
           onClick={handleRunEvaluation}
-          disabled={running || results !== null}
+          disabled={!sobreALocked || running || results !== null}
           className="bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-black font-semibold text-sm px-5 py-2 rounded-md transition-colors"
         >
           {running ? 'Running…' : results ? 'Evaluation complete ✓' : t('run_button')}
@@ -448,7 +460,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
           </div>
         )}
 
-        {!results && !running && (
+        {!results && !running && sobreALocked && (
           <p className="mt-3 bg-[#0057A8]/5 border border-[#0057A8]/20 rounded-xl p-4 text-sm text-[#0057A8]">{t('run_info')}</p>
         )}
       </section>
