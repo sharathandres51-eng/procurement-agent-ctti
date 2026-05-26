@@ -217,33 +217,33 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
 
       {/* Header */}
       <div>
-        <h1 className="text-xl font-bold text-white">{t('app_title')}</h1>
-        <p className="text-sm text-slate-400 mt-1">{tender.label}</p>
+        <h1 className="text-xl font-bold text-gray-900">{t('app_title')}</h1>
+        <p className="text-sm text-gray-500 mt-1">{tender.label}</p>
       </div>
 
       {/* Supplier chips */}
       <div className="flex flex-wrap gap-2">
         {tender.suppliers.map(s => (
-          <span key={s.id} className="text-xs bg-slate-800 border border-slate-700 text-slate-300 px-3 py-1 rounded-full">
+          <span key={s.id} className="text-xs bg-white border border-gray-200 text-gray-600 px-3 py-1 rounded-full shadow-sm">
             ✓ {s.name}
           </span>
         ))}
       </div>
 
       {/* ── Step 1: Evaluation plan ─────────────────────────────────────────── */}
-      <section>
-        <h2 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3">
+      <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
           {t('step_1')}
         </h2>
         <PlanTable plan={plan} />
-        <p className="text-xs text-slate-500 mt-2 italic">{t('step_1_caption')}</p>
+        <p className="text-xs text-gray-400 mt-2 italic">{t('step_1_caption')}</p>
       </section>
 
-      <hr className="border-slate-800" />
+      <hr className="border-gray-200" />
 
       {/* ── Step 2: Run ─────────────────────────────────────────────────────── */}
-      <section>
-        <h2 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3">
+      <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
           {t('step_2')}
         </h2>
 
@@ -302,20 +302,20 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
       {/* ── Step 3: Evaluation grid ─────────────────────────────────────────── */}
       {(results || running) && (
         <>
-          <hr className="border-slate-800" />
-          <section>
-            <h2 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">
+          <hr className="border-gray-200" />
+          <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
               {t('step_3')}
             </h2>
-            <p className="text-xs text-slate-500 mb-6">{t('grid_caption')}</p>
+            <p className="text-xs text-gray-400 mb-6">{t('grid_caption')}</p>
 
             {plan.criteria.map(criterion => (
               <div key={criterion.id} className="mb-10">
 
                 {/* Criterion header */}
-                <div className="flex items-baseline gap-3 mb-4 pb-2 border-b border-slate-800">
-                  <h3 className="text-base font-semibold text-white">{criterion.name}</h3>
-                  <span className="text-xs text-amber-400 font-mono bg-amber-500/10 px-2 py-0.5 rounded">
+                <div className="flex items-baseline gap-3 mb-4 pb-2 border-b border-gray-200">
+                  <h3 className="text-base font-semibold text-gray-800">{criterion.name}</h3>
+                  <span className="text-xs text-amber-600 font-mono bg-amber-50 border border-amber-200 px-2 py-0.5 rounded">
                     {criterion.max_points} pts
                   </span>
                 </div>
@@ -326,11 +326,11 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
                       <div key={sc.id} className="mb-6">
                         {/* Sub-criterion label */}
                         <div className="flex items-center gap-2 mb-3">
-                          <div className="w-1 h-4 bg-slate-600 rounded" />
-                          <p className="text-xs font-medium text-slate-300">
+                          <div className="w-1 h-4 bg-[#0057A8] rounded" />
+                          <p className="text-xs font-medium text-gray-700">
                             {sc.name}
                           </p>
-                          <span className="text-xs text-slate-500 font-mono">{sc.points} pts</span>
+                          <span className="text-xs text-gray-400 font-mono">{sc.points} pts</span>
                         </div>
 
                         {/* 3-column grid */}
@@ -372,15 +372,15 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
 
                     {/* Subtotals row */}
                     {tender.suppliers.some(s => criterionTotal(s.id, criterion.id) > 0) && (
-                      <div className="mt-2 pt-3 border-t border-slate-800">
-                        <p className="text-xs text-slate-500 mb-2">Subtotals ({criterion.max_points} pts)</p>
+                      <div className="mt-2 pt-3 border-t border-gray-200">
+                        <p className="text-xs text-gray-400 mb-2">Subtotals ({criterion.max_points} pts)</p>
                         <div className="grid grid-cols-3 gap-4">
                           {tender.suppliers.map(s => (
                             <div key={s.id} className="text-center">
-                              <p className="text-xs text-slate-400 truncate">{s.name}</p>
-                              <p className="text-lg font-bold text-amber-400 font-mono">
+                              <p className="text-xs text-gray-500 truncate">{s.name}</p>
+                              <p className="text-lg font-bold text-[#0057A8] font-mono">
                                 {criterionTotal(s.id, criterion.id).toFixed(1)}
-                                <span className="text-xs text-slate-600 font-normal"> / {criterion.max_points}</span>
+                                <span className="text-xs text-gray-400 font-normal"> / {criterion.max_points}</span>
                               </p>
                             </div>
                           ))}
@@ -431,16 +431,16 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
           {/* ── Step 4: Summary ─────────────────────────────────────────────── */}
           {allScored && (
             <>
-              <hr className="border-slate-800" />
-              <section>
-                <h2 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">
+              <hr className="border-gray-200" />
+              <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
                   {t('step_4')}
                 </h2>
 
-                <div className="rounded-lg border border-slate-700 overflow-hidden">
+                <div className="rounded-lg border border-gray-200 overflow-hidden">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="bg-slate-800 text-slate-400 text-xs uppercase tracking-wider">
+                      <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
                         <th className="text-left px-4 py-2">{t('supplier_col')}</th>
                         {plan.criteria.map(c => (
                           <th key={c.id} className="text-right px-4 py-2 max-w-24">
@@ -450,7 +450,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
                         <th className="text-right px-4 py-2">Total</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800">
+                    <tbody className="divide-y divide-gray-100">
                       {tender.suppliers.map((s, i) => {
                         const total = supplierTotal(s.id)
                         const isLeader = i === [...tender.suppliers]
@@ -458,17 +458,17 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
                           .findIndex(x => x.id === s.id) + 1 &&
                           [...tender.suppliers].sort((a, b) => supplierTotal(b.id) - supplierTotal(a.id))[0].id === s.id
                         return (
-                          <tr key={s.id} className={isLeader ? 'bg-amber-500/5' : 'bg-slate-900'}>
-                            <td className="px-4 py-2.5 text-slate-200 font-medium">
+                          <tr key={s.id} className={isLeader ? 'bg-green-50' : 'bg-white'}>
+                            <td className="px-4 py-2.5 text-gray-800 font-medium">
                               {s.name}
-                              {isLeader && <span className="ml-2 text-amber-400 text-xs">★</span>}
+                              {isLeader && <span className="ml-2 text-[#16A34A] text-xs">★</span>}
                             </td>
                             {plan.criteria.map(c => (
-                              <td key={c.id} className="px-4 py-2.5 text-right text-slate-300 font-mono text-sm">
+                              <td key={c.id} className="px-4 py-2.5 text-right text-gray-600 font-mono text-sm">
                                 {criterionTotal(s.id, c.id).toFixed(1)}
                               </td>
                             ))}
-                            <td className="px-4 py-2.5 text-right font-bold text-amber-400 font-mono">
+                            <td className="px-4 py-2.5 text-right font-bold text-[#0057A8] font-mono">
                               {total.toFixed(1)}
                             </td>
                           </tr>
@@ -482,7 +482,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
                   const winner = [...tender.suppliers].sort((a, b) => supplierTotal(b.id) - supplierTotal(a.id))[0]
                   const maxSobreB = plan.criteria.reduce((s, c) => s + c.max_points, 0)
                   return (
-                    <div className="mt-3 p-3 bg-green-900/20 border border-green-700/50 rounded-lg text-sm text-green-300">
+                    <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
                       🏆 {t('summary_winner', {
                         name: winner?.name,
                         total: supplierTotal(winner?.id ?? '').toFixed(1),
@@ -496,24 +496,24 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
               {/* ── Step 5: Sign and submit ──────────────────────────────────── */}
               {allScored && (
                 <>
-                  <hr className="border-slate-800" />
-                  <section>
-                    <h2 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3">
+                  <hr className="border-gray-200" />
+                  <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
                       {t('step_5')}
                     </h2>
                     <div className="space-y-3 max-w-md">
                       <div>
-                        <label className="block text-xs text-slate-400 mb-1">{t('evaluator_label')}</label>
+                        <label className="block text-xs text-gray-500 mb-1">{t('evaluator_label')}</label>
                         <input
                           type="text"
                           placeholder={t('evaluator_placeholder')}
                           value={evaluatorId}
                           onChange={e => setEvaluatorId(e.target.value)}
                           disabled={submitted}
-                          className="w-full bg-slate-800 border border-slate-700 text-white text-sm rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-amber-500 disabled:opacity-50"
+                          className="w-full bg-white border border-gray-300 text-gray-800 text-sm rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#0057A8] disabled:opacity-50"
                         />
                       </div>
-                      <p className="text-xs text-slate-500">{t('submit_legal_caption')}</p>
+                      <p className="text-xs text-gray-400">{t('submit_legal_caption')}</p>
                       <button
                         disabled={!evaluatorId || submitted}
                         onClick={async () => {
@@ -578,15 +578,15 @@ function CellCard({
   children?: React.ReactNode
 }) {
   return (
-    <div className={`rounded-lg p-3 border transition-colors ${
+    <div className={`rounded-xl p-3 border transition-colors ${
       loaded
-        ? 'bg-slate-800/40 border-slate-700'
-        : 'bg-slate-800/20 border-slate-800 border-dashed'
+        ? 'bg-white border-gray-100 shadow-sm'
+        : 'bg-gray-50 border-gray-200 border-dashed'
     }`}>
       {loaded ? children : (
         <div className="flex items-center gap-2 h-24">
           <Spinner />
-          <span className="text-xs text-slate-600">{supplierName}</span>
+          <span className="text-xs text-gray-400">{supplierName}</span>
         </div>
       )}
     </div>

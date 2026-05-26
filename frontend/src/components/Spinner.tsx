@@ -4,9 +4,9 @@ interface SpinnerProps {
 
 export default function Spinner({ label }: SpinnerProps) {
   return (
-    <div className="flex items-center gap-3 text-slate-400 text-sm">
+    <div className="flex items-center gap-3 text-gray-500 text-sm">
       <svg
-        className="animate-spin h-4 w-4 text-amber-400"
+        className="animate-spin h-4 w-4 text-[#0057A8]"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"

@@ -22,33 +22,30 @@ export default function Layout({
   const [langOpen, setLangOpen] = useState(false)
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+    `flex items-center gap-1.5 px-4 h-full text-sm font-medium transition-colors border-b-2 ${
       isActive
-        ? 'bg-slate-700 text-white'
-        : 'text-slate-400 hover:text-white hover:bg-slate-800'
+        ? 'text-white border-white'
+        : 'text-slate-400 border-transparent hover:text-white hover:border-slate-400'
     }`
 
   return (
-    <div className="min-h-screen bg-slate-900 flex">
-      {/* ── Sidebar ── */}
-      <aside className="w-64 shrink-0 bg-slate-950 border-r border-slate-800 flex flex-col">
-        <div className="p-4 border-b border-slate-800">
-          <div className="flex items-center gap-2 mb-0.5">
-            <span className="text-amber-400 text-base">⚖️</span>
-            <h1 className="text-sm font-bold text-white uppercase tracking-widest">CTTI</h1>
-          </div>
-          <p className="text-xs text-slate-500">{t('app_subtitle')}</p>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* ── Top bar ── */}
+      <header className="bg-slate-900 h-14 shrink-0 flex items-stretch px-6 gap-6">
+
+        {/* Brand */}
+        <div className="flex items-center gap-2 shrink-0 mr-2">
+          <span className="text-base">⚖️</span>
+          <span className="text-sm font-bold text-white uppercase tracking-widest">CTTI</span>
+          <span className="text-xs text-slate-500 hidden sm:block">{t('app_subtitle')}</span>
         </div>
 
         {/* Tender selector */}
-        <div className="p-4 border-b border-slate-800">
-          <label className="block text-xs text-slate-500 uppercase tracking-wider mb-2">
-            {t('select_tender')}
-          </label>
+        <div className="flex items-center shrink-0">
           <select
             value={selectedTenderId}
             onChange={e => onTenderChange(e.target.value)}
-            className="w-full bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-amber-500"
+            className="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-md px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#0057A8]"
           >
             {tenders.map(td => (
               <option key={td.tender_id} value={td.tender_id}>
@@ -58,8 +55,8 @@ export default function Layout({
           </select>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 p-3 space-y-1">
+        {/* Nav tabs */}
+        <nav className="flex items-stretch flex-1 gap-1">
           <NavLink to="/" end className={navLinkClass}>
             📋 {t('tab_dashboard')}
           </NavLink>
@@ -72,17 +69,17 @@ export default function Layout({
         </nav>
 
         {/* Language selector */}
-        <div className="p-4 border-t border-slate-800 relative">
+        <div className="flex items-center relative">
           <button
             onClick={() => setLangOpen(o => !o)}
-            className="flex items-center gap-2 text-xs text-slate-400 hover:text-white w-full"
+            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white px-2 py-1 rounded transition-colors"
           >
             <Globe size={14} />
             {SUPPORTED_LANGUAGES[i18n.language] ?? 'English'}
-            <span className="ml-auto">▾</span>
+            <span>▾</span>
           </button>
           {langOpen && (
-            <div className="absolute bottom-14 left-4 right-4 bg-slate-800 border border-slate-700 rounded-md overflow-hidden shadow-xl z-10">
+            <div className="absolute top-12 right-0 bg-slate-800 border border-slate-700 rounded-md overflow-hidden shadow-xl z-10 min-w-32">
               {Object.entries(SUPPORTED_LANGUAGES).map(([code, label]) => (
                 <button
                   key={code}
@@ -91,7 +88,7 @@ export default function Layout({
                     setLangOpen(false)
                   }}
                   className={`w-full text-left px-3 py-2 text-xs hover:bg-slate-700 transition-colors ${
-                    i18n.language === code ? 'text-amber-400 font-semibold' : 'text-slate-300'
+                    i18n.language === code ? 'text-[#0057A8] font-semibold' : 'text-slate-300'
                   }`}
                 >
                   {label}
@@ -100,11 +97,13 @@ export default function Layout({
             </div>
           )}
         </div>
-      </aside>
+      </header>
 
       {/* ── Main content ── */}
-      <main className="flex-1 overflow-auto p-6">
-        {children}
+      <main className="flex-1 overflow-auto">
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          {children}
+        </div>
       </main>
     </div>
   )
