@@ -1,0 +1,7 @@
+api/
+rag/
+db/
+requirements.txt
+nixpacks.toml
+railway.toml
+*.py
