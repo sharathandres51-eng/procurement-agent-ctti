@@ -103,6 +103,13 @@ export interface AuditEntry {
   evidence: Record<string, unknown>
 }
 
+// ── Lifted evaluation state (shared between Dashboard and SobreC) ─────────────
+
+export interface TenderEvalState {
+  results: EvaluationResults | null
+  scores: ScoreMap
+}
+
 // ── Scores (local state) ──────────────────────────────────────────────────────
 
 // null  = not yet scored by the evaluator (distinct from a deliberate 0)

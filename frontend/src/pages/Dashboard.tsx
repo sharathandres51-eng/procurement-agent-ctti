@@ -13,17 +13,31 @@ import type {
   EvaluationResults,
   CriterionResult,
   ScoreMap,
+  TenderEvalState,
 } from '../types'
 
 interface DashboardProps {
   tender: TenderSummary
+  evalState: TenderEvalState
+  onEvalUpdate: (tenderId: string, results: EvaluationResults | null, scores: ScoreMap) => void
 }
 
-export default function Dashboard({ tender }: DashboardProps) {
+export default function Dashboard({ tender, evalState, onEvalUpdate }: DashboardProps) {
   const { t, i18n } = useTranslation()
 
-  const [results, setResults] = useState<EvaluationResults | null>(null)
-  const [scores, setScores] = useState<ScoreMap>({})
+  const results = evalState.results
+  const scores  = evalState.scores
+
+  const setResults = (updater: ((prev: EvaluationResults | null) => EvaluationResults) | EvaluationResults | null) => {
+    const next = typeof updater === 'function' ? updater(evalState.results) : updater
+    onEvalUpdate(tender.tender_id, next, evalState.scores)
+  }
+
+  const setScores = (updater: ((prev: ScoreMap) => ScoreMap) | ScoreMap) => {
+    const next = typeof updater === 'function' ? updater(evalState.scores) : updater
+    onEvalUpdate(tender.tender_id, evalState.results, next)
+  }
+
   const [running, setRunning] = useState(false)
   const [completedCells, setCompletedCells] = useState(0)
   const [currentCell, setCurrentCell] = useState('')
@@ -147,8 +161,7 @@ export default function Dashboard({ tender }: DashboardProps) {
 
   const handleRunEvaluation = useCallback(() => {
     setRunning(true)
-    setResults(null)
-    setScores({})
+    onEvalUpdate(tender.tender_id, null, {})
     setSubmitted(false)
     setCompletedCells(0)
     setCurrentCell('')
@@ -191,7 +204,7 @@ export default function Dashboard({ tender }: DashboardProps) {
         setCurrentCell(`Error: ${err}`)
       },
     )
-  }, [tender.tender_id, i18n.language, plan])
+  }, [tender.tender_id, i18n.language, plan, onEvalUpdate])
 
   // ── Render ───────────────────────────────────────────────────────────────────
 
