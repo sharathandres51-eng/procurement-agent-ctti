@@ -175,7 +175,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
       i18n.language,
       (event) => {
         const { supplier_id, criterion_id, subcriterion_id, result } = event
-        setCurrentCell(`${result.supplier_name} — ${result.criterion_name}`)
+        setCurrentCell(`${result.supplier_name}: ${result.criterion_name}`)
         setCompletedCells(n => n + 1)
 
         setResults(prev => {
@@ -186,7 +186,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
             const existing = updated[supplier_id][criterion_id] as any
             updated[supplier_id][criterion_id] = {
               has_subcriteria: true,
-              criterion_name: result.criterion_name.split(' — ')[0] ?? result.criterion_name,
+              criterion_name: result.criterion_name.split(' - ')[0] ?? result.criterion_name,
               max_points: plan?.criteria.find(c => c.id === criterion_id)?.max_points ?? 0,
               subcriteria: {
                 ...(existing?.subcriteria ?? {}),
@@ -343,7 +343,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
                     />
                   ) : (
                     <div className="p-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-                      <p className="text-sm text-gray-400 italic">Not yet evaluated — run the evaluation first.</p>
+                      <p className="text-sm text-gray-400 italic">Not yet evaluated. Run the evaluation first.</p>
                     </div>
                   )
                 })()
@@ -517,7 +517,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
                             key={`${criterion.id}-${sc.id}-${i18n.language}`}
                             tenderId={tender.tender_id}
                             criterionId={`${criterion.id}_${sc.id}`}
-                            criterionName={`${criterion.name} — ${sc.name}`}
+                            criterionName={`${criterion.name}: ${sc.name}`}
                             evidence={buildEvidenceMap(criterion.id, sc.id)}
                           />
                         )}

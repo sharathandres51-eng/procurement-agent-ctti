@@ -236,7 +236,7 @@ export default function AuditLog({ tenders }: AuditLogProps) {
                                     ? Object.values(v as Record<string, number>)
                                         .reduce((s, n) => s + (n ?? 0), 0)
                                         .toFixed(1)
-                                    : '—'
+                                    : '-'
                                 return (
                                   <td key={cid} className="px-4 py-2 text-right text-gray-500 font-mono">
                                     {display}

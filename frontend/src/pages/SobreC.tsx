@@ -109,7 +109,7 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
                   </td>
                   {criteriaFields.map(f => (
                     <td key={f} className="px-6 py-3 text-right text-gray-600 font-mono">
-                      {String(data.results[sid].declared[f] ?? '—')}
+                      {String(data.results[sid].declared[f] ?? '-')}
                     </td>
                   ))}
                 </tr>
@@ -162,7 +162,7 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
                   </td>
                   {criteriaFields.map(f => (
                     <td key={f} className="px-6 py-3 text-right text-gray-600 font-mono">
-                      {data.results[sid].criteria[f]?.score?.toFixed(2) ?? '—'}
+                      {data.results[sid].criteria[f]?.score?.toFixed(2) ?? '-'}
                     </td>
                   ))}
                   <td className="px-6 py-3 text-right font-bold text-[#0057A8] font-mono">
@@ -243,10 +243,10 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
 
             <div className="mx-6 mb-4 mt-3 p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">
               🏆 {t('ranking_winner', {
-                name:  combinedWinner ? data.results[combinedWinner].name : '—',
+                name:  combinedWinner ? data.results[combinedWinner].name : '-',
                 total: combinedWinner
                   ? (sobreBTotal(combinedWinner) + data.results[combinedWinner].total).toFixed(2)
-                  : '—',
+                  : '-',
               })}
             </div>
             <p className="text-xs text-gray-500 italic px-6 pb-4">{t('ranking_caption')}</p>

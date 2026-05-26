@@ -109,7 +109,7 @@ export default function SobreA({ tender, sobreA, sobreALocked, onUpdate }: Sobre
       {sobreALocked && (
         <div className="p-3 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700 flex items-center gap-2">
           <span>🔒</span>
-          <span>{t('sobre_a_locked_banner', { evaluator: evaluatorId || '—' })}</span>
+          <span>{t('sobre_a_locked_banner', { evaluator: evaluatorId || '-' })}</span>
         </div>
       )}
 
@@ -198,7 +198,7 @@ export default function SobreA({ tender, sobreA, sobreALocked, onUpdate }: Sobre
                                 : 'bg-gray-50 border-gray-200 text-gray-300 hover:border-gray-400'
                             }`}
                           >
-                            {val === true ? '✓' : val === false ? '✗' : '—'}
+                            {val === true ? '✓' : val === false ? '✗' : '·'}
                           </button>
                         </td>
                       )
@@ -218,7 +218,7 @@ export default function SobreA({ tender, sobreA, sobreALocked, onUpdate }: Sobre
                       )}
                       {status === 'pending' && (
                         <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-500 text-xs font-medium px-3 py-1 rounded-full">
-                          — {t('sobre_a_status_pending')}
+                          {t('sobre_a_status_pending')}
                         </span>
                       )}
                     </td>
