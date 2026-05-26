@@ -28,18 +28,34 @@ _vectorstore = FAISS.load_local(
 
 
 def retrieve(supplier_id: str, query: str, tender_id: str, k: int = 5) -> list[dict]:
-    """Return top-k proposal chunks for supplier_id within the given tender."""
+    """Return top-k proposal chunks for supplier_id within the given tender.
+
+    Falls back to source-only filtering when the index was built before the
+    tender_id metadata field was added (all chunks have tender_id=None).
+    """
     candidates = _vectorstore.similarity_search(query, k=k * 10)
+
+    # Detect whether the index carries tender_id metadata
+    index_has_tender_id = any(
+        doc.metadata.get("tender_id") is not None for doc in candidates
+    )
+
+    def _matches(doc) -> bool:
+        if doc.metadata.get("source") != supplier_id:
+            return False
+        if index_has_tender_id:
+            return doc.metadata.get("tender_id") == tender_id
+        return True  # old index: trust source filter alone
+
     results = [
         {
             "text":      doc.page_content,
             "source":    doc.metadata.get("source", ""),
             "doc_type":  doc.metadata.get("doc_type", ""),
-            "tender_id": doc.metadata.get("tender_id", ""),
+            "tender_id": doc.metadata.get("tender_id") or tender_id,
         }
         for doc in candidates
-        if (doc.metadata.get("source") == supplier_id
-            and doc.metadata.get("tender_id") == tender_id)
+        if _matches(doc)
     ]
     return results[:k]
 
@@ -47,16 +63,19 @@ def retrieve(supplier_id: str, query: str, tender_id: str, k: int = 5) -> list[d
 def retrieve_criteria(query: str, tender_id: str, k: int = 5) -> list[dict]:
     """Return top-k criteria/requirements chunks for the given tender."""
     candidates = _vectorstore.similarity_search(query, k=k * 10)
+    index_has_tender_id = any(
+        doc.metadata.get("tender_id") is not None for doc in candidates
+    )
     results = [
         {
             "text":      doc.page_content,
             "source":    doc.metadata.get("source", ""),
             "doc_type":  doc.metadata.get("doc_type", ""),
-            "tender_id": doc.metadata.get("tender_id", ""),
+            "tender_id": doc.metadata.get("tender_id") or tender_id,
         }
         for doc in candidates
         if (doc.metadata.get("doc_type") in ("criteria", "requirements")
-            and doc.metadata.get("tender_id") == tender_id)
+            and (not index_has_tender_id or doc.metadata.get("tender_id") == tender_id))
     ]
     return results[:k]
 
