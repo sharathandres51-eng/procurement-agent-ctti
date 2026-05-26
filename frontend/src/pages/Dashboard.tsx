@@ -209,7 +209,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
   // ── Render ───────────────────────────────────────────────────────────────────
 
   if (planLoading) return <Spinner label="Loading evaluation plan…" />
-  if (planError) return <p className="text-red-400 text-sm">Failed to load plan.</p>
+  if (planError) return <p className="text-red-500 text-sm">Failed to load plan.</p>
   if (!plan) return null
 
   return (
@@ -232,7 +232,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
 
       {/* ── Step 1: Evaluation plan ─────────────────────────────────────────── */}
       <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider border-l-4 border-[#0057A8] pl-3 mb-3">
           {t('step_1')}
         </h2>
         <PlanTable plan={plan} />
@@ -243,7 +243,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
 
       {/* ── Step 2: Run ─────────────────────────────────────────────────────── */}
       <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider border-l-4 border-[#0057A8] pl-3 mb-3">
           {t('step_2')}
         </h2>
 
@@ -258,11 +258,11 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
         {/* Evaluation progress bar */}
         {(running || (results && completedCells > 0)) && (
           <div className="mt-4 space-y-1.5 max-w-lg">
-            <div className="flex justify-between text-xs text-slate-400">
+            <div className="flex justify-between text-xs text-gray-600">
               <span className="truncate mr-4">{running ? currentCell : '✓ All evidence extracted'}</span>
-              <span className="font-mono text-amber-400 shrink-0">{completedCells} / {totalCells} cells</span>
+              <span className="font-mono text-amber-500 shrink-0">{completedCells} / {totalCells} cells</span>
             </div>
-            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+            <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
               <div
                 className="bg-amber-500 h-1.5 rounded-full transition-all duration-500"
                 style={{ width: `${progressPct}%` }}
@@ -274,20 +274,20 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
         {/* Scoring progress (shown once evaluation is done) */}
         {results && !running && totalCells > 0 && (
           <div className="mt-3 space-y-1.5 max-w-lg">
-            <div className="flex justify-between text-xs text-slate-400">
+            <div className="flex justify-between text-xs text-gray-600">
               <span>Scores entered</span>
-              <span className={`font-mono shrink-0 ${allScored ? 'text-green-400' : 'text-slate-400'}`}>
+              <span className={`font-mono shrink-0 ${allScored ? 'text-green-600' : 'text-gray-500'}`}>
                 {scoredCells} / {totalCells} cells
               </span>
             </div>
-            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+            <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
               <div
-                className={`h-1.5 rounded-full transition-all duration-300 ${allScored ? 'bg-green-500' : 'bg-slate-500'}`}
+                className={`h-1.5 rounded-full transition-all duration-300 ${allScored ? 'bg-[#0057A8]' : 'bg-[#0057A8]'}`}
                 style={{ width: `${totalCells > 0 ? Math.round((scoredCells / totalCells) * 100) : 0}%` }}
               />
             </div>
             {!allScored && (
-              <p className="text-xs text-slate-500 italic">
+              <p className="text-xs text-gray-500 italic">
                 Enter a score for each supplier cell to unlock the summary.
               </p>
             )}
@@ -295,7 +295,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
         )}
 
         {!results && !running && (
-          <p className="text-xs text-slate-500 mt-2">{t('run_info')}</p>
+          <p className="mt-3 bg-[#0057A8]/5 border border-[#0057A8]/20 rounded-xl p-4 text-sm text-[#0057A8]">{t('run_info')}</p>
         )}
       </section>
 
@@ -304,7 +304,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
         <>
           <hr className="border-gray-200" />
           <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider border-l-4 border-[#0057A8] pl-3 mb-4">
               {t('step_3')}
             </h2>
             <p className="text-xs text-gray-400 mb-6">{t('grid_caption')}</p>
@@ -433,7 +433,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
             <>
               <hr className="border-gray-200" />
               <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">
+                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider border-l-4 border-[#0057A8] pl-3 mb-4">
                   {t('step_4')}
                 </h2>
 
@@ -498,7 +498,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
                 <>
                   <hr className="border-gray-200" />
                   <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                    <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider border-l-4 border-[#0057A8] pl-3 mb-3">
                       {t('step_5')}
                     </h2>
                     <div className="space-y-3 max-w-md">
@@ -552,7 +552,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
                         {t('submit_button')}
                       </button>
                       {submitted && (
-                        <p className="text-sm text-green-400">✅ {t('submit_success')}</p>
+                        <p className="text-sm text-green-600">✅ {t('submit_success')}</p>
                       )}
                     </div>
                   </section>

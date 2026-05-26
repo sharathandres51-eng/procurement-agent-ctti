@@ -46,24 +46,24 @@ export default function ComparisonPanel({
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="mt-4 bg-[#0f2d1f] border border-green-700/60 rounded-lg p-4">
-      <p className="text-[11px] font-bold text-green-400 uppercase tracking-wider mb-2">
+    <div className="mt-4 bg-blue-50 border border-blue-100 rounded-xl p-4">
+      <p className="text-[11px] font-semibold text-[#0057A8] uppercase tracking-wider mb-2">
         🔎 {t('comparison_header', { crit_name: criterionName })}
       </p>
 
       {isPending && (
         <div className="flex items-center gap-2">
           <Spinner />
-          <span className="text-xs text-slate-400">{t('comparison_spinner', { crit_name: criterionName })}</span>
+          <span className="text-xs text-gray-500">{t('comparison_spinner', { crit_name: criterionName })}</span>
         </div>
       )}
 
       {isError && (
-        <p className="text-xs text-red-400">{t('comparison_unavailable')}</p>
+        <p className="text-xs text-red-500">{t('comparison_unavailable')}</p>
       )}
 
       {data && (
-        <p className="text-xs text-green-100 leading-relaxed whitespace-pre-wrap">
+        <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
           {data.comparison_text}
         </p>
       )}
