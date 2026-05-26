@@ -5,9 +5,10 @@ import { fetchTenders } from './api/tenders'
 import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import AuditLog from './pages/AuditLog'
+import SobreA from './pages/SobreA'
 import SobreC from './pages/SobreC'
 import Spinner from './components/Spinner'
-import type { EvaluationResults, ScoreMap, TenderEvalState } from './types'
+import type { EvaluationResults, ScoreMap, SobreAState, TenderEvalState } from './types'
 
 export default function App() {
   const { data: tenders, isLoading, error } = useQuery({
@@ -23,14 +24,29 @@ export default function App() {
 
   const activeTenderId = selectedTenderId || tenders?.[0]?.tender_id || ''
   const activeTender   = tenders?.find(t => t.tender_id === activeTenderId)
-  const activeEval     = evalState[activeTenderId] ?? { results: null, scores: {} }
+  const activeEval     = evalState[activeTenderId] ?? {
+    results: null,
+    scores: {},
+    sobreA: {},
+    sobreALocked: false,
+  }
 
   const handleEvalUpdate = (
     tenderId: string,
     results: EvaluationResults | null,
     scores: ScoreMap,
   ) => {
-    setEvalState(prev => ({ ...prev, [tenderId]: { results, scores } }))
+    setEvalState(prev => ({
+      ...prev,
+      [tenderId]: { ...prev[tenderId] ?? { sobreA: {}, sobreALocked: false }, results, scores },
+    }))
+  }
+
+  const handleSobreAUpdate = (tenderId: string, sobreA: SobreAState, locked: boolean) => {
+    setEvalState(prev => ({
+      ...prev,
+      [tenderId]: { ...prev[tenderId] ?? { results: null, scores: {} }, sobreA, sobreALocked: locked },
+    }))
   }
 
   const handleTenderChange = (id: string) => {
@@ -67,6 +83,17 @@ export default function App() {
       onTenderChange={handleTenderChange}
     >
       <Routes>
+        <Route
+          path="/sobre-a"
+          element={
+            <SobreA
+              tender={activeTender}
+              sobreA={activeEval.sobreA}
+              sobreALocked={activeEval.sobreALocked}
+              onUpdate={(s, l) => handleSobreAUpdate(activeTenderId, s, l)}
+            />
+          }
+        />
         <Route
           path="/"
           element={

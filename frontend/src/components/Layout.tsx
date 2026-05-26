@@ -57,8 +57,11 @@ export default function Layout({
 
         {/* Nav tabs */}
         <nav className="flex items-stretch flex-1 gap-1">
+          <NavLink to="/sobre-a" className={navLinkClass}>
+            📁 {t('tab_sobre_a')}
+          </NavLink>
           <NavLink to="/" end className={navLinkClass}>
-            📋 {t('tab_dashboard')}
+            📋 {t('tab_sobre_b')}
           </NavLink>
           <NavLink to="/sobre-c" className={navLinkClass}>
             🧮 {t('tab_sobre_c')}

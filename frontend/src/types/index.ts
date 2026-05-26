@@ -103,11 +103,20 @@ export interface AuditEntry {
   evidence: Record<string, unknown>
 }
 
+// ── Sobre A ───────────────────────────────────────────────────────────────────
+
+// null = not yet reviewed, true = pass, false = fail
+export type SobreACheck = boolean | null
+// supplier_id → criterion_id → result
+export type SobreAState = Record<string, Record<string, SobreACheck>>
+
 // ── Lifted evaluation state (shared between Dashboard and SobreC) ─────────────
 
 export interface TenderEvalState {
   results: EvaluationResults | null
   scores: ScoreMap
+  sobreA: SobreAState
+  sobreALocked: boolean
 }
 
 // ── Scores (local state) ──────────────────────────────────────────────────────
