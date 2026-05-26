@@ -49,13 +49,14 @@ export default function Dashboard({ tender }: DashboardProps) {
   const progressPct = totalCells > 0 ? Math.round((completedCells / totalCells) * 100) : 0
 
   // ── Score helpers ────────────────────────────────────────────────────────────
+  // null = not yet scored (distinct from deliberately scoring 0)
 
   const setScore = (supplierId: string, criterionId: string, value: number, subId?: string) => {
     setScores(prev => {
       const updated = { ...prev }
       if (!updated[supplierId]) updated[supplierId] = {}
       if (subId) {
-        const existing = updated[supplierId][criterionId] as Record<string, number> | undefined
+        const existing = updated[supplierId][criterionId] as Record<string, number | null> | undefined
         updated[supplierId][criterionId] = { ...(existing ?? {}), [subId]: value }
       } else {
         updated[supplierId][criterionId] = value
@@ -64,21 +65,29 @@ export default function Dashboard({ tender }: DashboardProps) {
     })
   }
 
-  const getScore = (supplierId: string, criterionId: string, subId?: string): number => {
+  // Returns null if not yet scored, number if explicitly set
+  const getScore = (supplierId: string, criterionId: string, subId?: string): number | null => {
     const crit = scores[supplierId]?.[criterionId]
-    if (subId && typeof crit === 'object' && crit !== null)
-      return (crit as Record<string, number>)[subId] ?? 0
-    if (!subId && typeof crit === 'number') return crit
-    return 0
+    if (subId) {
+      if (typeof crit === 'object' && crit !== null)
+        return ((crit as Record<string, number | null>)[subId]) ?? null
+      return null
+    }
+    if (typeof crit === 'number') return crit
+    return null
   }
+
+  // For totals: treat null as 0
+  const getScoreValue = (supplierId: string, criterionId: string, subId?: string): number =>
+    getScore(supplierId, criterionId, subId) ?? 0
 
   const criterionTotal = (supplierId: string, criterionId: string): number => {
     if (!plan) return 0
     const c = plan.criteria.find(c => c.id === criterionId)
     if (!c) return 0
     if (c.has_subcriteria)
-      return c.subcriteria.reduce((sum, sc) => sum + getScore(supplierId, c.id, sc.id), 0)
-    return getScore(supplierId, c.id)
+      return c.subcriteria.reduce((sum, sc) => sum + getScoreValue(supplierId, c.id, sc.id), 0)
+    return getScoreValue(supplierId, c.id)
   }
 
   const supplierTotal = (supplierId: string): number => {
@@ -86,15 +95,27 @@ export default function Dashboard({ tender }: DashboardProps) {
     return plan.criteria.reduce((sum, c) => sum + criterionTotal(supplierId, c.id), 0)
   }
 
-  // True when all supplier × criterion pairs have a score entered
-  const allScored = results !== null && !!plan &&
-    tender.suppliers.every(s =>
-      plan.criteria.every(c => {
-        if (c.has_subcriteria)
-          return c.subcriteria.every(sc => getScore(s.id, c.id, sc.id) > 0 || getScore(s.id, c.id, sc.id) === 0)
-        return typeof scores[s.id]?.[c.id] === 'number'
-      })
-    )
+  // Count how many cells have been explicitly scored (null = not counted)
+  const scoredCells = useMemo(() => {
+    if (!plan) return 0
+    let count = 0
+    for (const s of tender.suppliers) {
+      for (const c of plan.criteria) {
+        if (c.has_subcriteria) {
+          for (const sc of c.subcriteria) {
+            if (getScore(s.id, c.id, sc.id) !== null) count++
+          }
+        } else {
+          if (getScore(s.id, c.id) !== null) count++
+        }
+      }
+    }
+    return count
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scores, plan, tender.suppliers])
+
+  // True only when every cell has been explicitly scored
+  const allScored = results !== null && !!plan && scoredCells === totalCells && totalCells > 0
 
   // Whether all three suppliers have results for a given criterion (for comparison trigger)
   const allSuppliersHaveResult = (criterionId: string, subId?: string): boolean => {
@@ -223,12 +244,12 @@ export default function Dashboard({ tender }: DashboardProps) {
           {running ? 'Running…' : results ? 'Evaluation complete ✓' : t('run_button')}
         </button>
 
-        {/* Progress bar */}
+        {/* Evaluation progress bar */}
         {(running || (results && completedCells > 0)) && (
-          <div className="mt-4 space-y-2 max-w-lg">
+          <div className="mt-4 space-y-1.5 max-w-lg">
             <div className="flex justify-between text-xs text-slate-400">
-              <span>{running ? currentCell : 'All cells complete'}</span>
-              <span className="font-mono text-amber-400">{completedCells} / {totalCells}</span>
+              <span className="truncate mr-4">{running ? currentCell : '✓ All evidence extracted'}</span>
+              <span className="font-mono text-amber-400 shrink-0">{completedCells} / {totalCells} cells</span>
             </div>
             <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
               <div
@@ -236,6 +257,29 @@ export default function Dashboard({ tender }: DashboardProps) {
                 style={{ width: `${progressPct}%` }}
               />
             </div>
+          </div>
+        )}
+
+        {/* Scoring progress (shown once evaluation is done) */}
+        {results && !running && totalCells > 0 && (
+          <div className="mt-3 space-y-1.5 max-w-lg">
+            <div className="flex justify-between text-xs text-slate-400">
+              <span>Scores entered</span>
+              <span className={`font-mono shrink-0 ${allScored ? 'text-green-400' : 'text-slate-400'}`}>
+                {scoredCells} / {totalCells} cells
+              </span>
+            </div>
+            <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+              <div
+                className={`h-1.5 rounded-full transition-all duration-300 ${allScored ? 'bg-green-500' : 'bg-slate-500'}`}
+                style={{ width: `${totalCells > 0 ? Math.round((scoredCells / totalCells) * 100) : 0}%` }}
+              />
+            </div>
+            {!allScored && (
+              <p className="text-xs text-slate-500 italic">
+                Enter a score for each supplier cell to unlock the summary.
+              </p>
+            )}
           </div>
         )}
 
@@ -374,7 +418,7 @@ export default function Dashboard({ tender }: DashboardProps) {
           </section>
 
           {/* ── Step 4: Summary ─────────────────────────────────────────────── */}
-          {results && (
+          {allScored && (
             <>
               <hr className="border-slate-800" />
               <section>
@@ -462,6 +506,22 @@ export default function Dashboard({ tender }: DashboardProps) {
                       <button
                         disabled={!evaluatorId || submitted}
                         onClick={async () => {
+                          // Normalise null scores → 0 before persisting
+                          const normalisedScores = Object.fromEntries(
+                            tender.suppliers.map(s => [
+                              s.id,
+                              Object.fromEntries(
+                                (plan?.criteria ?? []).map(c => {
+                                  if (c.has_subcriteria) {
+                                    return [c.id, Object.fromEntries(
+                                      c.subcriteria.map(sc => [sc.id, getScoreValue(s.id, c.id, sc.id)])
+                                    )]
+                                  }
+                                  return [c.id, getScoreValue(s.id, c.id)]
+                                })
+                              ),
+                            ])
+                          )
                           await submitAuditEntry({
                             evaluator_id: evaluatorId,
                             timestamp: new Date().toISOString(),
@@ -469,7 +529,7 @@ export default function Dashboard({ tender }: DashboardProps) {
                             tender_label: tender.label,
                             language: i18n.language,
                             regulatory_note: t('regulatory_note'),
-                            scores,
+                            scores: normalisedScores,
                             evidence: Object.fromEntries(
                               tender.suppliers.map(s => [s.id, results?.[s.id] ?? {}])
                             ),

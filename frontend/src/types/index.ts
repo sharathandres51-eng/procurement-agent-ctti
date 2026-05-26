@@ -105,5 +105,7 @@ export interface AuditEntry {
 
 // ── Scores (local state) ──────────────────────────────────────────────────────
 
-// supplier_id → criterion_id → score  (or sub_id → score for sub-criteria)
-export type ScoreMap = Record<string, Record<string, number | Record<string, number>>>
+// null  = not yet scored by the evaluator (distinct from a deliberate 0)
+// number = explicitly set score
+// Record = sub-criteria map (sub_id → score | null)
+export type ScoreMap = Record<string, Record<string, number | null | Record<string, number | null>>>
