@@ -42,6 +42,18 @@ export default function App() {
     }))
   }
 
+  // Accepts a functional updater so the stream handler never touches stale closure values.
+  // The updater receives the latest results from inside setEvalState's own functional update.
+  const handleResultsUpdate = (
+    tenderId: string,
+    updater: (prev: EvaluationResults | null) => EvaluationResults,
+  ) => {
+    setEvalState(prev => {
+      const current = prev[tenderId] ?? { results: null, scores: {}, sobreA: {}, sobreALocked: false }
+      return { ...prev, [tenderId]: { ...current, results: updater(current.results) } }
+    })
+  }
+
   const handleSobreAUpdate = (tenderId: string, sobreA: SobreAState, locked: boolean) => {
     setEvalState(prev => ({
       ...prev,
@@ -101,6 +113,7 @@ export default function App() {
               tender={activeTender}
               evalState={activeEval}
               onEvalUpdate={handleEvalUpdate}
+              onResultUpdate={(updater) => handleResultsUpdate(activeTenderId, updater)}
             />
           }
         />

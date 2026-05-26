@@ -21,19 +21,15 @@ interface DashboardProps {
   tender: TenderSummary
   evalState: TenderEvalState
   onEvalUpdate: (tenderId: string, results: EvaluationResults | null, scores: ScoreMap) => void
+  onResultUpdate: (updater: (prev: EvaluationResults | null) => EvaluationResults) => void
 }
 
-export default function Dashboard({ tender, evalState, onEvalUpdate }: DashboardProps) {
+export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpdate }: DashboardProps) {
   const { t, i18n } = useTranslation()
 
   const results       = evalState.results
   const scores        = evalState.scores
   const sobreALocked  = evalState.sobreALocked
-
-  const setResults = (updater: ((prev: EvaluationResults | null) => EvaluationResults) | EvaluationResults | null) => {
-    const next = typeof updater === 'function' ? updater(evalState.results) : updater
-    onEvalUpdate(tender.tender_id, next, evalState.scores)
-  }
 
   const setScores = (updater: ((prev: ScoreMap) => ScoreMap) | ScoreMap) => {
     const next = typeof updater === 'function' ? updater(evalState.scores) : updater
@@ -179,7 +175,9 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
         setCurrentCell(`${result.supplier_name}: ${result.criterion_name}`)
         setCompletedCells(n => n + 1)
 
-        setResults(prev => {
+        // onResultUpdate applies the updater inside setEvalState's own functional update,
+        // so `prev` is always the latest accumulated results — no stale closure possible.
+        onResultUpdate(prev => {
           const updated = { ...(prev ?? {}) }
           if (!updated[supplier_id]) updated[supplier_id] = {}
 
@@ -209,7 +207,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate }: Dashboard
         setCurrentCell(`Error: ${err}`)
       },
     )
-  }, [tender.tender_id, i18n.language, plan, onEvalUpdate])
+  }, [tender.tender_id, i18n.language, plan, onEvalUpdate, onResultUpdate])
 
   // ── Render ───────────────────────────────────────────────────────────────────
 
