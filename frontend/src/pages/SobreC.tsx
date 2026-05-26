@@ -85,14 +85,14 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
       {/* ── Declared values ──────────────────────────────────────────────────── */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+          <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider">
             {t('declared_subheader')}
           </h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="bg-gray-50 text-gray-400 uppercase tracking-wider">
+              <tr className="bg-gray-50 text-gray-600 uppercase tracking-wider">
                 <th className="text-left px-6 py-3">{t('supplier_col')}</th>
                 {criteriaFields.map(f => (
                   <th key={f} className="text-right px-6 py-3">
@@ -122,27 +122,27 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
       {/* ── Score breakdown ───────────────────────────────────────────────────── */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+          <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider">
             {t('breakdown_subheader')}
           </h2>
-          <p className="text-xs text-gray-400 mt-1">{t('breakdown_caption')}</p>
+          <p className="text-xs text-gray-500 mt-1">{t('breakdown_caption')}</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="bg-gray-50 text-gray-400 uppercase tracking-wider">
+              <tr className="bg-gray-50 text-gray-600 uppercase tracking-wider">
                 <th className="text-left px-6 py-3">{t('supplier_col')}</th>
                 {criteriaFields.map(f => (
                   <th key={f} className="text-right px-6 py-3">
                     {firstSupplier?.criteria[f]?.label ?? f}
-                    <span className="text-gray-300 normal-case font-normal">
+                    <span className="text-gray-400 normal-case font-normal">
                       {' '}/ {firstSupplier?.criteria[f]?.max_points}
                     </span>
                   </th>
                 ))}
-                <th className="text-right px-6 py-3 text-gray-600">
+                <th className="text-right px-6 py-3 text-gray-700 font-semibold">
                   Total
-                  <span className="text-gray-300 font-normal"> / {maxSobreC}</span>
+                  <span className="text-gray-400 font-normal"> / {maxSobreC}</span>
                 </th>
               </tr>
             </thead>
@@ -178,7 +178,7 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
       {/* ── Combined final ranking ────────────────────────────────────────────── */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+          <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider">
             {t('ranking_subheader')}
           </h2>
           {!sobreBReady && (
@@ -193,7 +193,7 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-gray-50 text-gray-400 text-xs uppercase tracking-wider">
+                  <tr className="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
                     <th className="text-left px-6 py-3">{t('supplier_col')}</th>
                     <th className="text-right px-6 py-3">
                       {t('sobre_b_col', { max: Math.round(maxSobreB) })}
@@ -249,11 +249,11 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
                   : '—',
               })}
             </div>
-            <p className="text-xs text-gray-400 italic px-6 pb-4">{t('ranking_caption')}</p>
+            <p className="text-xs text-gray-500 italic px-6 pb-4">{t('ranking_caption')}</p>
           </>
         ) : (
           <div className="p-8 text-center">
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-600">
               Complete the evaluation on the{' '}
               <a href="/" className="text-[#0057A8] hover:underline font-medium">Dashboard tab</a>
               {' '}and enter all scores to see the combined ranking.

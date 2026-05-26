@@ -50,10 +50,10 @@ function EvidencePanel({ evidence, tenders, entry }: EvidencePanelProps) {
     <div className="border-t border-gray-100">
       <button
         onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between px-6 py-3 text-xs font-semibold text-gray-400 hover:text-gray-600 uppercase tracking-wider transition-colors text-left"
+        className="w-full flex items-center justify-between px-6 py-3 text-xs font-semibold text-gray-600 hover:text-gray-800 uppercase tracking-wider transition-colors text-left"
       >
         <span>🔍 {t('audit_evidence_header')}</span>
-        <span className="text-gray-300 normal-case font-normal">{open ? '▲ hide' : '▼ expand'}</span>
+        <span className="text-gray-400 normal-case font-normal">{open ? '▲ hide' : '▼ expand'}</span>
       </button>
 
       {open && (
@@ -82,15 +82,15 @@ function EvidencePanel({ evidence, tenders, entry }: EvidencePanelProps) {
                             const r = scResult as CriterionResult
                             return (
                               <div key={scid} className="mb-2 pl-2">
-                                <p className="text-xs text-gray-400 italic mb-0.5">{scid}</p>
+                                <p className="text-xs text-gray-500 italic mb-0.5">{scid}</p>
                                 {r.evidence && (
                                   <p className="text-xs text-gray-600">
-                                    <span className="text-gray-400">{t('evidence_prefix')}: </span>
+                                    <span className="text-gray-500 font-medium">{t('evidence_prefix')}: </span>
                                     {r.evidence}
                                   </p>
                                 )}
                                 {r.agent_note && (
-                                  <p className="text-xs text-gray-400 italic mt-0.5">
+                                  <p className="text-xs text-gray-500 italic mt-0.5">
                                     ⚙ {r.agent_note}
                                   </p>
                                 )}
@@ -110,12 +110,12 @@ function EvidencePanel({ evidence, tenders, entry }: EvidencePanelProps) {
                         </p>
                         {r.evidence && (
                           <p className="text-xs text-gray-600">
-                            <span className="text-gray-400">{t('evidence_prefix')}: </span>
+                            <span className="text-gray-500 font-medium">{t('evidence_prefix')}: </span>
                             {r.evidence}
                           </p>
                         )}
                         {r.agent_note && (
-                          <p className="text-xs text-gray-400 italic mt-0.5">⚙ {r.agent_note}</p>
+                          <p className="text-xs text-gray-500 italic mt-0.5">⚙ {r.agent_note}</p>
                         )}
                       </div>
                     )
@@ -172,7 +172,7 @@ export default function AuditLog({ tenders }: AuditLogProps) {
         </div>
       ) : (
         <div className="space-y-4">
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-500">
             {t('audit_export_caption', { count: entries.length })}
           </p>
 
@@ -185,15 +185,15 @@ export default function AuditLog({ tenders }: AuditLogProps) {
                 {/* ── Entry header ──────────────────────────────────────────── */}
                 <div className="grid grid-cols-3 gap-4 px-6 py-4 border-b border-gray-100 bg-gray-50">
                   <div>
-                    <p className="text-xs text-gray-400 uppercase tracking-wider mb-0.5">Evaluator</p>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-0.5">Evaluator</p>
                     <p className="text-sm text-gray-900 font-medium">{entry.evaluator_id}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-400 uppercase tracking-wider mb-0.5">Timestamp</p>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-0.5">Timestamp</p>
                     <p className="text-sm text-gray-600">{new Date(entry.timestamp).toLocaleString()}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-400 uppercase tracking-wider mb-0.5">Contract</p>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-0.5">Contract</p>
                     <p className="text-sm text-gray-600">{entry.tender_label ?? entry.contract}</p>
                   </div>
                 </div>
@@ -205,13 +205,13 @@ export default function AuditLog({ tenders }: AuditLogProps) {
 
                 {/* ── Scores table ──────────────────────────────────────────── */}
                 <div className="p-6">
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                  <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">
                     {t('audit_scores_header')}
                   </p>
                   <div className="rounded-lg border border-gray-100 overflow-hidden">
                     <table className="w-full text-xs">
                       <thead>
-                        <tr className="bg-gray-50 text-gray-400 uppercase tracking-wider">
+                        <tr className="bg-gray-50 text-gray-600 uppercase tracking-wider">
                           <th className="text-left px-4 py-2">{t('supplier_col')}</th>
                           {cols.map(cid => (
                             <th key={cid} className="text-right px-4 py-2">{cid}</th>
