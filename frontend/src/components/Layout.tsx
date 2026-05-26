@@ -33,8 +33,11 @@ export default function Layout({
       {/* ── Sidebar ── */}
       <aside className="w-64 shrink-0 bg-slate-950 border-r border-slate-800 flex flex-col">
         <div className="p-4 border-b border-slate-800">
-          <h1 className="text-sm font-bold text-white uppercase tracking-widest">CTTI</h1>
-          <p className="text-xs text-slate-500 mt-0.5">Procurement Workbench</p>
+          <div className="flex items-center gap-2 mb-0.5">
+            <span className="text-amber-400 text-base">⚖️</span>
+            <h1 className="text-sm font-bold text-white uppercase tracking-widest">CTTI</h1>
+          </div>
+          <p className="text-xs text-slate-500">{t('app_subtitle')}</p>
         </div>
 
         {/* Tender selector */}
@@ -60,11 +63,11 @@ export default function Layout({
           <NavLink to="/" end className={navLinkClass}>
             📋 {t('tab_dashboard')}
           </NavLink>
-          <NavLink to="/audit" className={navLinkClass}>
-            📁 {t('tab_audit')}
-          </NavLink>
           <NavLink to="/sobre-c" className={navLinkClass}>
-            📊 {t('tab_sobre_c')}
+            🧮 {t('tab_sobre_c')}
+          </NavLink>
+          <NavLink to="/audit" className={navLinkClass}>
+            📝 {t('tab_audit')}
           </NavLink>
         </nav>
 

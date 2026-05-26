@@ -1,4 +1,5 @@
 import { CheckCircle } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import type { CriterionResult } from '../types'
 
 interface EvidenceCardProps {
@@ -14,6 +15,7 @@ export default function EvidenceCard({
   maxPoints,
   onScoreChange,
 }: EvidenceCardProps) {
+  const { t } = useTranslation()
   const isScored = score !== null
 
   return (
@@ -25,17 +27,17 @@ export default function EvidenceCard({
         {isScored ? (
           <span className="flex items-center gap-1 text-[10px] text-green-400 font-medium">
             <CheckCircle size={11} />
-            {score} / {maxPoints}
+            {t('scored_label', { score, max: maxPoints })}
           </span>
         ) : (
-          <span className="text-[10px] text-amber-500/70 italic">not scored</span>
+          <span className="text-[10px] text-amber-500/70 italic">{t('not_scored_label')}</span>
         )}
       </div>
 
       {/* Amber evidence box */}
       <div className="bg-[#2d1f00] border border-amber-500/50 rounded-lg p-3">
         <p className="text-[10px] font-bold text-amber-400 uppercase tracking-wider mb-1.5">
-          AI Evidence
+          {t('evidence_label')}
         </p>
         <p className="text-xs text-slate-200 leading-relaxed whitespace-pre-wrap line-clamp-6">
           {result.evidence}

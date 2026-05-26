@@ -41,6 +41,7 @@ interface EvidencePanelProps {
 }
 
 function EvidencePanel({ evidence, tenders, entry }: EvidencePanelProps) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
 
   const supplierEntries = Object.entries(evidence)
@@ -52,7 +53,7 @@ function EvidencePanel({ evidence, tenders, entry }: EvidencePanelProps) {
         onClick={() => setOpen(o => !o)}
         className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold text-slate-400 hover:text-slate-200 uppercase tracking-wider transition-colors text-left"
       >
-        <span>🔍 Agent evidence</span>
+        <span>🔍 {t('audit_evidence_header')}</span>
         <span className="text-slate-600">{open ? '▲ hide' : '▼ expand'}</span>
       </button>
 
@@ -86,7 +87,7 @@ function EvidencePanel({ evidence, tenders, entry }: EvidencePanelProps) {
                                 <p className="text-xs text-slate-500 italic mb-0.5">{scid}</p>
                                 {r.evidence && (
                                   <p className="text-xs text-slate-400">
-                                    <span className="text-slate-500">Evidence: </span>
+                                    <span className="text-slate-500">{t('evidence_prefix')}: </span>
                                     {r.evidence}
                                   </p>
                                 )}
@@ -112,7 +113,7 @@ function EvidencePanel({ evidence, tenders, entry }: EvidencePanelProps) {
                         </p>
                         {r.evidence && (
                           <p className="text-xs text-slate-400">
-                            <span className="text-slate-500">Evidence: </span>
+                            <span className="text-slate-500">{t('evidence_prefix')}: </span>
                             {r.evidence}
                           </p>
                         )}
