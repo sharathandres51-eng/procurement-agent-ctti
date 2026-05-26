@@ -20,3 +20,7 @@ db/audit.db
 .DS_Store
 Thumbs.db
 .claude/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/

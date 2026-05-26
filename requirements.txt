@@ -9,3 +9,7 @@ python-dotenv
 tiktoken
 pdfplumber
 fpdf2
+# API layer
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+httpx>=0.27.0
