@@ -24,10 +24,10 @@ function supplierName(
 }
 
 function scoreTotal(critScores: Record<string, number | Record<string, number>>): number {
-  return Object.values(critScores).reduce((sum: number, v) => {
+  return Object.values(critScores).reduce<number>((sum, v) => {
     if (typeof v === 'number') return sum + v
     if (typeof v === 'object' && v !== null)
-      return sum + Object.values(v as Record<string, number>).reduce((s, n) => s + (n ?? 0), 0)
+      return sum + Object.values(v as Record<string, number>).reduce<number>((s, n) => s + (n ?? 0), 0)
     return sum
   }, 0)
 }
