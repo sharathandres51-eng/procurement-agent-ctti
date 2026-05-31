@@ -12,46 +12,23 @@ Interactive docs available at:
 """
 
 import os
-# macOS: FAISS and PyTorch both load libomp.dylib; must be set before any
-# import that triggers FAISS or torch initialisation.
-os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
 
 from dotenv import load_dotenv
 load_dotenv()
 
-import asyncio
 from contextlib import asynccontextmanager
-from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.routers import tenders, evaluate, compare, sobre_c, audit
-
-INDEX_DIR = Path(__file__).parent.parent / "rag" / "faiss_index"
-
-
-def _build_index_sync() -> None:
-    """Blocking helper — runs in a thread so the event loop stays free."""
-    try:
-        from rag.indexer import build_index
-        build_index()
-        print("FAISS index built successfully.")
-    except Exception as exc:
-        print(f"WARNING: Failed to build FAISS index: {exc}")
-        print("The /evaluate endpoint will not work until the index is built.")
+from rag.indexer import ingest_all_proposals
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    On startup: if the FAISS index is missing, rebuild it in a background
-    thread so the event loop (and Railway healthcheck) are never blocked.
-    """
-    if not INDEX_DIR.exists() or not any(INDEX_DIR.iterdir()):
-        print("FAISS index not found — building in background (this takes ~2 minutes)…")
-        asyncio.get_event_loop().run_in_executor(None, _build_index_sync)
-    else:
-        print(f"FAISS index found at {INDEX_DIR} — ready.")
+    print("Startup: ingesting new or changed proposals into pgvector…")
+    ingest_all_proposals()
+    print("Startup: proposal ingestion complete.")
     yield
 
 
@@ -97,11 +74,9 @@ app.include_router(audit.router)
 
 @app.get("/health", tags=["meta"])
 def health():
-    index_ready = INDEX_DIR.exists() and any(INDEX_DIR.iterdir())
     return {
         "status": "ok",
         "service": "ctti-procurement-api",
-        "faiss_index": "ready" if index_ready else "missing",
     }
 
 

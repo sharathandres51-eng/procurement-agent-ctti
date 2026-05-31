@@ -71,6 +71,19 @@ export interface SubCriteriaResults {
 
 // ── Sobre C ───────────────────────────────────────────────────────────────────
 
+export interface SobreCCriterionDef {
+  label: string
+  max_points: number
+  direction: 'lower' | 'higher'
+  unit: string
+}
+
+export interface SobreCCriteriaResponse {
+  tender_id: string
+  total_points: number
+  criteria: Record<string, SobreCCriterionDef>
+}
+
 export interface SobreCCriterionDetail {
   label: string
   max_points: number

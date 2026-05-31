@@ -1,0 +1,141 @@
+{
+  "contract_id": "CTTI-2026-44",
+  "tender_id": "ctti_2026_44",
+  "generated_at": "2026-05-26T18:38:48.561945",
+  "criteria": [
+    {
+      "id": "methodological_approach",
+      "name": "Methodological approach for the provision of the service",
+      "max_points": 30.0,
+      "has_subcriteria": true,
+      "query": "",
+      "subcriteria": [
+        {
+          "id": "methodology_quality_and_detail",
+          "name": "Quality and level of detail of the proposed methodology",
+          "points": 10.0,
+          "query": "detailed service delivery methodology description"
+        },
+        {
+          "id": "innovative_approaches",
+          "name": "Innovative approaches to improve service efficiency",
+          "points": 5.0,
+          "query": "innovative solutions for service efficiency"
+        },
+        {
+          "id": "risk_management_plan",
+          "name": "Risk management and contingency plan",
+          "points": 5.0,
+          "query": "risk identification and mitigation strategies"
+        },
+        {
+          "id": "resource_allocation_plan",
+          "name": "Resource allocation and task distribution plan",
+          "points": 5.0,
+          "query": "resource allocation and task scheduling"
+        },
+        {
+          "id": "quality_control_measures",
+          "name": "Quality control and continuous improvement measures",
+          "points": 5.0,
+          "query": "quality assurance and improvement processes"
+        }
+      ]
+    },
+    {
+      "id": "team_experience_and_qualifications",
+      "name": "Experience and qualifications of the proposed team",
+      "max_points": 25.0,
+      "has_subcriteria": true,
+      "query": "",
+      "subcriteria": [
+        {
+          "id": "project_manager_experience",
+          "name": "Experience of the project manager in similar projects",
+          "points": 7.0,
+          "query": "project manager similar project experience"
+        },
+        {
+          "id": "team_member_qualifications",
+          "name": "Qualifications and certifications of team members",
+          "points": 6.0,
+          "query": "team member qualifications and certifications"
+        },
+        {
+          "id": "team_relevant_experience",
+          "name": "Relevant experience of the team in the sector",
+          "points": 6.0,
+          "query": "team sector-specific experience details"
+        },
+        {
+          "id": "team_availability_and_commitment",
+          "name": "Team availability and commitment to the project",
+          "points": 6.0,
+          "query": "team availability and dedication commitment"
+        }
+      ]
+    },
+    {
+      "id": "company_experience",
+      "name": "Company experience in similar projects",
+      "max_points": 20.0,
+      "has_subcriteria": true,
+      "query": "",
+      "subcriteria": [
+        {
+          "id": "similar_projects_completed",
+          "name": "Number and relevance of similar projects completed",
+          "points": 10.0,
+          "query": "completed similar projects case studies"
+        },
+        {
+          "id": "client_references_and_testimonials",
+          "name": "Client references and testimonials",
+          "points": 5.0,
+          "query": "client references and satisfaction testimonials"
+        },
+        {
+          "id": "sector_specific_experience",
+          "name": "Experience in the specific sector of the project",
+          "points": 5.0,
+          "query": "sector-specific project experience examples"
+        }
+      ]
+    },
+    {
+      "id": "environmental_and_social_commitment",
+      "name": "Environmental and social commitment",
+      "max_points": 15.0,
+      "has_subcriteria": true,
+      "query": "",
+      "subcriteria": [
+        {
+          "id": "environmental_sustainability_measures",
+          "name": "Environmental sustainability measures in the project",
+          "points": 5.0,
+          "query": "environmental sustainability initiatives proposed"
+        },
+        {
+          "id": "social_responsibility_actions",
+          "name": "Social responsibility actions and community impact",
+          "points": 5.0,
+          "query": "social responsibility and community engagement"
+        },
+        {
+          "id": "compliance_with_standards",
+          "name": "Compliance with environmental and social standards",
+          "points": 5.0,
+          "query": "compliance with environmental social standards"
+        }
+      ]
+    },
+    {
+      "id": "proposal_clarity_and_presentation",
+      "name": "Clarity and presentation of the proposal",
+      "max_points": 10.0,
+      "has_subcriteria": false,
+      "query": "proposal structure clarity and presentation quality",
+      "subcriteria": []
+    }
+  ]
+}

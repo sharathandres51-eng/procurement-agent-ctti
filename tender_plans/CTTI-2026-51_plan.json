@@ -1,0 +1,162 @@
+{
+  "contract_id": "CTTI-2026-51",
+  "tender_id": "ctti_2026_51",
+  "generated_at": "2026-05-26T18:43:54.926649",
+  "criteria": [
+    {
+      "id": "methodology_and_approach",
+      "name": "Methodology and approach for the provision of the service",
+      "max_points": 30.0,
+      "has_subcriteria": true,
+      "query": "",
+      "subcriteria": [
+        {
+          "id": "methodology_quality_and_detail",
+          "name": "Quality and level of detail of the proposed methodology",
+          "points": 10.0,
+          "query": "detailed service delivery methodology description"
+        },
+        {
+          "id": "innovative_approaches",
+          "name": "Innovative approaches and added value",
+          "points": 5.0,
+          "query": "innovative solutions proposed for service"
+        },
+        {
+          "id": "risk_management_plan",
+          "name": "Risk management and mitigation plan",
+          "points": 5.0,
+          "query": "risk identification and mitigation strategies"
+        },
+        {
+          "id": "resource_allocation_plan",
+          "name": "Resource allocation and team organization plan",
+          "points": 5.0,
+          "query": "team roles and resource allocation plan"
+        },
+        {
+          "id": "quality_control_measures",
+          "name": "Quality control and continuous improvement measures",
+          "points": 5.0,
+          "query": "quality assurance and improvement processes"
+        }
+      ]
+    },
+    {
+      "id": "technical_capabilities",
+      "name": "Technical capabilities of the bidder",
+      "max_points": 20.0,
+      "has_subcriteria": true,
+      "query": "",
+      "subcriteria": [
+        {
+          "id": "experience_in_similar_projects",
+          "name": "Experience in similar projects in the last 5 years",
+          "points": 8.0,
+          "query": "relevant project experience last five years"
+        },
+        {
+          "id": "technical_qualifications_team",
+          "name": "Technical qualifications of the proposed team",
+          "points": 7.0,
+          "query": "team member technical qualifications and certifications"
+        },
+        {
+          "id": "technological_infrastructure",
+          "name": "Technological infrastructure and tools",
+          "points": 5.0,
+          "query": "available technological tools and infrastructure"
+        }
+      ]
+    },
+    {
+      "id": "project_management_plan",
+      "name": "Project management plan",
+      "max_points": 15.0,
+      "has_subcriteria": true,
+      "query": "",
+      "subcriteria": [
+        {
+          "id": "project_governance_structure",
+          "name": "Project governance structure and decision-making",
+          "points": 5.0,
+          "query": "project governance and decision-making framework"
+        },
+        {
+          "id": "communication_plan",
+          "name": "Communication and reporting plan",
+          "points": 5.0,
+          "query": "stakeholder communication and reporting procedures"
+        },
+        {
+          "id": "monitoring_and_evaluation",
+          "name": "Monitoring and evaluation mechanisms",
+          "points": 5.0,
+          "query": "project performance monitoring and evaluation"
+        }
+      ]
+    },
+    {
+      "id": "sustainability_and_social_responsibility",
+      "name": "Sustainability and social responsibility plan",
+      "max_points": 10.0,
+      "has_subcriteria": true,
+      "query": "",
+      "subcriteria": [
+        {
+          "id": "environmental_sustainability_measures",
+          "name": "Environmental sustainability measures",
+          "points": 4.0,
+          "query": "environmental impact reduction initiatives"
+        },
+        {
+          "id": "social_responsibility_actions",
+          "name": "Social responsibility actions",
+          "points": 3.0,
+          "query": "social responsibility and community engagement"
+        },
+        {
+          "id": "ethical_practices",
+          "name": "Ethical practices and compliance",
+          "points": 3.0,
+          "query": "ethical business practices and compliance"
+        }
+      ]
+    },
+    {
+      "id": "transition_and_implementation_plan",
+      "name": "Transition and implementation plan",
+      "max_points": 15.0,
+      "has_subcriteria": true,
+      "query": "",
+      "subcriteria": [
+        {
+          "id": "transition_strategy",
+          "name": "Transition strategy from current to new service",
+          "points": 5.0,
+          "query": "service transition strategy and timeline"
+        },
+        {
+          "id": "implementation_timeline",
+          "name": "Implementation timeline and milestones",
+          "points": 5.0,
+          "query": "detailed implementation timeline and milestones"
+        },
+        {
+          "id": "change_management_plan",
+          "name": "Change management and user adoption plan",
+          "points": 5.0,
+          "query": "change management and user adoption strategy"
+        }
+      ]
+    },
+    {
+      "id": "proposal_clarity_and_presentation",
+      "name": "Clarity and presentation of the proposal",
+      "max_points": 10.0,
+      "has_subcriteria": false,
+      "query": "proposal clarity structure and presentation quality",
+      "subcriteria": []
+    }
+  ]
+}

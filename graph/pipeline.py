@@ -15,6 +15,7 @@ from agents.planning_agent import load_or_generate_plan
 
 TENDER_REGISTRY: dict[str, dict] = {
     "ctti_2026_36": {
+        "contract_id": "CTTI-2026-36",
         "label": "CTTI-2026-36 — QKD Infrastructure",
         "suppliers": [
             {"id": "supplier_a", "name": "QuantumNet Solutions SL"},
@@ -22,20 +23,22 @@ TENDER_REGISTRY: dict[str, dict] = {
             {"id": "supplier_c", "name": "SecureComms Catalunya SA"},
         ],
     },
-    "ctti_2026_44": {
-        "label": "CTTI-2026-44 — Cloud Infrastructure Migration",
+    "ctti_2026_1": {
+        "contract_id": "CTTI-2026-1",
+        "label": "CTTI-2026-1 — Connectivity Migration Support",
         "suppliers": [
-            {"id": "supplier_a", "name": "CloudPath Solutions SL"},
-            {"id": "supplier_b", "name": "NexCloud Iberia SA"},
-            {"id": "supplier_c", "name": "InfraTech Catalunya SA"},
+            {"id": "supplier_a", "name": "ConnecTech Iberia SL"},
+            {"id": "supplier_b", "name": "FibraXarxa Partners SA"},
+            {"id": "supplier_c", "name": "Xarxes Catalunya Grup SL"},
         ],
     },
-    "ctti_2026_51": {
-        "label": "CTTI-2026-51 — Cybersecurity SOC Services",
+    "ctti_2026_5": {
+        "contract_id": "CTTI-2026-5",
+        "label": "CTTI-2026-5 — Museums Collections System",
         "suppliers": [
-            {"id": "supplier_a", "name": "CyberShield Catalunya SL"},
-            {"id": "supplier_b", "name": "SecOps Iberia SA"},
-            {"id": "supplier_c", "name": "GuardNet Partners SL"},
+            {"id": "supplier_a", "name": "MuseumSoft Iberia SL"},
+            {"id": "supplier_b", "name": "ColeccioTech Partners SA"},
+            {"id": "supplier_c", "name": "PatrimoniSaaS Catalunya SL"},
         ],
     },
 }

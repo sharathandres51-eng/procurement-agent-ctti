@@ -1,94 +1,102 @@
 """
 rag/retriever.py
 ----------------
-Semantic search helpers over the multi-tender FAISS index.
+Semantic search helpers over Supabase pgvector.
 
 retrieve()          → top-k proposal chunks for a given supplier in a given tender
 retrieve_criteria() → top-k criteria/requirements chunks for a given tender
-
-Both functions filter on tender_id metadata so results from different tenders
-never bleed into each other.
 """
 
-from pathlib import Path
+import os
 from dotenv import load_dotenv
 from langchain_mistralai import MistralAIEmbeddings
-from langchain_community.vectorstores import FAISS
+from langchain_postgres.vectorstores import PGVector
+from sqlalchemy import create_engine
 
 load_dotenv()
 
-INDEX_DIR = Path(__file__).parent / "faiss_index"
 
-_embeddings  = MistralAIEmbeddings(model="mistral-embed")
-_vectorstore = FAISS.load_local(
-    str(INDEX_DIR),
-    _embeddings,
-    allow_dangerous_deserialization=True,
-)
-
-
-def retrieve(supplier_id: str, query: str, tender_id: str, k: int = 5) -> list[dict]:
-    """Return top-k proposal chunks for supplier_id within the given tender.
-
-    Falls back to source-only filtering when the index was built before the
-    tender_id metadata field was added (all chunks have tender_id=None).
-    """
-    candidates = _vectorstore.similarity_search(query, k=k * 10)
-
-    # Detect whether the index carries tender_id metadata
-    index_has_tender_id = any(
-        doc.metadata.get("tender_id") is not None for doc in candidates
+def get_vectorstore() -> PGVector:
+    engine = create_engine(
+        os.environ["DATABASE_URL"],
+        pool_pre_ping=True,
+        pool_recycle=300,
+    )
+    return PGVector(
+        connection=engine,
+        collection_name="ctti_documents",
+        embeddings=MistralAIEmbeddings(model="mistral-embed"),
+        use_jsonb=True,
     )
 
-    def _matches(doc) -> bool:
-        if doc.metadata.get("source") != supplier_id:
-            return False
-        if index_has_tender_id:
-            return doc.metadata.get("tender_id") == tender_id
-        return True  # old index: trust source filter alone
+
+_vectorstore = get_vectorstore()
+
+
+def retrieve(
+    supplier_id: str, query: str, tender_id: str, k: int = 5
+) -> list[dict]:
+    """Return top-k proposal chunks for supplier_id within the given tender."""
+    candidates = _vectorstore.similarity_search(query, k=k * 5)
 
     results = [
         {
             "text":      doc.page_content,
             "source":    doc.metadata.get("source", ""),
             "doc_type":  doc.metadata.get("doc_type", ""),
-            "tender_id": doc.metadata.get("tender_id") or tender_id,
+            "tender_id": doc.metadata.get("tender_id", ""),
         }
         for doc in candidates
-        if _matches(doc)
+        if (
+            doc.metadata.get("tender_id") == tender_id
+            and doc.metadata.get("source") == supplier_id
+            and doc.metadata.get("doc_type") == "proposal"
+        )
     ]
     return results[:k]
 
 
 def retrieve_criteria(query: str, tender_id: str, k: int = 5) -> list[dict]:
     """Return top-k criteria/requirements chunks for the given tender."""
-    candidates = _vectorstore.similarity_search(query, k=k * 10)
-    index_has_tender_id = any(
-        doc.metadata.get("tender_id") is not None for doc in candidates
-    )
+    candidates = _vectorstore.similarity_search(query, k=k * 5)
+
     results = [
         {
             "text":      doc.page_content,
             "source":    doc.metadata.get("source", ""),
             "doc_type":  doc.metadata.get("doc_type", ""),
-            "tender_id": doc.metadata.get("tender_id") or tender_id,
+            "tender_id": doc.metadata.get("tender_id", ""),
         }
         for doc in candidates
-        if (doc.metadata.get("doc_type") in ("criteria", "requirements")
-            and (not index_has_tender_id or doc.metadata.get("tender_id") == tender_id))
+        if (
+            doc.metadata.get("tender_id") == tender_id
+            and doc.metadata.get("doc_type") in ("criteria", "requirements")
+        )
     ]
     return results[:k]
 
 
 if __name__ == "__main__":
     tests = [
-        ("supplier_a", "team qualifications migration plan references", "ctti_2026_36", 3),
-        ("supplier_b", "ENS compliance data sovereignty GDPR",          "ctti_2026_44", 3),
-        ("supplier_a", "SOC analyst certifications threat intelligence", "ctti_2026_51", 3),
+        retrieve("supplier_a", "team qualifications", "ctti_2026_36", k=3),
+        retrieve("supplier_b", "risk identification", "ctti_2026_36", k=3),
+        retrieve_criteria("evaluation criteria maximum points", "ctti_2026_36", k=3),
     ]
-    for supplier_id, query, tender_id, k in tests:
-        print(f"\n--- retrieve('{supplier_id}', ..., tender='{tender_id}', k={k}) ---")
-        for r in retrieve(supplier_id, query, tender_id, k):
-            print(f"  tender={r['tender_id']}  source={r['source']}  "
-                  f"doc_type={r['doc_type']}")
+    labels = [
+        "retrieve('supplier_a', 'team qualifications', 'ctti_2026_36', k=3)",
+        "retrieve('supplier_b', 'risk identification', 'ctti_2026_36', k=3)",
+        "retrieve_criteria('evaluation criteria maximum points', 'ctti_2026_36', k=3)",
+    ]
+
+    all_passed = True
+    for label, results in zip(labels, tests):
+        print(f"\n--- {label} ---")
+        if not results:
+            print("  FAIL: no results returned")
+            all_passed = False
+            continue
+        for r in results:
+            print(f"  source={r['source']}  doc_type={r['doc_type']}")
             print(f"  text={r['text'][:100]!r}")
+
+    print("\n--- " + ("ALL PASSED" if all_passed else "SOME TESTS FAILED") + " ---")

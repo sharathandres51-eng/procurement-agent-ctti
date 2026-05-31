@@ -89,6 +89,23 @@ class ComparisonResponse(BaseModel):
 
 # ── Sobre C ───────────────────────────────────────────────────────────────────
 
+class SobreCCriterionDef(BaseModel):
+    label: str
+    max_points: float
+    direction: str
+    unit: str
+
+
+class SobreCCriteriaResponse(BaseModel):
+    tender_id: str
+    total_points: float
+    criteria: dict[str, SobreCCriterionDef]
+
+
+class SobreCCalculateRequest(BaseModel):
+    declared_values: dict[str, dict[str, float]]
+
+
 class SobreCCriterionDetail(BaseModel):
     label: str
     max_points: float
