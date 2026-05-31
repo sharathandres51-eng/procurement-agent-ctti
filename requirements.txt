@@ -2,12 +2,15 @@ langchain==0.3.25
 langchain-mistralai==0.2.10
 langchain-community==0.3.24
 langchain-text-splitters==0.3.8
+langchain-postgres==0.0.17
 langgraph==0.2.74
-faiss-cpu
 python-dotenv
 tiktoken
 pdfplumber
 fpdf2
+psycopg2-binary==2.9.12
+pgvector==0.3.6
+markitdown==0.1.6
 # API layer
 fastapi>=0.115.0
 uvicorn[standard]>=0.30.0

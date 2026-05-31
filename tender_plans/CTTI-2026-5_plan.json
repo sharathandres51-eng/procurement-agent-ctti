@@ -1,0 +1,89 @@
+{
+  "contract_id": "CTTI-2026-5",
+  "tender_id": "ctti_2026_5",
+  "generated_at": "2026-05-30T20:45:31.429526",
+  "pcap_hash": "",
+  "criteria": [
+    {
+      "id": "solucio_tecnica",
+      "name": "Soluci\u00f3 t\u00e8cnica",
+      "max_points": 49.0,
+      "has_subcriteria": true,
+      "query": "",
+      "subcriteria": [
+        {
+          "id": "eficiencia_entrada_dades",
+          "name": "Efici\u00e8ncia en l\u2019entrada de dades",
+          "points": 4.0,
+          "query": "data entry efficiency and usability"
+        },
+        {
+          "id": "capacitat_cerca_filtratge",
+          "name": "Capacitat de cerca i filtratge",
+          "points": 4.0,
+          "query": "search and filtering functionality details"
+        },
+        {
+          "id": "generacio_creacio_informes",
+          "name": "Generaci\u00f3 i creaci\u00f3 d\u2019informes",
+          "points": 4.0,
+          "query": "report generation and customization features"
+        },
+        {
+          "id": "acompliment_funcions_velocitat",
+          "name": "Acompliment de funcions i velocitat de resposta",
+          "points": 4.0,
+          "query": "system performance and response time"
+        },
+        {
+          "id": "disseny_web_responsiu",
+          "name": "Disseny de web responsiu",
+          "points": 4.0,
+          "query": "responsive web design implementation"
+        },
+        {
+          "id": "funcionament_multi_tinenca",
+          "name": "Funcionament muti tinen\u00e7a",
+          "points": 4.0,
+          "query": "multi-tenancy architecture and security"
+        },
+        {
+          "id": "seguretat_privacitat",
+          "name": "Seguretat i privacitat",
+          "points": 4.0,
+          "query": "data security and privacy measures"
+        },
+        {
+          "id": "administracio_sistema",
+          "name": "Administraci\u00f3 del sistema",
+          "points": 4.0,
+          "query": "system administration and management"
+        },
+        {
+          "id": "model_governanca_gestio_projecte",
+          "name": "Proposta de model de governan\u00e7a i gesti\u00f3 del projecte",
+          "points": 6.0,
+          "query": "project governance and management model"
+        },
+        {
+          "id": "minimitzacio_processos_manuals",
+          "name": "Minimitzaci\u00f3 dels processos manuals en la migraci\u00f3 de les dades dels sistemes actuals",
+          "points": 2.0,
+          "query": "data migration automation and processes"
+        },
+        {
+          "id": "proposta_model_relacio",
+          "name": "Proposta de model de relaci\u00f3",
+          "points": 2.0,
+          "query": "relationship model and collaboration approach"
+        },
+        {
+          "id": "experiencia_equip_analistes",
+          "name": "Experi\u00e8ncia dels recursos en les tasques descrites a l\u2019apartat 5.9",
+          "points": 7.0,
+          "query": "team experience and roles description"
+        }
+      ]
+    }
+  ]
+}

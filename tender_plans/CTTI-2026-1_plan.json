@@ -1,0 +1,63 @@
+{
+  "contract_id": "CTTI-2026-1",
+  "tender_id": "ctti_2026_1",
+  "generated_at": "2026-05-30T19:09:06.690977",
+  "pcap_hash": "",
+  "criteria": [
+    {
+      "id": "suport_migracio",
+      "name": "Servei de suport a la migraci\u00f3",
+      "max_points": 17.0,
+      "has_subcriteria": true,
+      "query": "",
+      "subcriteria": [
+        {
+          "id": "metodologia_reporting_seguiment",
+          "name": "Metodologia de reporting i seguiment del servei per garantir el correcte seguiment de l\u2019activitat dels \u00e0mbits de servei",
+          "points": 17.0,
+          "query": "migration support reporting methodology details"
+        }
+      ]
+    },
+    {
+      "id": "redaccio_direccio_facultativa",
+      "name": "Redacci\u00f3 i direcci\u00f3 facultativa",
+      "max_points": 10.0,
+      "has_subcriteria": false,
+      "query": "technical writing and supervision approach",
+      "subcriteria": []
+    },
+    {
+      "id": "redaccio_projectes",
+      "name": "Servei de redacci\u00f3 de projectes",
+      "max_points": 4.0,
+      "has_subcriteria": false,
+      "query": "project drafting service methodology",
+      "subcriteria": []
+    },
+    {
+      "id": "direccio_facultativa",
+      "name": "Servei de direcci\u00f3 facultativa",
+      "max_points": 6.0,
+      "has_subcriteria": false,
+      "query": "technical supervision service approach",
+      "subcriteria": []
+    },
+    {
+      "id": "qualitat_evolucio_millores",
+      "name": "Servei de qualitat, evoluci\u00f3 i millores",
+      "max_points": 12.0,
+      "has_subcriteria": false,
+      "query": "quality evolution improvement strategies",
+      "subcriteria": []
+    },
+    {
+      "id": "estrategia_transformacio",
+      "name": "Servei de l\u2019estrat\u00e8gia de la transformaci\u00f3",
+      "max_points": 6.0,
+      "has_subcriteria": false,
+      "query": "transformation strategy service proposal",
+      "subcriteria": []
+    }
+  ]
+}

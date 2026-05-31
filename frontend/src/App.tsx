@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { fetchTenders } from './api/tenders'
-import { fetchSobreC } from './api/sobreC'
 import { fetchAuditEntries } from './api/audit'
 import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
@@ -45,11 +44,6 @@ export default function App() {
   // navigating to those tabs is instant even on first visit.
   useEffect(() => {
     if (!activeTenderId) return
-    queryClient.prefetchQuery({
-      queryKey: ['sobre-c', activeTenderId],
-      queryFn:  () => fetchSobreC(activeTenderId),
-      staleTime: 1000 * 60 * 5,
-    })
     queryClient.prefetchQuery({
       queryKey: ['audit'],
       queryFn:  fetchAuditEntries,
