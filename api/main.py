@@ -56,18 +56,25 @@ app = FastAPI(
 )
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
-# In development, allow requests from the Vite dev server.
-# In production, set ALLOWED_ORIGINS to your Vercel frontend URL.
-# e.g. ALLOWED_ORIGINS=https://procurement-ctti.vercel.app
+# Always-allowed origins (localhost for dev + the production Vercel app) are
+# baked in so the deployed frontend works without depending on a dashboard env
+# var. Any extra origins can be added via the ALLOWED_ORIGINS env var (comma-
+# separated) and are appended to — not replacing — these defaults.
 
-ALLOWED_ORIGINS = os.getenv(
-    "ALLOWED_ORIGINS",
-    "http://localhost:5173,http://localhost:3000",
-).split(",")
+DEFAULT_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://procurement-agent-ctti.vercel.app",
+]
+
+_extra = os.getenv("ALLOWED_ORIGINS", "")
+ALLOWED_ORIGINS = DEFAULT_ORIGINS + [o.strip() for o in _extra.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[o.strip() for o in ALLOWED_ORIGINS],
+    allow_origins=ALLOWED_ORIGINS,
+    # Match this project's Vercel preview deployments (…-hash.vercel.app) too.
+    allow_origin_regex=r"https://procurement-agent-ctti.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
