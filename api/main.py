@@ -12,6 +12,7 @@ Interactive docs available at:
 """
 
 import os
+import threading
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -24,11 +25,22 @@ from api.routers import tenders, evaluate, compare, sobre_c, audit
 from rag.indexer import ingest_all_proposals
 
 
+def _ingest_background():
+    """Run proposal ingestion in a daemon thread so startup doesn't block."""
+    try:
+        print("Background ingestion: starting…")
+        ingest_all_proposals()
+        print("Background ingestion: complete.")
+    except Exception as exc:
+        print(f"Background ingestion: failed — {exc}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("Startup: ingesting new or changed proposals into pgvector…")
-    ingest_all_proposals()
-    print("Startup: proposal ingestion complete.")
+    # Start ingestion in a background thread so Railway's health check
+    # is satisfied immediately — ingestion may take 30–120 s on cold start.
+    t = threading.Thread(target=_ingest_background, daemon=True)
+    t.start()
     yield
 
 

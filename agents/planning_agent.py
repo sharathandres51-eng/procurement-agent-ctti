@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
 
 import psycopg2
@@ -10,7 +11,12 @@ from rag.retriever import retrieve_criteria
 
 load_dotenv()
 
-llm = ChatMistralAI(model="mistral-large-latest", temperature=0)
+# Lazy singleton — only instantiated on first inference call, not at import time.
+# This prevents a crash on startup when MISTRAL_API_KEY is read from env vars
+# that may not be available until the container is fully initialised.
+@lru_cache(maxsize=1)
+def _llm() -> ChatMistralAI:
+    return ChatMistralAI(model="mistral-large-latest", temperature=0)
 
 
 # ---------------------------------------------------------------------------
@@ -117,7 +123,7 @@ Respond ONLY with a valid JSON object in exactly this structure with no addition
   ]
 }}"""
 
-    response = llm.invoke([{"role": "user", "content": prompt}])
+    response = _llm().invoke([{"role": "user", "content": prompt}])
     text = response.content.strip()
 
     if text.startswith("```"):

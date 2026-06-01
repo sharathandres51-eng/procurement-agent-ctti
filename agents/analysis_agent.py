@@ -1,6 +1,7 @@
 import re
 import time
 import httpx
+from functools import lru_cache
 from dotenv import load_dotenv
 from langchain_mistralai import ChatMistralAI
 from rag.retriever import retrieve_criteria
@@ -9,7 +10,12 @@ from i18n import get_translations
 
 load_dotenv()
 
-llm = ChatMistralAI(model="mistral-large-latest", temperature=0)
+# Lazy singleton — only instantiated on first inference call, not at import time.
+# This prevents a crash on startup when MISTRAL_API_KEY is read from env vars
+# that may not be available until the container is fully initialised.
+@lru_cache(maxsize=1)
+def _llm() -> ChatMistralAI:
+    return ChatMistralAI(model="mistral-large-latest", temperature=0)
 
 
 def analysis_agent(state: EvalState) -> dict:
@@ -111,7 +117,7 @@ AGENT_NOTE: <2-3 sentence observation>"""
 
     for attempt in range(5):
         try:
-            response = llm.invoke([{"role": "user", "content": prompt}])
+            response = _llm().invoke([{"role": "user", "content": prompt}])
             break
         except httpx.HTTPStatusError as exc:
             if exc.response.status_code == 429 and attempt < 4:
