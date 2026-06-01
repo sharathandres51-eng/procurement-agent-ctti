@@ -35,7 +35,11 @@ export default function Layout({
 
         {/* Brand */}
         <div className="flex items-center gap-2 shrink-0 mr-2">
-          <span className="text-base">⚖️</span>
+          <img
+            src="/ctti_logo.jpeg"
+            alt="CTTI"
+            className="h-8 w-8 rounded object-cover"
+          />
           <span className="text-sm font-bold text-white uppercase tracking-widest">CTTI</span>
           <span className="text-xs text-slate-500 hidden sm:block">{t('app_subtitle')}</span>
         </div>
