@@ -30,14 +30,21 @@ def get_vectorstore() -> PGVector:
     )
 
 
-_vectorstore = get_vectorstore()
+_vectorstore = None
+
+
+def _get_vs() -> PGVector:
+    global _vectorstore
+    if _vectorstore is None:
+        _vectorstore = get_vectorstore()
+    return _vectorstore
 
 
 def retrieve(
     supplier_id: str, query: str, tender_id: str, k: int = 5
 ) -> list[dict]:
     """Return top-k proposal chunks for supplier_id within the given tender."""
-    candidates = _vectorstore.similarity_search(query, k=k * 5)
+    candidates = _get_vs().similarity_search(query, k=k * 5)
 
     results = [
         {
@@ -58,7 +65,7 @@ def retrieve(
 
 def retrieve_criteria(query: str, tender_id: str, k: int = 5) -> list[dict]:
     """Return top-k criteria/requirements chunks for the given tender."""
-    candidates = _vectorstore.similarity_search(query, k=k * 5)
+    candidates = _get_vs().similarity_search(query, k=k * 5)
 
     results = [
         {
