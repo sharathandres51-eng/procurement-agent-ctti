@@ -9,10 +9,10 @@ AI-assisted tender evaluation workbench for the Generalitat de Catalunya (CTTI).
 | Envelope | Route | Points | Method |
 |---|---|---|---|
 | **Sobre A** | `/sobre-a` | Pass / Fail | Administrative qualification checklist |
-| **Sobre B** | `/` | 49 pts | Qualitative AI-assisted evaluation |
+| **Sobre B** | `/sobre-b` | 49 pts | Qualitative AI-assisted evaluation |
 | **Sobre C** | `/sobre-c` | 51 pts | Deterministic price formula (PCAP Annex 2.b) |
 
-Three real CTTI tenders are bundled. The combined Sobre B + Sobre C score produces the final 100-pt ranking.
+Three real CTTI tenders are bundled. The combined Sobre B + Sobre C score produces the final 100-pt ranking. The app opens on **Sobre A** by default (`/` redirects to `/sobre-a`), reflecting the order of the procurement process — Sobre A must be locked before Sobre B can run.
 
 ---
 
@@ -23,7 +23,7 @@ flowchart TD
     subgraph FE["🖥️  React Frontend  —  Vite · TypeScript · Tailwind CSS v4"]
         direction LR
         SA["Sobre A\n/sobre-a\nAdmin checklist"]
-        SBD["Sobre B\n/\nSSE evaluation grid"]
+        SBD["Sobre B\n/sobre-b\nSSE evaluation grid"]
         SC["Sobre C\n/sobre-c\nPrice input form"]
         AL["Audit Log\n/audit\nExport + accordion"]
     end
@@ -249,7 +249,25 @@ npm run dev
 | Service | Platform | Configuration |
 |---|---|---|
 | Backend | Railway | Set `MISTRAL_API_KEY` and `DATABASE_URL` in Railway environment variables |
-| Frontend | Vercel | Set `VITE_API_URL=https://your-project.railway.app` in Vercel environment variables |
+| Frontend | Vercel | `VITE_API_URL` may be set to the Railway URL, but the app falls back to a hardcoded Railway URL in `frontend/src/api/client.ts` if it is unset |
+
+**Hardcoded fallbacks.** Because this project's Vercel env vars were not reaching the build, two values are baked into code so the deployment works without dashboard configuration:
+- `frontend/src/api/client.ts` — the production Railway API URL (env var `VITE_API_URL` still overrides if present).
+- `api/main.py` — the production Vercel origin is in the CORS default allowlist, plus a regex for `*.vercel.app` preview deployments.
+
+Startup ingestion runs in a background thread (`api/main.py`) so Railway's health check passes immediately; the LLM client is lazily initialised so a missing `MISTRAL_API_KEY` cannot crash the process on import.
+
+### Access Control (password gate)
+
+The deployed frontend is gated by a Vercel Edge Middleware password login (`middleware.ts`, duplicated in `frontend/middleware.ts` so it is detected regardless of the Vercel Root Directory setting):
+
+- Unauthenticated visitors get a branded **password-only** login page (CTTI logo + single password field) — not the browser's native Basic Auth dialog.
+- The password is validated against a committed **SHA-256 hash**, so no secret is stored in the repo and no environment variable is required.
+- On success an `HttpOnly; Secure` cookie (`ctti_pw`) keeps the session for 24 hours.
+- To change the password, replace `PASSWORD_SHA256` in **both** middleware files:
+  ```bash
+  printf '%s' 'newpassword' | shasum -a 256
+  ```
 
 ---
 
@@ -259,7 +277,7 @@ npm run dev
 
 Administrative pass/fail qualification. Five PCAP criteria are checked per supplier using a three-state toggle (unchecked / pass / fail). Use **Mark all as passed** to expedite uncontested criteria. An evaluator sign-off is required to lock Sobre A before Sobre B can run.
 
-### Tab 2 — Sobre B (`/`)
+### Tab 2 — Sobre B (`/sobre-b`)
 
 Main qualitative evaluation dashboard.
 

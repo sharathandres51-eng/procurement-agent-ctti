@@ -9,22 +9,24 @@ AI-assisted procurement evaluation workbench for the Generalitat de Catalunya (C
 ## Completed features
 
 ### Core pipeline
-- [x] LangGraph 2-node pipeline (`retrieval_agent` → `analysis_agent`) in `graph/pipeline.py`
-- [x] FAISS semantic search with `tender_id` + `source` metadata filters (`rag/retriever.py`)
-- [x] Backward-compat fallback: detects legacy indexes without `tender_id` and filters by source only
-- [x] Deterministic 51-pt Sobre C price scorer driven by `sobre_c_submissions.json` (`scoring/sobre_c.py`)
-- [x] SQLite audit log compliant with Law 40/2015 + EU AI Act Annex III (`db/audit.py`)
-- [x] `TENDER_REGISTRY` in `graph/pipeline.py` for multi-tender support (3 tenders)
-- [x] pdfplumber-based PDF document ingestion (`rag/pdf_loader.py`)
+- [x] LangGraph pipeline (`planning_agent` → `retrieval_agent` → `analysis_agent`) in `graph/pipeline.py`
+- [x] Planning Agent reads the PCAP via RAG and generates a structured eval plan, cached in Supabase (`tender_plans` table)
+- [x] Supabase **pgvector** semantic search with `tender_id` + `source` + `doc_type` filters (`rag/retriever.py`)
+- [x] Deterministic 51-pt Sobre C price scorer (`scoring/sobre_c.py`, no file I/O — values posted by the evaluator)
+- [x] Supabase **PostgreSQL** audit log compliant with Law 40/2015 + EU AI Act Annex III (`db/audit.py`; legacy `audit.db` SQLite superseded)
+- [x] `TENDER_REGISTRY` in `graph/pipeline.py` for multi-tender support (3 real tenders: ctti_2026_36 / _1 / _5)
+- [x] **MarkItDown** PDF + TXT → Markdown ingestion (`rag/indexer.py`) with SHA-256 hash dedup (`indexed_documents` table)
+- [x] Startup ingestion runs as a FastAPI lifespan **background thread** so Railway's health check passes immediately
 
-### React + FastAPI migration (replaced Streamlit prototype)
+### React + FastAPI architecture (replaced Streamlit prototype)
 - [x] FastAPI backend with modular routers: `tenders`, `evaluate` (SSE), `sobre_c`, `compare`, `source_chunks`, `audit`
 - [x] React 19 + TypeScript + Vite 8 + Tailwind CSS v4 frontend
-- [x] React Router v7 — 4 routes: `/sobre-a`, `/` (Sobre B), `/sobre-c`, `/audit`
-- [x] React Query v5 — global `staleTime: 5 min`; Sobre C + audit prefetched on app load
+- [x] React Router v7 — `/` redirects to `/sobre-a` (default landing); `/sobre-b`, `/sobre-c`, `/audit`
+- [x] React Query v5 — global `staleTime: 5 min`; audit prefetched on app load
 - [x] Eval state lifted in `App.tsx` (`TenderEvalState`) — survives tab navigation per tender
 - [x] Streaming evaluation via `fetch()` + ReadableStream with functional updater pattern (no stale closures)
 - [x] `useMemo` on `activeEval` — prevents downstream re-renders when eval state is uninitialised
+- [x] Error boundary (`components/ErrorBoundary.tsx`) — render-time throws show a readable error instead of a blank screen
 
 ### Sobre A tab (`/sobre-a`)
 - [x] Administrative pass/fail checklist — 5 PCAP criteria per supplier
@@ -32,7 +34,7 @@ AI-assisted procurement evaluation workbench for the Generalitat de Catalunya (C
 - [x] "Mark all as passed" shortcut per supplier row
 - [x] Lock + evaluator sign-off gate; Sobre B is disabled until Sobre A is locked
 
-### Sobre B (`/`)
+### Sobre B (`/sobre-b`)
 - [x] SSE stream from `/tenders/{id}/evaluate` — results appear cell-by-cell
 - [x] `EvidenceCard` per supplier × criterion with human score input
 - [x] Cross-supplier `ComparisonPanel` — `useQuery` with `staleTime: Infinity` (computed once, cached for session)
@@ -57,18 +59,29 @@ AI-assisted procurement evaluation workbench for the Generalitat de Catalunya (C
 - [x] LLM prompts inject language instruction — responses match UI language
 
 ### UI / UX
-- [x] CTTI logo favicon (`frontend/public/ctti_logo.jpeg`)
+- [x] CTTI logo (`frontend/public/ctti_logo.jpeg`) as favicon, header brand (`Layout.tsx`), and login page
 - [x] Page title: "CTTI Procurement Evaluation"
 - [x] Tender selector in header (`Layout.tsx`)
 - [x] lucide-react icon set; no emoji in navigation
 
+### Access control (deployed app)
+- [x] Vercel Edge Middleware password gate (`middleware.ts` + identical `frontend/middleware.ts`)
+- [x] Branded **password-only** login page (CTTI logo + single field) instead of the native Basic Auth dialog
+- [x] Password checked against a committed **SHA-256 hash** (no env var; safe in a public repo) via Web Crypto in the Edge runtime
+- [x] `HttpOnly; Secure` cookie (`ctti_pw`) keeps the session for 24 h; change password by replacing `PASSWORD_SHA256` in both files
+
+### Deployment fixes (Railway + Vercel)
+- [x] Lazy-init `ChatMistralAI` (`agents/*.py`) so a missing `MISTRAL_API_KEY` can't crash on import
+- [x] Background-thread startup ingestion so Railway health check passes immediately
+- [x] Hardcoded Railway API URL fallback in `frontend/src/api/client.ts` (Vercel env vars weren't reaching the build)
+- [x] Production Vercel origin baked into CORS defaults + `*.vercel.app` preview regex (`api/main.py`)
+
 ### Bug fixes
-- [x] RAG zero chunks — legacy FAISS indexes without `tender_id` now fall back to source-only filtering
 - [x] Stale closure in SSE stream — `handleResultsUpdate` uses `setEvalState(prev => ...)` functional updater
 - [x] i18n interpolation — all `{variable}` → `{{variable}}` (react-i18next double-brace syntax)
 - [x] ComparisonPanel reloads on every visit — replaced `useMutation` (no cache) with `useQuery` (`staleTime: Infinity`)
 - [x] Markdown rendered literally — added `react-markdown` with custom Tailwind component map
-- [x] Sobre C / Audit slow first load — both queries prefetched from `App.tsx` on mount
+- [x] Audit slow first load — query prefetched from `App.tsx` on mount
 - [x] Audit stale after submission — `queryClient.invalidateQueries(['audit'])` called post-submit
 - [x] `activeEval` reference instability — wrapped in `useMemo`
 
@@ -77,10 +90,13 @@ AI-assisted procurement evaluation workbench for the Generalitat de Catalunya (C
 ## Next steps
 
 ### Hardening
-- [ ] Replace SQLite with PostgreSQL for production multi-user concurrency
-- [ ] Add authentication (evaluator login, role-based access for sign-off)
+- [x] PostgreSQL (Supabase) for audit log, plans, and vector store — done
+- [x] Site-level password gate on the deployed app — done
+- [ ] Per-evaluator authentication / identity (current gate is a shared password; evaluator ID is still free text)
+- [ ] Role-based access for sign-off
 - [ ] Rate-limit the `/evaluate` endpoint per evaluator session
 - [ ] Optimistic locking — prevent two evaluators from submitting conflicting scores for the same tender
+- [ ] Fix the Vercel env-var pipeline (repo likely linked to two projects) so secrets don't need to be hardcoded
 
 ### Evaluation quality
 - [ ] Allow evaluators to add freetext annotations per cell (currently score only)
@@ -104,12 +120,12 @@ AI-assisted procurement evaluation workbench for the Generalitat de Catalunya (C
 
 | Concern | Current state | Production target |
 |---|---|---|
-| Authentication | Free-text evaluator ID | VALID / IdCAT / Cl@ve (Generalitat identity) |
+| Authentication | Shared site password + free-text evaluator ID | VALID / IdCAT / Cl@ve (Generalitat identity) |
 | Data isolation | `tender_id` filter in RAG | Tenant-isolated database per procurement body |
-| Audit immutability | Append-only SQLite | PostgreSQL + WAL + signed export |
+| Audit immutability | Supabase PostgreSQL (append-only writes) | Managed Postgres + WAL + signed export |
 | LLM traceability | temperature=0, prompt stored in audit | Full model card + Annex III conformity assessment |
 | Sovereignty | Mistral API (external) | AINA (BSC) — native Catalan, on-premises |
-| GDPR | Synthetic data only | Legal review before loading real supplier docs |
+| GDPR | Real CTTI tender docs (PDF) | Legal review for supplier PII |
 | Accessibility | Basic Tailwind | axe-core audit + ARIA annotations |
 
 ---
@@ -127,14 +143,14 @@ All LLM calls use `mistral-large-latest` at temperature=0 via `langchain-mistral
 # Install dependencies
 pip install -r requirements.txt
 
-# Build / rebuild FAISS index (run after adding or replacing any data file)
-python -m rag.indexer
+# Requires .env with MISTRAL_API_KEY and DATABASE_URL (Supabase pooler string)
 
-# Start API server (development, hot-reload)
-uvicorn api.main:app --reload --port 8000
+# Index a tender's setup docs (PCAP + PPTP) into pgvector — run once per tender
+python -m rag.indexer setup ctti_2026_36
 
-# Run backend tests
-pytest
+# Start API server (development, hot-reload).
+# Proposal PDFs are ingested automatically on startup (SHA-256 dedup skips unchanged files).
+PYTHONUNBUFFERED=1 python -m uvicorn api.main:app --reload --port 8000
 ```
 
 ### Frontend
@@ -157,9 +173,16 @@ npm run build
 npm run preview
 ```
 
-### Database
+### Database (Supabase PostgreSQL)
 ```bash
-# The audit database is created automatically on first API startup.
-# To reset it during development:
-rm db/audit.db
+# Tables: langchain_pg_embedding (pgvector), audit_log, tender_plans, indexed_documents.
+# Create them via the SQL in README.md → "Database Schema (Supabase)".
+# To force re-ingestion of a file, delete its row from indexed_documents (or TRUNCATE it).
+```
+
+### Deployment / access
+```bash
+# Change the site access password — update PASSWORD_SHA256 in BOTH middleware files:
+printf '%s' 'newpassword' | shasum -a 256
+# then paste the hash into middleware.ts and frontend/middleware.ts
 ```
