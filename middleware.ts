@@ -33,7 +33,9 @@ export default function middleware(request: Request): Response {
   // IFF this middleware is actually executing. Used to tell "middleware not
   // detected" apart from "middleware runs but BASIC_AUTH_PASSWORD unset".
   if (new URL(request.url).pathname === '/__authcheck') {
-    return new Response('gate-active', { status: 401 })
+    // Reports only whether the var is PRESENT at runtime — never its value.
+    const state = process.env.BASIC_AUTH_PASSWORD ? 'configured' : 'unset'
+    return new Response(`gate-active:${state}`, { status: 401 })
   }
 
   const expected = process.env.BASIC_AUTH_PASSWORD
