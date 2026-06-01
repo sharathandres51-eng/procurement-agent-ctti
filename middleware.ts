@@ -29,6 +29,13 @@ function proceed(): Response {
 }
 
 export default function middleware(request: Request): Response {
+  // Diagnostic probe: hitting /__authcheck always returns a distinctive 401
+  // IFF this middleware is actually executing. Used to tell "middleware not
+  // detected" apart from "middleware runs but BASIC_AUTH_PASSWORD unset".
+  if (new URL(request.url).pathname === '/__authcheck') {
+    return new Response('gate-active', { status: 401 })
+  }
+
   const expected = process.env.BASIC_AUTH_PASSWORD
 
   // No password configured → gate disabled, let everyone through.
