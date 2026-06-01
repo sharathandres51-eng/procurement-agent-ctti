@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { fetchTenders } from './api/tenders'
 import { fetchAuditEntries } from './api/audit'
@@ -115,6 +115,8 @@ export default function App() {
       onTenderChange={handleTenderChange}
     >
       <Routes>
+        {/* Land on Sobre A by default — administrative qualification comes first. */}
+        <Route path="/" element={<Navigate to="/sobre-a" replace />} />
         <Route
           path="/sobre-a"
           element={
@@ -127,7 +129,7 @@ export default function App() {
           }
         />
         <Route
-          path="/"
+          path="/sobre-b"
           element={
             <Dashboard
               tender={activeTender}

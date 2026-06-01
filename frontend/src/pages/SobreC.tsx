@@ -337,7 +337,7 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
               <div className="p-8 text-center">
                 <p className="text-sm text-gray-600">
                   Complete the evaluation on the{' '}
-                  <a href="/" className="text-[#0057A8] hover:underline font-medium">Dashboard tab</a>
+                  <a href="/sobre-b" className="text-[#0057A8] hover:underline font-medium">Sobre B tab</a>
                   {' '}and enter all scores to see the combined ranking.
                 </p>
               </div>

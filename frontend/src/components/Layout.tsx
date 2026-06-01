@@ -60,7 +60,7 @@ export default function Layout({
           <NavLink to="/sobre-a" className={navLinkClass}>
             {t('tab_sobre_a')}
           </NavLink>
-          <NavLink to="/" end className={navLinkClass}>
+          <NavLink to="/sobre-b" className={navLinkClass}>
             {t('tab_sobre_b')}
           </NavLink>
           <NavLink to="/sobre-c" className={navLinkClass}>
