@@ -272,7 +272,7 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
                   </table>
                 </div>
 
-                <div className="mx-6 mb-4 mt-3 p-4 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">
+                <div className="mx-6 mb-4 mt-3 p-4 bg-green-50 border border-green-200 rounded-xl text-sm font-semibold text-green-700">
                   🏆 {t('ranking_winner', {
                     name:  combinedWinner ? calcResult.results[combinedWinner].name : '-',
                     total: combinedWinner
