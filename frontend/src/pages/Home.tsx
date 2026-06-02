@@ -22,8 +22,8 @@ export default function Home({ tenders, onSelectTender }: HomeProps) {
     {
       key: 'a',
       icon: ClipboardCheck,
-      accent: 'text-emerald-600 bg-emerald-50 border-emerald-200',
-      bar: 'bg-emerald-500',
+      accent: 'text-[#C8372A] bg-[#C8372A]/10 border-[#C8372A]/25',
+      bar: 'bg-[#C8372A]',
       title: t('home_a_title'),
       method: t('home_a_method'),
       desc: t('home_a_desc'),
@@ -34,7 +34,7 @@ export default function Home({ tenders, onSelectTender }: HomeProps) {
     {
       key: 'b',
       icon: Bot,
-      accent: 'text-[#A81B0F] bg-[#A81B0F]/10 border-[#A81B0F]/20',
+      accent: 'text-[#A81B0F] bg-[#A81B0F]/10 border-[#A81B0F]/25',
       bar: 'bg-[#A81B0F]',
       title: t('home_b_title'),
       method: t('home_b_method'),
@@ -50,8 +50,8 @@ export default function Home({ tenders, onSelectTender }: HomeProps) {
     {
       key: 'c',
       icon: Calculator,
-      accent: 'text-amber-600 bg-amber-50 border-amber-200',
-      bar: 'bg-amber-500',
+      accent: 'text-[#7A1208] bg-[#7A1208]/10 border-[#7A1208]/25',
+      bar: 'bg-[#7A1208]',
       title: t('home_c_title'),
       method: t('home_c_method'),
       desc: t('home_c_desc'),
