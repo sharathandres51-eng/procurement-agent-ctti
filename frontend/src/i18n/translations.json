@@ -146,7 +146,11 @@
     "home_applications_label": "applications",
     "home_open_tender": "Open",
     "sobre_a_admitted_preview": "{{count}} supplier(s) will proceed to Sobre B and Sobre C: {{names}}.",
-    "sobre_a_none_admitted_warning": "Mark at least one supplier as passing all criteria before locking Sobre A."
+    "sobre_a_none_admitted_warning": "Mark at least one supplier as passing all criteria before locking Sobre A.",
+    "declared_caption": "Declared values from each supplier's Sobre C envelope. Scores are computed automatically by the proportionality formula.",
+    "criterion_col": "Criterion",
+    "max_direction_col": "Max / Direction",
+    "ranking_need_sobre_b": "Complete and submit the evaluation on"
   },
   "es": {
     "lang_label": "Idioma",
@@ -295,7 +299,11 @@
     "home_applications_label": "solicitudes",
     "home_open_tender": "Abrir",
     "sobre_a_admitted_preview": "{{count}} licitador(es) pasarán al Sobre B y al Sobre C: {{names}}.",
-    "sobre_a_none_admitted_warning": "Marque al menos un licitador como apto en todos los criterios antes de bloquear el Sobre A."
+    "sobre_a_none_admitted_warning": "Marque al menos un licitador como apto en todos los criterios antes de bloquear el Sobre A.",
+    "declared_caption": "Valores declarados del sobre C de cada licitador. Las puntuaciones se calculan automáticamente mediante la fórmula de proporcionalidad.",
+    "criterion_col": "Criterio",
+    "max_direction_col": "Máx. / Dirección",
+    "ranking_need_sobre_b": "Complete y envíe la evaluación en"
   },
   "ca": {
     "lang_label": "Idioma",
@@ -444,6 +452,10 @@
     "home_applications_label": "sol·licituds",
     "home_open_tender": "Obrir",
     "sobre_a_admitted_preview": "{{count}} licitador(s) passaran al Sobre B i al Sobre C: {{names}}.",
-    "sobre_a_none_admitted_warning": "Marqueu almenys un licitador com a apte en tots els criteris abans de bloquejar el Sobre A."
+    "sobre_a_none_admitted_warning": "Marqueu almenys un licitador com a apte en tots els criteris abans de bloquejar el Sobre A.",
+    "declared_caption": "Valors declarats del sobre C de cada licitador. Les puntuacions es calculen automàticament mitjançant la fórmula de proporcionalitat.",
+    "criterion_col": "Criteri",
+    "max_direction_col": "Màx. / Direcció",
+    "ranking_need_sobre_b": "Completeu i envieu l'avaluació a"
   }
 }

@@ -126,6 +126,28 @@ SOBRE_C_CRITERIA: dict[str, dict[str, dict]] = {
 }
 
 
+# Stored declared values per tender: { supplier_id: { field: value } }.
+# These are the figures from each supplier's Sobre C economic envelope, used to
+# render the automatic scoring board (synthetic, fictional figures).
+SOBRE_C_DECLARED: dict[str, dict[str, dict[str, float]]] = {
+    "ctti_2026_36": {
+        "supplier_a": {"price_eur": 487000, "ans_improvement_hours": 2, "manufacturer_services_days": 15, "training_days": 10, "energy_kwh_per_node": 3.2, "warranty_resolution_hours": 8},
+        "supplier_b": {"price_eur": 523000, "ans_improvement_hours": 4, "manufacturer_services_days": 20, "training_days": 8,  "energy_kwh_per_node": 2.8, "warranty_resolution_hours": 6},
+        "supplier_c": {"price_eur": 561000, "ans_improvement_hours": 3, "manufacturer_services_days": 12, "training_days": 12, "energy_kwh_per_node": 3.5, "warranty_resolution_hours": 10},
+    },
+    "ctti_2026_1": {
+        "supplier_a": {"price_eur": 412000, "bandwidth_gbps": 10, "migration_weeks": 14, "uptime_pct": 99.9,  "support_response_hours": 4},
+        "supplier_b": {"price_eur": 388000, "bandwidth_gbps": 20, "migration_weeks": 10, "uptime_pct": 99.95, "support_response_hours": 2},
+        "supplier_c": {"price_eur": 445000, "bandwidth_gbps": 8,  "migration_weeks": 16, "uptime_pct": 99.8,  "support_response_hours": 6},
+    },
+    "ctti_2026_5": {
+        "supplier_a": {"price_eur": 300013, "implementation_weeks": 10, "training_days": 48, "storage_gb": 30, "sla_response_hours": 123},
+        "supplier_b": {"price_eur": 300000, "implementation_weeks": 2,  "training_days": 37, "storage_gb": 52, "sla_response_hours": 33},
+        "supplier_c": {"price_eur": 312000, "implementation_weeks": 6,  "training_days": 40, "storage_gb": 45, "sla_response_hours": 24},
+    },
+}
+
+
 @router.get("/{tender_id}/sobre-c/criteria", response_model=SobreCCriteriaResponse)
 def get_sobre_c_criteria(tender_id: str):
     if tender_id not in TENDER_REGISTRY:
@@ -139,6 +161,7 @@ def get_sobre_c_criteria(tender_id: str):
         tender_id=tender_id,
         total_points=total_points,
         criteria=criteria,
+        declared=SOBRE_C_DECLARED.get(tender_id, {}),
     )
 
 

@@ -104,6 +104,9 @@ class SobreCCriteriaResponse(BaseModel):
     tender_id: str
     total_points: float
     criteria: dict[str, SobreCCriterionDef]
+    # Stored declared values per supplier (supplier_id -> field -> value), so
+    # the frontend can display an automatic scoring board without manual entry.
+    declared: dict[str, dict[str, float]] = {}
 
 
 class SobreCCalculateRequest(BaseModel):

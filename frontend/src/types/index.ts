@@ -82,6 +82,8 @@ export interface SobreCCriteriaResponse {
   tender_id: string
   total_points: number
   criteria: Record<string, SobreCCriterionDef>
+  // Stored declared values per supplier (supplier_id -> field -> value)
+  declared: Record<string, Record<string, number>>
 }
 
 export interface SobreCCriterionDetail {

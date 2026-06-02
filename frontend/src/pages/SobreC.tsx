@@ -1,10 +1,9 @@
-import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { fetchSobreCCriteria, calculateSobreC } from '../api/sobreC'
 import { fetchPlan } from '../api/tenders'
 import Spinner from '../components/Spinner'
-import type { TenderSummary, TenderEvalState, SobreCResponse } from '../types'
+import type { TenderSummary, TenderEvalState } from '../types'
 
 interface SobreCProps {
   tender: TenderSummary
@@ -15,9 +14,24 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
   const { t } = useTranslation()
   const { results, scores } = evalState
 
+  const supplierIds = tender.suppliers.map(s => s.id)
+
   const { data: criteriaData, isLoading, error } = useQuery({
     queryKey: ['sobre-c-criteria', tender.tender_id],
     queryFn: () => fetchSobreCCriteria(tender.tender_id),
+  })
+
+  // Automatically score the stored declared values for the (admitted) suppliers.
+  // The proportionality formula runs server-side; no manual entry needed.
+  const { data: calcResult, isLoading: calcLoading } = useQuery({
+    queryKey: ['sobre-c-calc', tender.tender_id, supplierIds.join(',')],
+    enabled: !!criteriaData && supplierIds.length > 0,
+    staleTime: Infinity,
+    queryFn: () => {
+      const declared: Record<string, Record<string, number>> = {}
+      for (const sid of supplierIds) declared[sid] = criteriaData!.declared[sid] ?? {}
+      return calculateSobreC(tender.tender_id, declared)
+    },
   })
 
   const { data: plan } = useQuery({
@@ -26,55 +40,11 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
     enabled: !!results,
   })
 
-  // inputValues: field → supplierId → raw string from the input element
-  const [inputValues, setInputValues] = useState<Record<string, Record<string, string>>>({})
-  const [calcResult, setCalcResult] = useState<SobreCResponse | null>(null)
-  const [isCalculating, setIsCalculating] = useState(false)
-  const [calcError, setCalcError] = useState<string | null>(null)
-
-  if (isLoading) return <Spinner label="Loading Sobre C criteria…" />
-  if (error)     return <p className="text-red-500 text-sm">Failed to load Sobre C criteria.</p>
+  if (isLoading)     return <Spinner label="Loading Sobre C scores…" />
+  if (error)         return <p className="text-red-500 text-sm">Failed to load Sobre C criteria.</p>
   if (!criteriaData) return null
 
-  const supplierIds    = tender.suppliers.map(s => s.id)
   const criteriaFields = Object.keys(criteriaData.criteria)
-
-  const allEntered = supplierIds.every(sid =>
-    criteriaFields.every(f => {
-      const v = inputValues[f]?.[sid]
-      return v !== undefined && v.trim() !== ''
-    })
-  )
-
-  const handleInput = (field: string, supplierId: string, value: string) => {
-    setInputValues(prev => ({ ...prev, [field]: { ...prev[field], [supplierId]: value } }))
-    setCalcResult(null)
-  }
-
-  const handleCalculate = async () => {
-    setIsCalculating(true)
-    setCalcError(null)
-    try {
-      const declared: Record<string, Record<string, number>> = {}
-      for (const sid of supplierIds) {
-        declared[sid] = {}
-        for (const f of criteriaFields) {
-          const raw = inputValues[f]?.[sid]
-          const num = parseFloat(raw ?? '')
-          if (Number.isNaN(num)) {
-            throw new Error(`Invalid number for ${f} / ${sid}`)
-          }
-          declared[sid][f] = num
-        }
-      }
-      const result = await calculateSobreC(tender.tender_id, declared)
-      setCalcResult(result)
-    } catch {
-      setCalcError('Calculation failed. Check that all values are valid numbers.')
-    } finally {
-      setIsCalculating(false)
-    }
-  }
 
   // ── Sobre B helpers ────────────────────────────────────────────────────────
   const getScoreValue = (supplierId: string, criterionId: string, subId?: string): number => {
@@ -126,23 +96,21 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
         ℹ️ {t('sobre_c_info')}
       </div>
 
-      {/* ── Declared values input form ──────────────────────────────────────── */}
+      {/* ── Declared values (read-only) ─────────────────────────────────────── */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider">
             {t('declared_subheader')}
           </h2>
-          <p className="text-xs text-gray-500 mt-1">
-            Enter the declared values from each supplier's Sobre C envelope.
-          </p>
+          <p className="text-xs text-gray-500 mt-1">{t('declared_caption')}</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
               <tr className="bg-gray-50 text-gray-600 uppercase tracking-wider">
-                <th className="text-left px-6 py-3 w-64">Criterion</th>
-                <th className="text-center px-4 py-3 text-gray-400 font-normal normal-case whitespace-nowrap">
-                  Max / Direction
+                <th className="text-left px-6 py-3 w-64">{t('criterion_col')}</th>
+                <th className="text-center px-4 py-3 text-gray-500 font-normal normal-case whitespace-nowrap">
+                  {t('max_direction_col')}
                 </th>
                 {tender.suppliers.map(s => (
                   <th key={s.id} className="text-right px-6 py-3">{s.name}</th>
@@ -157,26 +125,13 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
                     <td className="px-6 py-3 text-gray-800 font-medium leading-snug">
                       {def.label}
                     </td>
-                    <td className="px-4 py-3 text-center text-gray-400 font-mono whitespace-nowrap">
+                    <td className="px-4 py-3 text-center text-gray-500 font-mono whitespace-nowrap">
                       {def.max_points} pts · {def.direction === 'lower' ? '↓' : '↑'}
                     </td>
                     {tender.suppliers.map(s => (
-                      <td key={s.id} className="px-6 py-3 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <input
-                            type="number"
-                            step="any"
-                            min="0"
-                            placeholder="0"
-                            value={inputValues[field]?.[s.id] ?? ''}
-                            onChange={e => handleInput(field, s.id, e.target.value)}
-                            className="w-28 text-right border border-gray-300 rounded-lg px-2 py-1.5
-                                       text-xs font-mono text-gray-900 placeholder:text-gray-400
-                                       focus:outline-none focus:ring-2
-                                       focus:ring-[#A81B0F] focus:border-transparent"
-                          />
-                          <span className="text-gray-400 text-xs w-8 text-left">{def.unit}</span>
-                        </div>
+                      <td key={s.id} className="px-6 py-3 text-right text-gray-900 font-mono">
+                        {criteriaData.declared[s.id]?.[field] ?? '-'}
+                        <span className="text-gray-400 ml-1.5">{def.unit}</span>
                       </td>
                     ))}
                   </tr>
@@ -185,28 +140,16 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
             </tbody>
           </table>
         </div>
-        <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
+        <div className="px-6 py-3 border-t border-gray-100">
           <p className="text-xs text-gray-400">
             {criteriaData.total_points} points total · Proportionality formula (Directriu 1/2020)
           </p>
-          <button
-            onClick={handleCalculate}
-            disabled={!allEntered || isCalculating}
-            className={`px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${
-              allEntered && !isCalculating
-                ? 'bg-[#A81B0F] text-white hover:bg-[#8A160C] cursor-pointer'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-            }`}
-          >
-            {isCalculating ? 'Calculating…' : 'Calculate Scores'}
-          </button>
         </div>
-        {calcError && (
-          <p className="text-red-500 text-xs px-6 pb-4">{calcError}</p>
-        )}
       </div>
 
-      {/* ── Score breakdown - shown after calculation ───────────────────────── */}
+      {calcLoading && <Spinner label="Calculating Sobre C scores…" />}
+
+      {/* ── Score breakdown ──────────────────────────────────────────────────── */}
       {calcResult && (
         <>
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -342,9 +285,8 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
             ) : (
               <div className="p-8 text-center">
                 <p className="text-sm text-gray-600">
-                  Complete the evaluation on the{' '}
-                  <a href="/sobre-b" className="text-[#A81B0F] hover:underline font-medium">Sobre B tab</a>
-                  {' '}and enter all scores to see the combined ranking.
+                  {t('ranking_need_sobre_b')}{' '}
+                  <a href="/sobre-b" className="text-[#A81B0F] hover:underline font-medium">{t('tab_sobre_b')}</a>.
                 </p>
               </div>
             )}
