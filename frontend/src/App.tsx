@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { fetchTenders } from './api/tenders'
 import { fetchAuditEntries } from './api/audit'
 import Layout from './components/Layout'
+import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
 import AuditLog from './pages/AuditLog'
 import SobreA from './pages/SobreA'
@@ -115,8 +116,13 @@ export default function App() {
       onTenderChange={handleTenderChange}
     >
       <Routes>
-        {/* Land on Sobre A by default — administrative qualification comes first. */}
-        <Route path="/" element={<Navigate to="/sobre-a" replace />} />
+        {/* Land on the home page — process roadmap + tender overview. */}
+        <Route
+          path="/"
+          element={
+            <Home tenders={tenders} onSelectTender={handleTenderChange} />
+          }
+        />
         <Route
           path="/sobre-a"
           element={

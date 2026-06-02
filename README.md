@@ -12,7 +12,7 @@ AI-assisted tender evaluation workbench for the Generalitat de Catalunya (CTTI).
 | **Sobre B** | `/sobre-b` | 49 pts | Qualitative AI-assisted evaluation |
 | **Sobre C** | `/sobre-c` | 51 pts | Deterministic price formula (PCAP Annex 2.b) |
 
-Three real CTTI tenders are bundled. The combined Sobre B + Sobre C score produces the final 100-pt ranking. The app opens on **Sobre A** by default (`/` redirects to `/sobre-a`), reflecting the order of the procurement process — Sobre A must be locked before Sobre B can run.
+Three real CTTI tenders are bundled. The combined Sobre B + Sobre C score produces the final 100-pt ranking. The app opens on a **home page** (`/`) that shows the evaluation roadmap (the three envelopes, the agents involved, and the steps for each) and the bundled tenders with their application counts. Sobre A must be locked before Sobre B can run.
 
 ---
 
@@ -22,6 +22,7 @@ Three real CTTI tenders are bundled. The combined Sobre B + Sobre C score produc
 flowchart TD
     subgraph FE["🖥️  React Frontend  —  Vite · TypeScript · Tailwind CSS v4"]
         direction LR
+        HM["Home\n/\nRoadmap + tenders"]
         SA["Sobre A\n/sobre-a\nAdmin checklist"]
         SBD["Sobre B\n/sobre-b\nSSE evaluation grid"]
         SC["Sobre C\n/sobre-c\nPrice input form"]
@@ -272,6 +273,10 @@ The deployed frontend is gated by a Vercel Edge Middleware password login (`midd
 ---
 
 ## Usage Walkthrough
+
+### Home (`/`)
+
+Landing page after login. Shows the **evaluation roadmap** — the three envelopes (Sobre A / B / C) with the method, the AI agents involved (Planning, Retrieval, Analysis for Sobre B; none for the human/deterministic stages), and the steps for each — plus the bundled **tenders** with their application (supplier) counts. Click a tender card to select it and jump to Sobre A.
 
 ### Tab 1 — Sobre A (`/sobre-a`)
 

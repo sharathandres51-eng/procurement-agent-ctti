@@ -33,8 +33,8 @@ export default function Layout({
       {/* ── Top bar ── */}
       <header className="bg-slate-900 h-14 shrink-0 flex items-stretch px-6 gap-6">
 
-        {/* Brand */}
-        <div className="flex items-center gap-2 shrink-0 mr-2">
+        {/* Brand — links home */}
+        <NavLink to="/" className="flex items-center gap-2 shrink-0 mr-2">
           <img
             src="/ctti_logo.jpeg"
             alt="CTTI"
@@ -42,7 +42,7 @@ export default function Layout({
           />
           <span className="text-sm font-bold text-white uppercase tracking-widest">CTTI</span>
           <span className="text-xs text-slate-500 hidden sm:block">{t('app_subtitle')}</span>
-        </div>
+        </NavLink>
 
         {/* Tender selector */}
         <div className="flex items-center shrink-0">
@@ -61,6 +61,9 @@ export default function Layout({
 
         {/* Nav tabs */}
         <nav className="flex items-stretch flex-1 gap-1">
+          <NavLink to="/" end className={navLinkClass}>
+            {t('tab_home')}
+          </NavLink>
           <NavLink to="/sobre-a" className={navLinkClass}>
             {t('tab_sobre_a')}
           </NavLink>

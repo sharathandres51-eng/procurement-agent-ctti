@@ -21,12 +21,18 @@ AI-assisted procurement evaluation workbench for the Generalitat de Catalunya (C
 ### React + FastAPI architecture (replaced Streamlit prototype)
 - [x] FastAPI backend with modular routers: `tenders`, `evaluate` (SSE), `sobre_c`, `compare`, `source_chunks`, `audit`
 - [x] React 19 + TypeScript + Vite 8 + Tailwind CSS v4 frontend
-- [x] React Router v7 — `/` redirects to `/sobre-a` (default landing); `/sobre-b`, `/sobre-c`, `/audit`
+- [x] React Router v7 — `/` is the Home page (default landing); `/sobre-a`, `/sobre-b`, `/sobre-c`, `/audit`
 - [x] React Query v5 — global `staleTime: 5 min`; audit prefetched on app load
 - [x] Eval state lifted in `App.tsx` (`TenderEvalState`) — survives tab navigation per tender
 - [x] Streaming evaluation via `fetch()` + ReadableStream with functional updater pattern (no stale closures)
 - [x] `useMemo` on `activeEval` — prevents downstream re-renders when eval state is uninitialised
 - [x] Error boundary (`components/ErrorBoundary.tsx`) — render-time throws show a readable error instead of a blank screen
+
+### Home page (`/`)
+- [x] Landing page after login (`pages/Home.tsx`)
+- [x] Roadmap of the three envelopes — method, AI agents involved (Planning / Retrieval / Analysis for Sobre B), and per-stage steps
+- [x] Tender cards with application (supplier) counts; clicking selects the tender and navigates to Sobre A
+- [x] "Home" nav tab + clickable CTTI brand logo; full EN / ES / CA i18n (`home_*` keys)
 
 ### Sobre A tab (`/sobre-a`)
 - [x] Administrative pass/fail checklist — 5 PCAP criteria per supplier
