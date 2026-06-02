@@ -243,7 +243,7 @@ export default function AuditLog({ tenders }: AuditLogProps) {
                                   </td>
                                 )
                               })}
-                              <td className="px-4 py-2 text-right text-[#0057A8] font-mono font-bold">
+                              <td className="px-4 py-2 text-right text-[#A81B0F] font-mono font-bold">
                                 {total.toFixed(1)}
                               </td>
                             </tr>

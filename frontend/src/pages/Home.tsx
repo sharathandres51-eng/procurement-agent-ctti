@@ -34,8 +34,8 @@ export default function Home({ tenders, onSelectTender }: HomeProps) {
     {
       key: 'b',
       icon: Bot,
-      accent: 'text-[#0057A8] bg-[#0057A8]/10 border-[#0057A8]/20',
-      bar: 'bg-[#0057A8]',
+      accent: 'text-[#A81B0F] bg-[#A81B0F]/10 border-[#A81B0F]/20',
+      bar: 'bg-[#A81B0F]',
       title: t('home_b_title'),
       method: t('home_b_method'),
       desc: t('home_b_desc'),
@@ -118,7 +118,7 @@ export default function Home({ tenders, onSelectTender }: HomeProps) {
                       <div className="space-y-1.5">
                         {s.agents.map(a => (
                           <div key={a.name} className="flex items-start gap-2">
-                            <Bot size={13} className="text-[#0057A8] mt-0.5 shrink-0" />
+                            <Bot size={13} className="text-[#A81B0F] mt-0.5 shrink-0" />
                             <div>
                               <p className="text-xs font-medium text-gray-800">{a.name}</p>
                               <p className="text-[11px] text-gray-500 leading-snug">{a.desc}</p>
@@ -168,19 +168,19 @@ export default function Home({ tenders, onSelectTender }: HomeProps) {
             <button
               key={tender.tender_id}
               onClick={() => openTender(tender.tender_id)}
-              className="group text-left bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:border-[#0057A8]/40 hover:shadow-md transition-all"
+              className="group text-left bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:border-[#A81B0F]/40 hover:shadow-md transition-all"
             >
               <div className="flex items-baseline justify-between gap-2">
-                <p className="text-[11px] font-mono font-semibold text-[#0057A8]">
+                <p className="text-[11px] font-mono font-semibold text-[#A81B0F]">
                   {tender.tender_id.toUpperCase().replace(/_/g, '-')}
                 </p>
                 <ArrowRight
                   size={15}
-                  className="text-gray-300 group-hover:text-[#0057A8] group-hover:translate-x-0.5 transition-all"
+                  className="text-gray-300 group-hover:text-[#A81B0F] group-hover:translate-x-0.5 transition-all"
                 />
               </div>
               <h3 className="text-sm font-semibold text-gray-900 mt-1 leading-snug">
-                {tender.label.replace(/^CTTI-[0-9-]+\s*[—-]\s*/, '')}
+                {tender.label.replace(/^CTTI-[0-9-]+\s*-\s*/, '')}
               </h3>
               <div className="mt-4 flex items-baseline gap-1.5">
                 <span className="text-2xl font-bold text-gray-900 font-mono">

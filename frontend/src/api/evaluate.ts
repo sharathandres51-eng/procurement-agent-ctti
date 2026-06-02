@@ -55,7 +55,7 @@ export function streamEvaluation(
                 onEvent(payload as EvaluationProgressEvent)
               }
             } catch {
-              // malformed line — skip
+              // malformed line - skip
             }
           }
         }

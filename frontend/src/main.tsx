@@ -10,7 +10,7 @@ import ErrorBoundary from './components/ErrorBoundary'
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes — plans and tenders don't change often
+      staleTime: 1000 * 60 * 5, // 5 minutes - plans and tenders don't change often
       retry: 1,
     },
   },

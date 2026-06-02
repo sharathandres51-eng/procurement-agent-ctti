@@ -162,12 +162,12 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
                             type="number"
                             step="any"
                             min="0"
-                            placeholder="—"
+                            placeholder="-"
                             value={inputValues[field]?.[s.id] ?? ''}
                             onChange={e => handleInput(field, s.id, e.target.value)}
                             className="w-28 text-right border border-gray-200 rounded-lg px-2 py-1.5
                                        text-xs font-mono focus:outline-none focus:ring-2
-                                       focus:ring-[#0057A8] focus:border-transparent"
+                                       focus:ring-[#A81B0F] focus:border-transparent"
                           />
                           <span className="text-gray-400 text-xs w-8 text-left">{def.unit}</span>
                         </div>
@@ -188,7 +188,7 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
             disabled={!allEntered || isCalculating}
             className={`px-5 py-2 rounded-lg text-sm font-semibold transition-colors ${
               allEntered && !isCalculating
-                ? 'bg-[#0057A8] text-white hover:bg-[#0046A0] cursor-pointer'
+                ? 'bg-[#A81B0F] text-white hover:bg-[#8A160C] cursor-pointer'
                 : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             }`}
           >
@@ -200,7 +200,7 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
         )}
       </div>
 
-      {/* ── Score breakdown — shown after calculation ───────────────────────── */}
+      {/* ── Score breakdown - shown after calculation ───────────────────────── */}
       {calcResult && (
         <>
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -217,7 +217,7 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
                     <th className="text-left px-6 py-3">{t('supplier_col')}</th>
                     {criteriaFields.map(f => (
                       <th key={f} className="text-right px-6 py-3">
-                        {criteriaData.criteria[f].label.split('—')[0].trim()}
+                        {criteriaData.criteria[f].label.split('-')[0].trim()}
                         <span className="text-gray-400 normal-case font-normal">
                           {' '}/ {criteriaData.criteria[f].max_points}
                         </span>
@@ -248,7 +248,7 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
                           {calcResult.results[sid].criteria[f]?.score?.toFixed(2) ?? '-'}
                         </td>
                       ))}
-                      <td className="px-6 py-3 text-right font-bold text-[#0057A8] font-mono">
+                      <td className="px-6 py-3 text-right font-bold text-[#A81B0F] font-mono">
                         {calcResult.results[sid].total.toFixed(2)}
                       </td>
                     </tr>
@@ -313,7 +313,7 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
                               {row.sobreC.toFixed(2)}
                             </td>
                             <td className={`px-6 py-3 text-right font-bold font-mono ${
-                              i === 0 ? 'text-[#0057A8] text-base' : 'text-gray-600'
+                              i === 0 ? 'text-[#A81B0F] text-base' : 'text-gray-600'
                             }`}>
                               {row.combined.toFixed(2)}
                             </td>
@@ -337,7 +337,7 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
               <div className="p-8 text-center">
                 <p className="text-sm text-gray-600">
                   Complete the evaluation on the{' '}
-                  <a href="/sobre-b" className="text-[#0057A8] hover:underline font-medium">Sobre B tab</a>
+                  <a href="/sobre-b" className="text-[#A81B0F] hover:underline font-medium">Sobre B tab</a>
                   {' '}and enter all scores to see the combined ranking.
                 </p>
               </div>

@@ -127,7 +127,7 @@ export default function SobreA({ tender, sobreA, sobreALocked, onUpdate }: Sobre
       {/* ── Step 1: Review documents ──────────────────────────────────────────── */}
       <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100">
-          <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider border-l-4 border-[#0057A8] pl-3">
+          <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider border-l-4 border-[#A81B0F] pl-3">
             {t('sobre_a_step1')}
           </h2>
           <p className="text-xs text-gray-500 mt-1 pl-3.5">{t('sobre_a_step1_caption')}</p>
@@ -174,7 +174,7 @@ export default function SobreA({ tender, sobreA, sobreALocked, onUpdate }: Sobre
                       {!sobreALocked && status !== 'admitted' && (
                         <button
                           onClick={() => passAll(supplier.id)}
-                          className="mt-1 text-[10px] text-[#0057A8] hover:underline"
+                          className="mt-1 text-[10px] text-[#A81B0F] hover:underline"
                         >
                           ✓ {t('sobre_a_pass_all')}
                         </button>
@@ -232,14 +232,14 @@ export default function SobreA({ tender, sobreA, sobreALocked, onUpdate }: Sobre
 
       {/* ── Step 2: Criteria legend ───────────────────────────────────────────── */}
       <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider border-l-4 border-[#0057A8] pl-3 mb-4">
+        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider border-l-4 border-[#A81B0F] pl-3 mb-4">
           {t('sobre_a_step2')}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {SOBRE_A_CRITERIA.map(c => (
             <div key={c.id} className="flex gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
-              <div className="shrink-0 mt-0.5 w-5 h-5 rounded bg-[#0057A8]/10 flex items-center justify-center">
-                <span className="text-[10px] font-bold text-[#0057A8]">
+              <div className="shrink-0 mt-0.5 w-5 h-5 rounded bg-[#A81B0F]/10 flex items-center justify-center">
+                <span className="text-[10px] font-bold text-[#A81B0F]">
                   {SOBRE_A_CRITERIA.indexOf(c) + 1}
                 </span>
               </div>
@@ -254,7 +254,7 @@ export default function SobreA({ tender, sobreA, sobreALocked, onUpdate }: Sobre
 
       {/* ── Step 3: Lock & Sign ───────────────────────────────────────────────── */}
       <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider border-l-4 border-[#0057A8] pl-3 mb-4">
+        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider border-l-4 border-[#A81B0F] pl-3 mb-4">
           {t('sobre_a_step3')}
         </h2>
 
@@ -280,14 +280,14 @@ export default function SobreA({ tender, sobreA, sobreALocked, onUpdate }: Sobre
                 placeholder={t('evaluator_placeholder')}
                 value={evaluatorId}
                 onChange={e => setEvaluatorId(e.target.value)}
-                className="w-full bg-white border border-gray-300 text-gray-800 text-sm rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#0057A8]"
+                className="w-full bg-white border border-gray-300 text-gray-800 text-sm rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#A81B0F]"
               />
             </div>
             <p className="text-xs text-gray-400">{t('sobre_a_sign_caption')}</p>
             <button
               disabled={!evaluatorId || !allReviewed(sobreA, tender.suppliers)}
               onClick={handleLock}
-              className="bg-[#0057A8] hover:bg-[#004a94] disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-sm px-5 py-2 rounded-md transition-colors"
+              className="bg-[#A81B0F] hover:bg-[#8A160C] disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-sm px-5 py-2 rounded-md transition-colors"
             >
               🔒 {t('sobre_a_lock_btn')}
             </button>

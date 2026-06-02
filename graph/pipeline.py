@@ -11,12 +11,12 @@ from agents.planning_agent import load_or_generate_plan
 # ── Tender registry ────────────────────────────────────────────────────────────
 # Add a new tender here and it appears automatically in the UI dropdown.
 # The Planning Agent reads the PCAP from the FAISS index at runtime to
-# generate the evaluation plan — the registry only needs supplier metadata.
+# generate the evaluation plan - the registry only needs supplier metadata.
 
 TENDER_REGISTRY: dict[str, dict] = {
     "ctti_2026_36": {
         "contract_id": "CTTI-2026-36",
-        "label": "CTTI-2026-36 — QKD Infrastructure",
+        "label": "CTTI-2026-36 - QKD Infrastructure",
         "suppliers": [
             {"id": "supplier_a", "name": "QuantumNet Solutions SL"},
             {"id": "supplier_b", "name": "CyberQuantum Iberia SL"},
@@ -25,7 +25,7 @@ TENDER_REGISTRY: dict[str, dict] = {
     },
     "ctti_2026_1": {
         "contract_id": "CTTI-2026-1",
-        "label": "CTTI-2026-1 — Connectivity Migration Support",
+        "label": "CTTI-2026-1 - Connectivity Migration Support",
         "suppliers": [
             {"id": "supplier_a", "name": "ConnecTech Iberia SL"},
             {"id": "supplier_b", "name": "FibraXarxa Partners SA"},
@@ -34,7 +34,7 @@ TENDER_REGISTRY: dict[str, dict] = {
     },
     "ctti_2026_5": {
         "contract_id": "CTTI-2026-5",
-        "label": "CTTI-2026-5 — Museums Collections System",
+        "label": "CTTI-2026-5 - Museums Collections System",
         "suppliers": [
             {"id": "supplier_a", "name": "MuseumSoft Iberia SL"},
             {"id": "supplier_b", "name": "ColeccioTech Partners SA"},
@@ -76,7 +76,7 @@ def run_evaluation(
     if subcriterion:
         query          = subcriterion["query"]
         criterion_id   = subcriterion["id"]
-        criterion_name = f"{criterion['name']} — {subcriterion['name']}"
+        criterion_name = f"{criterion['name']} - {subcriterion['name']}"
         max_points     = subcriterion["points"]
     else:
         query          = criterion["query"]
@@ -138,8 +138,8 @@ def run_all_evaluations(
                 }
                 for sc in criterion["subcriteria"]:
                     print(
-                        f"  {supplier['name']} — "
-                        f"{criterion['name']} — {sc['name']}..."
+                        f"  {supplier['name']} - "
+                        f"{criterion['name']} - {sc['name']}..."
                     )
                     result = run_evaluation(
                         supplier_id=supplier["id"],
@@ -153,7 +153,7 @@ def run_all_evaluations(
                     time.sleep(10)
 
             else:
-                print(f"  {supplier['name']} — {criterion['name']}...")
+                print(f"  {supplier['name']} - {criterion['name']}...")
                 result = run_evaluation(
                     supplier_id=supplier["id"],
                     supplier_name=supplier["name"],

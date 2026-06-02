@@ -1,7 +1,7 @@
 /**
  * middleware.ts (repo root)
  * -------------------------
- * Vercel Edge Middleware — password gate with a custom login page.
+ * Vercel Edge Middleware - password gate with a custom login page.
  *
  * Unlike HTTP Basic Auth (which forces the browser's username+password
  * dialog), this serves a branded password-only login form. On submit, the
@@ -9,7 +9,7 @@
  * cookie holding the password is set so subsequent requests pass through.
  *
  * Security: the hash is safe to commit (not reversible). The cookie holds the
- * plaintext password (HttpOnly, Secure) — equivalent to how Basic Auth keeps
+ * plaintext password (HttpOnly, Secure) - equivalent to how Basic Auth keeps
  * credentials in the browser. A repo reader only has the hash, so cannot forge
  * a valid cookie.
  *
@@ -65,9 +65,9 @@ function loginPage(error = ''): Response {
   h1{font-size:15px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin:0 0 4px}
   p{font-size:12px;color:#94a3b8;margin:0 0 24px}
   input{width:100%;box-sizing:border-box;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 12px;color:#e2e8f0;font-size:14px;outline:none}
-  input:focus{border-color:#0057A8}
-  button{width:100%;margin-top:12px;background:#0057A8;border:none;border-radius:8px;padding:10px;color:#fff;font-weight:600;font-size:14px;cursor:pointer}
-  button:hover{background:#004a94}
+  input:focus{border-color:#A81B0F}
+  button{width:100%;margin-top:12px;background:#A81B0F;border:none;border-radius:8px;padding:10px;color:#fff;font-weight:600;font-size:14px;cursor:pointer}
+  button:hover{background:#8A160C}
   .err{color:#f87171;font-size:12px;margin-top:12px;min-height:14px}
 </style></head>
 <body>
@@ -111,6 +111,6 @@ export default async function middleware(request: Request): Promise<Response> {
     return proceed()
   }
 
-  // Not authenticated — show the login page.
+  // Not authenticated - show the login page.
   return loginPage()
 }

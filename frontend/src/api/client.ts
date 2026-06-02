@@ -4,7 +4,7 @@
  * Axios instance with environment-aware base URL.
  *
  * Resolution order:
- *   1. VITE_API_URL  — if set at build time (Vercel env var), always wins
+ *   1. VITE_API_URL  - if set at build time (Vercel env var), always wins
  *   2. Production build with no env var → the hardcoded Railway backend
  *   3. Development → '/api' so Vite's dev proxy forwards to localhost:8000
  *

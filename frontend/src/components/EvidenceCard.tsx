@@ -67,7 +67,7 @@ export default function EvidenceCard({
           max={maxPoints}
           step={Number.isInteger(maxPoints) ? 1 : 0.5}
           value={score ?? ''}
-          placeholder="—"
+          placeholder="-"
           onChange={e => {
             const raw = e.target.value
             if (raw === '') return

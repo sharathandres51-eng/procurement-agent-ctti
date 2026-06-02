@@ -29,7 +29,7 @@ export default function App() {
   const activeTenderId = selectedTenderId || tenders?.[0]?.tender_id || ''
   const activeTender   = tenders?.find(t => t.tender_id === activeTenderId)
 
-  // Stable reference — only recreates when evalState or activeTenderId changes,
+  // Stable reference - only recreates when evalState or activeTenderId changes,
   // preventing SobreC/AuditLog from getting a new prop object on every render.
   const activeEval = useMemo(
     () => evalState[activeTenderId] ?? {
@@ -116,7 +116,7 @@ export default function App() {
       onTenderChange={handleTenderChange}
     >
       <Routes>
-        {/* Land on the home page — process roadmap + tender overview. */}
+        {/* Land on the home page - process roadmap + tender overview. */}
         <Route
           path="/"
           element={

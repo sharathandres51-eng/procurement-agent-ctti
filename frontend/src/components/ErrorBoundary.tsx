@@ -3,7 +3,7 @@
  * -------------
  * Catches render-time exceptions anywhere in the component tree and shows a
  * readable fallback instead of unmounting React (which would leave only the
- * dark page background visible — a "blank screen").
+ * dark page background visible - a "blank screen").
  *
  * A common trigger in this app: a misconfigured API base URL. If VITE_API_URL
  * is not baked into the build, requests hit /api on the Vercel domain, the SPA

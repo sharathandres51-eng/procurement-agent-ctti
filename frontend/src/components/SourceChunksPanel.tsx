@@ -37,8 +37,8 @@ export default function SourceChunksPanel({
       {/* Panel header */}
       <div className="mb-5">
         <div className="flex items-center gap-2 mb-1">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#0057A8]" />
-          <p className="text-[11px] font-bold text-[#0057A8] uppercase tracking-widest">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#A81B0F]" />
+          <p className="text-[11px] font-bold text-[#A81B0F] uppercase tracking-widest">
             Source Document
           </p>
         </div>
@@ -76,7 +76,7 @@ export default function SourceChunksPanel({
                 className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden"
               >
                 <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 border-b border-gray-100">
-                  <span className="text-[10px] font-bold text-[#0057A8] uppercase tracking-widest">
+                  <span className="text-[10px] font-bold text-[#A81B0F] uppercase tracking-widest">
                     Excerpt {i + 1}
                   </span>
                   <span className="ml-auto text-[10px] text-gray-400 font-mono">

@@ -33,7 +33,7 @@ export default function Layout({
       {/* ── Top bar ── */}
       <header className="bg-slate-900 h-14 shrink-0 flex items-stretch px-6 gap-6">
 
-        {/* Brand — links home */}
+        {/* Brand - links home */}
         <NavLink to="/" className="flex items-center gap-2 shrink-0 mr-2">
           <img
             src="/ctti_logo.jpeg"
@@ -49,7 +49,7 @@ export default function Layout({
           <select
             value={selectedTenderId}
             onChange={e => onTenderChange(e.target.value)}
-            className="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-md px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#0057A8]"
+            className="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-md px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#A81B0F]"
           >
             {tenders.map(td => (
               <option key={td.tender_id} value={td.tender_id}>
@@ -95,7 +95,7 @@ export default function Layout({
                     setLangOpen(false)
                   }}
                   className={`w-full text-left px-3 py-2 text-xs hover:bg-slate-700 transition-colors ${
-                    i18n.language === code ? 'text-[#0057A8] font-semibold' : 'text-slate-300'
+                    i18n.language === code ? 'text-[#A81B0F] font-semibold' : 'text-slate-300'
                   }`}
                 >
                   {label}

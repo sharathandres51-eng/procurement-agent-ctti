@@ -5,7 +5,7 @@
  * indefinitely (staleTime: Infinity) so navigating away from Sobre B and
  * back does NOT re-trigger the LLM call.
  *
- * Uses react-markdown to render the response text properly — the LLM
+ * Uses react-markdown to render the response text properly - the LLM
  * often returns **bold headers** and bullet lists.
  */
 import ReactMarkdown from 'react-markdown'
@@ -22,7 +22,7 @@ interface ComparisonPanelProps {
   evidence: Record<string, string>
 }
 
-// Tailwind component map for react-markdown — no @tailwindcss/typography needed
+// Tailwind component map for react-markdown - no @tailwindcss/typography needed
 const mdComponents: React.ComponentProps<typeof ReactMarkdown>['components'] = {
   p:      ({ children }) => <p className="text-sm text-gray-700 leading-relaxed mb-2 last:mb-0">{children}</p>,
   strong: ({ children }) => <strong className="font-semibold text-gray-800">{children}</strong>,
@@ -56,14 +56,14 @@ export default function ComparisonPanel({
         language:       i18n.language,
         evidence,
       }),
-    staleTime: Infinity,       // deterministic result — never re-fetch for the same inputs
+    staleTime: Infinity,       // deterministic result - never re-fetch for the same inputs
     gcTime:    1000 * 60 * 30, // keep in cache for 30 min
     retry: 1,
   })
 
   return (
     <div className="mt-4 bg-blue-50 border border-blue-100 rounded-xl p-4">
-      <p className="text-[11px] font-semibold text-[#0057A8] uppercase tracking-wider mb-2">
+      <p className="text-[11px] font-semibold text-[#A81B0F] uppercase tracking-wider mb-2">
         🔎 {t('comparison_header', { crit_name: criterionName })}
       </p>
 

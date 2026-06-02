@@ -178,7 +178,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
         setCompletedCells(n => n + 1)
 
         // onResultUpdate applies the updater inside setEvalState's own functional update,
-        // so `prev` is always the latest accumulated results — no stale closure possible.
+        // so `prev` is always the latest accumulated results - no stale closure possible.
         onResultUpdate(prev => {
           const updated = { ...(prev ?? {}) }
           if (!updated[supplier_id]) updated[supplier_id] = {}
@@ -232,7 +232,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
         setReviewSupIdx(i => i + 1)
         setReviewCritIdx(0)
       } else {
-        // All reviewed — exit review mode, show summary/sign
+        // All reviewed - exit review mode, show summary/sign
         setReviewMode(false)
       }
     }
@@ -261,11 +261,11 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
                 <span className="text-gray-400 mx-1.5">·</span>
                 {criterion.name}
               </span>
-              <span className="font-mono text-[#0057A8]">{currentStep} / {totalSteps}</span>
+              <span className="font-mono text-[#A81B0F]">{currentStep} / {totalSteps}</span>
             </div>
             <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
               <div
-                className="bg-[#0057A8] h-1.5 rounded-full transition-all duration-300"
+                className="bg-[#A81B0F] h-1.5 rounded-full transition-all duration-300"
                 style={{ width: `${Math.round((currentStep / totalSteps) * 100)}%` }}
               />
             </div>
@@ -280,7 +280,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
             </button>
             <button
               onClick={goNext}
-              className="text-xs bg-[#0057A8] hover:bg-[#004a94] text-white font-semibold px-4 py-1.5 rounded-lg transition-colors"
+              className="text-xs bg-[#A81B0F] hover:bg-[#8A160C] text-white font-semibold px-4 py-1.5 rounded-lg transition-colors"
             >
               {isLast ? '✅ Finish Review' : 'Next →'}
             </button>
@@ -290,7 +290,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
         {/* ── Split screen ── */}
         <div className="flex-1 grid grid-cols-2 gap-0 overflow-hidden">
 
-          {/* LEFT — AI Analysis */}
+          {/* LEFT - AI Analysis */}
           <div className="border-r border-gray-100 overflow-y-auto p-6 bg-white">
             <div className="mb-4">
               <div className="flex items-center gap-2 mb-1">
@@ -299,7 +299,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
               </div>
               <div className="flex items-baseline gap-2">
                 <h2 className="text-lg font-bold text-gray-900">{criterion.name}</h2>
-                <span className="text-xs bg-[#0057A8]/10 text-[#0057A8] font-mono font-semibold px-2 py-0.5 rounded-full">
+                <span className="text-xs bg-[#A81B0F]/10 text-[#A81B0F] font-mono font-semibold px-2 py-0.5 rounded-full">
                   {criterion.max_points} pts
                 </span>
               </div>
@@ -313,7 +313,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
                   return (
                     <div key={sc.id}>
                       <div className="flex items-center gap-2 mb-2">
-                        <div className="w-0.5 h-4 bg-[#0057A8]/30 rounded" />
+                        <div className="w-0.5 h-4 bg-[#A81B0F]/30 rounded" />
                         <p className="text-xs font-semibold text-gray-600">{sc.name}</p>
                         <span className="text-[10px] text-gray-400 font-mono">{sc.points} pts</span>
                       </div>
@@ -352,7 +352,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
             </div>
           </div>
 
-          {/* RIGHT — Source document */}
+          {/* RIGHT - Source document */}
           <div className="overflow-y-auto p-6 bg-gray-50">
             <SourceChunksPanel
               tenderId={tender.tender_id}
@@ -387,7 +387,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
 
       {/* ── Step 1: Evaluation plan ─────────────────────────────────────────── */}
       <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider border-l-4 border-[#0057A8] pl-3 mb-3">
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider border-l-4 border-[#A81B0F] pl-3 mb-3">
           {t('step_1')}
         </h2>
         <PlanTable plan={plan} />
@@ -398,7 +398,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
 
       {/* ── Step 2: Run ─────────────────────────────────────────────────────── */}
       <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider border-l-4 border-[#0057A8] pl-3 mb-3">
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider border-l-4 border-[#A81B0F] pl-3 mb-3">
           {t('step_2')}
         </h2>
 
@@ -448,7 +448,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
             </div>
             <div className="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
               <div
-                className={`h-1.5 rounded-full transition-all duration-300 ${allScored ? 'bg-[#0057A8]' : 'bg-[#0057A8]'}`}
+                className={`h-1.5 rounded-full transition-all duration-300 ${allScored ? 'bg-[#A81B0F]' : 'bg-[#A81B0F]'}`}
                 style={{ width: `${totalCells > 0 ? Math.round((scoredCells / totalCells) * 100) : 0}%` }}
               />
             </div>
@@ -461,7 +461,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
         )}
 
         {!results && !running && sobreALocked && (
-          <p className="mt-3 bg-[#0057A8]/5 border border-[#0057A8]/20 rounded-xl p-4 text-sm text-[#0057A8]">{t('run_info')}</p>
+          <p className="mt-3 bg-[#A81B0F]/5 border border-[#A81B0F]/20 rounded-xl p-4 text-sm text-[#A81B0F]">{t('run_info')}</p>
         )}
       </section>
 
@@ -470,7 +470,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
         <>
           <hr className="border-gray-200" />
           <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider border-l-4 border-[#0057A8] pl-3 mb-4">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider border-l-4 border-[#A81B0F] pl-3 mb-4">
               {t('step_3')}
             </h2>
             <p className="text-xs text-gray-400 mb-6">{t('grid_caption')}</p>
@@ -492,7 +492,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
                       <div key={sc.id} className="mb-6">
                         {/* Sub-criterion label */}
                         <div className="flex items-center gap-2 mb-3">
-                          <div className="w-1 h-4 bg-[#0057A8] rounded" />
+                          <div className="w-1 h-4 bg-[#A81B0F] rounded" />
                           <p className="text-xs font-medium text-gray-700">
                             {sc.name}
                           </p>
@@ -544,7 +544,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
                           {tender.suppliers.map(s => (
                             <div key={s.id} className="text-center">
                               <p className="text-xs text-gray-500 truncate">{s.name}</p>
-                              <p className="text-lg font-bold text-[#0057A8] font-mono">
+                              <p className="text-lg font-bold text-[#A81B0F] font-mono">
                                 {criterionTotal(s.id, criterion.id).toFixed(1)}
                                 <span className="text-xs text-gray-400 font-normal"> / {criterion.max_points}</span>
                               </p>
@@ -598,7 +598,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
               <div className="mt-6 flex justify-end">
                 <button
                   onClick={() => { setReviewMode(true); setReviewSupIdx(0); setReviewCritIdx(0) }}
-                  className="bg-[#0057A8] hover:bg-[#004a94] text-white font-semibold text-sm px-5 py-2.5 rounded-lg transition-colors shadow-sm"
+                  className="bg-[#A81B0F] hover:bg-[#8A160C] text-white font-semibold text-sm px-5 py-2.5 rounded-lg transition-colors shadow-sm"
                 >
                   📋 Review Evaluations
                 </button>
@@ -611,7 +611,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
             <>
               <hr className="border-gray-200" />
               <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider border-l-4 border-[#0057A8] pl-3 mb-4">
+                <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider border-l-4 border-[#A81B0F] pl-3 mb-4">
                   {t('step_4')}
                 </h2>
 
@@ -646,7 +646,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
                                 {criterionTotal(s.id, c.id).toFixed(1)}
                               </td>
                             ))}
-                            <td className="px-4 py-2.5 text-right font-bold text-[#0057A8] font-mono">
+                            <td className="px-4 py-2.5 text-right font-bold text-[#A81B0F] font-mono">
                               {total.toFixed(1)}
                             </td>
                           </tr>
@@ -676,7 +676,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
                 <>
                   <hr className="border-gray-200" />
                   <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider border-l-4 border-[#0057A8] pl-3 mb-3">
+                    <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider border-l-4 border-[#A81B0F] pl-3 mb-3">
                       {t('step_5')}
                     </h2>
                     <div className="space-y-3 max-w-md">
@@ -688,7 +688,7 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
                           value={evaluatorId}
                           onChange={e => setEvaluatorId(e.target.value)}
                           disabled={submitted}
-                          className="w-full bg-white border border-gray-300 text-gray-800 text-sm rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#0057A8] disabled:opacity-50"
+                          className="w-full bg-white border border-gray-300 text-gray-800 text-sm rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#A81B0F] disabled:opacity-50"
                         />
                       </div>
                       <p className="text-xs text-gray-400">{t('submit_legal_caption')}</p>
