@@ -27,7 +27,7 @@ const SOBRE_A_CRITERIA: SobreACriterion[] = [
   { id: 'declaracio_responsable', labelKey: 'soa_declaracio_responsable', descKey: 'soa_declaracio_responsable_desc' },
 ]
 
-// ── Helpers (exported — App uses these to filter who proceeds to Sobre B/C) ────
+// ── Helpers (exported - App uses these to filter who proceeds to Sobre B/C) ────
 
 // A supplier is admitted only when all 5 criteria are explicitly marked pass.
 // Suppliers left blank or with any fail are simply not admitted and do not

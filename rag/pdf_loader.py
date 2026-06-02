@@ -3,7 +3,7 @@ rag/pdf_loader.py
 -----------------
 PDF text extraction for the CTTI procurement evaluation pipeline.
 
-Uses pdfplumber as the primary extractor — it handles multi-column layouts
+Uses pdfplumber as the primary extractor - it handles multi-column layouts
 and produces cleaner text than pypdf for typical government/corporate PDFs.
 
 Returns a list of LangChain Document objects (one per page) with metadata
@@ -38,7 +38,7 @@ def load_pdf(
     Returns
     -------
     List of Document objects. Pages with no extractable text are skipped
-    silently (e.g. scanned image pages — OCR is out of scope for this prototype).
+    silently (e.g. scanned image pages - OCR is out of scope for this prototype).
     """
     path = Path(path)
     docs = []
@@ -71,5 +71,5 @@ if __name__ == "__main__":
     pages = load_pdf(sys.argv[1], source="test", doc_type="test")
     print(f"Extracted {len(pages)} page(s)")
     for p in pages:
-        print(f"  Page {p.metadata['page']}: {len(p.page_content)} chars — "
+        print(f"  Page {p.metadata['page']}: {len(p.page_content)} chars - "
               f"{p.page_content[:80].replace(chr(10), ' ')!r}...")

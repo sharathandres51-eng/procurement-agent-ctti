@@ -7,7 +7,7 @@ Formula (Directriu 1/2020 proportionality):
   "higher is better": score = max_pts * (this_value / best_value)
   "lower  is better": score = max_pts * (best_value / this_value)
 
-Accepts declared values as parameters — no file I/O.
+Accepts declared values as parameters - no file I/O.
 """
 
 

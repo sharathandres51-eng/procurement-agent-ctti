@@ -32,13 +32,13 @@ def _ingest_background():
         ingest_all_proposals()
         print("Background ingestion: complete.")
     except Exception as exc:
-        print(f"Background ingestion: failed — {exc}")
+        print(f"Background ingestion: failed - {exc}")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Start ingestion in a background thread so Railway's health check
-    # is satisfied immediately — ingestion may take 30–120 s on cold start.
+    # is satisfied immediately - ingestion may take 30–120 s on cold start.
     t = threading.Thread(target=_ingest_background, daemon=True)
     t.start()
     yield
@@ -59,7 +59,7 @@ app = FastAPI(
 # Always-allowed origins (localhost for dev + the production Vercel app) are
 # baked in so the deployed frontend works without depending on a dashboard env
 # var. Any extra origins can be added via the ALLOWED_ORIGINS env var (comma-
-# separated) and are appended to — not replacing — these defaults.
+# separated) and are appended to - not replacing - these defaults.
 
 DEFAULT_ORIGINS = [
     "http://localhost:5173",

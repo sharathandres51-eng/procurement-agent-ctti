@@ -17,10 +17,10 @@ Schema
 
 Regulatory alignment
 --------------------
-  Law 40/2015 Art. 24  — evaluator identity and timestamp recorded at submission
-  EU AI Act Annex III  — AI-generated evidence stored alongside human decisions,
+  Law 40/2015 Art. 24  - evaluator identity and timestamp recorded at submission
+  EU AI Act Annex III  - AI-generated evidence stored alongside human decisions,
                          demonstrating human-in-the-loop compliance
-  Llei 19/2014         — log structure supports future publication obligations
+  Llei 19/2014         - log structure supports future publication obligations
 """
 
 import json
@@ -102,8 +102,8 @@ def export_json() -> str:
             "generated_at": datetime.now().isoformat(),
             "record_count": len(entries),
             "regulatory_basis": (
-                "Law 40/2015 Art. 24 — evaluator signatures recorded at submission. "
-                "EU AI Act Annex III — AI evidence retained alongside human decisions."
+                "Law 40/2015 Art. 24 - evaluator signatures recorded at submission. "
+                "EU AI Act Annex III - AI evidence retained alongside human decisions."
             ),
         },
         "entries": entries,

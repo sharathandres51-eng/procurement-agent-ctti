@@ -4,7 +4,7 @@ api/routers/evaluate.py
 POST /tenders/{tender_id}/evaluate
 
 Runs the full supplier × criteria evaluation pipeline and streams
-results back as Server-Sent Events (SSE) — one event per completed
+results back as Server-Sent Events (SSE) - one event per completed
 supplier-criterion cell. The React frontend can render each card
 as it arrives rather than waiting for the full pipeline to finish.
 

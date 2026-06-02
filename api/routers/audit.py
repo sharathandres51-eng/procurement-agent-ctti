@@ -1,9 +1,9 @@
 """
 api/routers/audit.py
 ---------------------
-GET  /audit         — list all submitted audit entries (newest first)
-POST /audit         — submit a new audit entry
-GET  /audit/export  — download full audit log as JSON
+GET  /audit         - list all submitted audit entries (newest first)
+POST /audit         - submit a new audit entry
+GET  /audit/export  - download full audit log as JSON
 """
 
 import json

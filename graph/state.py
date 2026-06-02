@@ -14,5 +14,5 @@ class EvalState(TypedDict):
     raw_chunks: list          # written by retrieval_agent
     evidence: str             # verbatim passage from analysis_agent
     agent_note: str           # flags: missing content, uncertainty
-    criterion_name: str       # set by pipeline from plan (combined "Parent — Sub" for sub-criteria)
+    criterion_name: str       # set by pipeline from plan (combined "Parent - Sub" for sub-criteria)
     max_points: float         # float to support sub-criterion values like 1.5, 4.5

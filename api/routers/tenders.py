@@ -1,9 +1,9 @@
 """
 api/routers/tenders.py
 -----------------------
-GET /tenders          — list all registered tenders
-GET /tenders/{id}     — single tender detail
-GET /tenders/{id}/plan — load (or generate) the evaluation plan
+GET /tenders          - list all registered tenders
+GET /tenders/{id}     - single tender detail
+GET /tenders/{id}/plan - load (or generate) the evaluation plan
 """
 
 from fastapi import APIRouter, HTTPException, Query

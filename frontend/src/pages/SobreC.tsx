@@ -59,7 +59,12 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
       for (const sid of supplierIds) {
         declared[sid] = {}
         for (const f of criteriaFields) {
-          declared[sid][f] = parseFloat(inputValues[f][sid])
+          const raw = inputValues[f]?.[sid]
+          const num = parseFloat(raw ?? '')
+          if (Number.isNaN(num)) {
+            throw new Error(`Invalid number for ${f} / ${sid}`)
+          }
+          declared[sid][f] = num
         }
       }
       const result = await calculateSobreC(tender.tender_id, declared)
@@ -162,11 +167,12 @@ export default function SobreC({ tender, evalState }: SobreCProps) {
                             type="number"
                             step="any"
                             min="0"
-                            placeholder="-"
+                            placeholder="0"
                             value={inputValues[field]?.[s.id] ?? ''}
                             onChange={e => handleInput(field, s.id, e.target.value)}
-                            className="w-28 text-right border border-gray-200 rounded-lg px-2 py-1.5
-                                       text-xs font-mono focus:outline-none focus:ring-2
+                            className="w-28 text-right border border-gray-300 rounded-lg px-2 py-1.5
+                                       text-xs font-mono text-gray-900 placeholder:text-gray-400
+                                       focus:outline-none focus:ring-2
                                        focus:ring-[#A81B0F] focus:border-transparent"
                           />
                           <span className="text-gray-400 text-xs w-8 text-left">{def.unit}</span>
