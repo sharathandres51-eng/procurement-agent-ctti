@@ -40,47 +40,68 @@ def _get_vs() -> PGVector:
     return _vectorstore
 
 
-def retrieve(
-    supplier_id: str, query: str, tender_id: str, k: int = 5
-) -> list[dict]:
-    """Return top-k proposal chunks for supplier_id within the given tender."""
-    candidates = _get_vs().similarity_search(query, k=k * 5)
-
-    results = [
+def _to_dicts(docs) -> list[dict]:
+    return [
         {
             "text":      doc.page_content,
             "source":    doc.metadata.get("source", ""),
             "doc_type":  doc.metadata.get("doc_type", ""),
             "tender_id": doc.metadata.get("tender_id", ""),
         }
-        for doc in candidates
-        if (
-            doc.metadata.get("tender_id") == tender_id
-            and doc.metadata.get("source") == supplier_id
-            and doc.metadata.get("doc_type") == "proposal"
-        )
+        for doc in docs
     ]
-    return results[:k]
+
+
+def retrieve(
+    supplier_id: str, query: str, tender_id: str, k: int = 5
+) -> list[dict]:
+    """Return top-k proposal chunks for supplier_id within the given tender.
+
+    Filtering happens INSIDE the pgvector query (not after) so the supplier's
+    chunks are always considered, even when other tenders dominate the global
+    similarity ranking.
+    """
+    flt = {
+        "$and": [
+            {"tender_id": {"$eq": tender_id}},
+            {"source":    {"$eq": supplier_id}},
+            {"doc_type":  {"$eq": "proposal"}},
+        ]
+    }
+    try:
+        docs = _get_vs().similarity_search(query or supplier_id, k=k, filter=flt)
+        return _to_dicts(docs)[:k]
+    except Exception:
+        # Fallback: over-fetch then post-filter (older metadata / filter issues)
+        candidates = _get_vs().similarity_search(query or supplier_id, k=k * 10)
+        results = [
+            d for d in _to_dicts(candidates)
+            if d["tender_id"] == tender_id
+            and d["source"] == supplier_id
+            and d["doc_type"] == "proposal"
+        ]
+        return results[:k]
 
 
 def retrieve_criteria(query: str, tender_id: str, k: int = 5) -> list[dict]:
     """Return top-k criteria/requirements chunks for the given tender."""
-    candidates = _get_vs().similarity_search(query, k=k * 5)
-
-    results = [
-        {
-            "text":      doc.page_content,
-            "source":    doc.metadata.get("source", ""),
-            "doc_type":  doc.metadata.get("doc_type", ""),
-            "tender_id": doc.metadata.get("tender_id", ""),
-        }
-        for doc in candidates
-        if (
-            doc.metadata.get("tender_id") == tender_id
-            and doc.metadata.get("doc_type") in ("criteria", "requirements")
-        )
-    ]
-    return results[:k]
+    flt = {
+        "$and": [
+            {"tender_id": {"$eq": tender_id}},
+            {"doc_type":  {"$in": ["criteria", "requirements"]}},
+        ]
+    }
+    try:
+        docs = _get_vs().similarity_search(query, k=k, filter=flt)
+        return _to_dicts(docs)[:k]
+    except Exception:
+        candidates = _get_vs().similarity_search(query, k=k * 10)
+        results = [
+            d for d in _to_dicts(candidates)
+            if d["tender_id"] == tender_id
+            and d["doc_type"] in ("criteria", "requirements")
+        ]
+        return results[:k]
 
 
 if __name__ == "__main__":

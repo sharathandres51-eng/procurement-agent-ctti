@@ -81,9 +81,20 @@ def get_source_chunks(
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
 
-    # Use the criterion's own query for the similarity search
+    # Build a similarity-search query for the criterion. Criteria that have
+    # sub-criteria store their query at the sub-criterion level (the parent
+    # query is empty), so combine the sub-criteria queries/names; otherwise
+    # use the criterion's own query, falling back to its name.
     criterion = next((c for c in plan["criteria"] if c["id"] == criterion_id), None)
-    query = criterion["query"] if criterion else criterion_id
+    if not criterion:
+        query = criterion_id
+    elif criterion.get("query"):
+        query = criterion["query"]
+    elif criterion.get("has_subcriteria") and criterion.get("subcriteria"):
+        parts = [sc.get("query") or sc.get("name", "") for sc in criterion["subcriteria"]]
+        query = " ".join(p for p in parts if p) or criterion.get("name", criterion_id)
+    else:
+        query = criterion.get("name", criterion_id)
 
     try:
         from rag.retriever import retrieve
