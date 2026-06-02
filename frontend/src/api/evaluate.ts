@@ -16,6 +16,7 @@ export function streamEvaluation(
   onEvent: (event: EvaluationProgressEvent) => void,
   onDone: () => void,
   onError: (err: string) => void,
+  supplierIds?: string[],
 ): () => void {
   const controller = new AbortController()
 
@@ -25,7 +26,7 @@ export function streamEvaluation(
   fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ language }),
+    body: JSON.stringify({ language, supplier_ids: supplierIds }),
     signal: controller.signal,
   })
     .then(async res => {

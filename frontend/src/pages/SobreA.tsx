@@ -27,9 +27,12 @@ const SOBRE_A_CRITERIA: SobreACriterion[] = [
   { id: 'declaracio_responsable', labelKey: 'soa_declaracio_responsable', descKey: 'soa_declaracio_responsable_desc' },
 ]
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
+// ── Helpers (exported — App uses these to filter who proceeds to Sobre B/C) ────
 
-function supplierStatus(
+// A supplier is admitted only when all 5 criteria are explicitly marked pass.
+// Suppliers left blank or with any fail are simply not admitted and do not
+// proceed to Sobre B / Sobre C.
+export function supplierStatus(
   supplierId: string,
   sobreA: SobreAState,
 ): 'admitted' | 'excluded' | 'pending' {
@@ -39,10 +42,11 @@ function supplierStatus(
   return 'pending'
 }
 
-function allReviewed(sobreA: SobreAState, suppliers: TenderSummary['suppliers']): boolean {
-  return suppliers.every(s =>
-    SOBRE_A_CRITERIA.every(c => sobreA[s.id]?.[c.id] !== null && sobreA[s.id]?.[c.id] !== undefined)
-  )
+export function admittedSupplierIds(
+  sobreA: SobreAState,
+  suppliers: TenderSummary['suppliers'],
+): string[] {
+  return suppliers.filter(s => supplierStatus(s.id, sobreA) === 'admitted').map(s => s.id)
 }
 
 // ── Props ──────────────────────────────────────────────────────────────────────
@@ -82,8 +86,13 @@ export default function SobreA({ tender, sobreA, sobreALocked, onUpdate }: Sobre
     onUpdate(updated, false)
   }
 
+  const admittedSuppliers = tender.suppliers.filter(
+    s => supplierStatus(s.id, sobreA) === 'admitted'
+  )
+  const canLock = !!evaluatorId && admittedSuppliers.length > 0
+
   const handleLock = () => {
-    if (!evaluatorId || !allReviewed(sobreA, tender.suppliers)) return
+    if (!canLock) return
     onUpdate(sobreA, true)
   }
 
@@ -104,6 +113,19 @@ export default function SobreA({ tender, sobreA, sobreALocked, onUpdate }: Sobre
       <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl text-sm text-blue-700">
         ℹ️ {t('sobre_a_info')}
       </div>
+
+      {/* Admitted suppliers preview (who proceeds to Sobre B / C) */}
+      {!sobreALocked && admittedSuppliers.length > 0 && (
+        <div className="p-3 bg-[#A81B0F]/5 border border-[#A81B0F]/20 rounded-xl text-sm text-gray-700 flex items-start gap-2">
+          <span className="text-[#A81B0F]">→</span>
+          <span>
+            {t('sobre_a_admitted_preview', {
+              count: admittedSuppliers.length,
+              names: admittedSuppliers.map(s => s.name).join(', '),
+            })}
+          </span>
+        </div>
+      )}
 
       {/* Locked banner */}
       {sobreALocked && (
@@ -268,9 +290,9 @@ export default function SobreA({ tender, sobreA, sobreALocked, onUpdate }: Sobre
           </div>
         ) : (
           <div className="space-y-3 max-w-md">
-            {!allReviewed(sobreA, tender.suppliers) && (
+            {admittedSuppliers.length === 0 && (
               <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-                ⚠️ {t('sobre_a_incomplete_warning')}
+                ⚠️ {t('sobre_a_none_admitted_warning')}
               </p>
             )}
             <div>
@@ -285,7 +307,7 @@ export default function SobreA({ tender, sobreA, sobreALocked, onUpdate }: Sobre
             </div>
             <p className="text-xs text-gray-400">{t('sobre_a_sign_caption')}</p>
             <button
-              disabled={!evaluatorId || !allReviewed(sobreA, tender.suppliers)}
+              disabled={!canLock}
               onClick={handleLock}
               className="bg-[#A81B0F] hover:bg-[#8A160C] disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-sm px-5 py-2 rounded-md transition-colors"
             >

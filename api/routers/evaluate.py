@@ -41,10 +41,13 @@ def _sse(payload: dict) -> str:
     return f"data: {json.dumps(payload)}\n\n"
 
 
-def _run_pipeline(tender_id: str, language: str):
+def _run_pipeline(tender_id: str, language: str, supplier_ids: list[str] | None = None):
     """
     Generator that yields SSE strings as each evaluation cell completes.
     Runs synchronously in a thread pool (called via run_in_executor below).
+
+    If supplier_ids is provided, only those suppliers are evaluated (used to
+    skip suppliers that did not pass Sobre A).
     """
     config = TENDER_REGISTRY[tender_id]
     plan   = load_or_generate_plan(
@@ -53,6 +56,9 @@ def _run_pipeline(tender_id: str, language: str):
     )
 
     suppliers = config["suppliers"]
+    if supplier_ids:
+        wanted = set(supplier_ids)
+        suppliers = [s for s in suppliers if s["id"] in wanted]
     criteria  = plan["criteria"]
 
     for supplier in suppliers:
@@ -96,7 +102,8 @@ def _run_pipeline(tender_id: str, language: str):
     yield _sse({"done": True})
 
 
-async def _stream(tender_id: str, language: str, request: Request):
+async def _stream(tender_id: str, language: str, request: Request,
+                  supplier_ids: list[str] | None = None):
     """
     Async wrapper: runs the blocking pipeline in a thread pool executor
     so it doesn't block the FastAPI event loop, and checks for client
@@ -104,15 +111,12 @@ async def _stream(tender_id: str, language: str, request: Request):
     """
     loop = asyncio.get_event_loop()
 
-    def blocking_gen():
-        return list(_run_pipeline(tender_id, language))
-
     # Run entire pipeline in executor; yield results as they come
     # For true streaming we iterate synchronously in a thread
     import concurrent.futures
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
 
-    gen = _run_pipeline(tender_id, language)
+    gen = _run_pipeline(tender_id, language, supplier_ids)
 
     def next_item():
         try:
@@ -135,7 +139,7 @@ async def evaluate(tender_id: str, body: EvaluationRequest, request: Request):
         raise HTTPException(status_code=404, detail=f"Tender '{tender_id}' not found")
 
     return StreamingResponse(
-        _stream(tender_id, body.language, request),
+        _stream(tender_id, body.language, request, body.supplier_ids),
         media_type="text/event-stream",
         headers={
             "Cache-Control":   "no-cache",

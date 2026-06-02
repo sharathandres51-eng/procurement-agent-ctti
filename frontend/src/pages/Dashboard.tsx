@@ -208,8 +208,11 @@ export default function Dashboard({ tender, evalState, onEvalUpdate, onResultUpd
         setRunning(false)
         setCurrentCell(`Error: ${err}`)
       },
+      // Only evaluate the suppliers admitted in Sobre A (tender.suppliers is
+      // already filtered to the admitted set by App).
+      tender.suppliers.map(s => s.id),
     )
-  }, [tender.tender_id, i18n.language, plan, onEvalUpdate, onResultUpdate])
+  }, [tender.tender_id, tender.suppliers, i18n.language, plan, onEvalUpdate, onResultUpdate])
 
   // ── Render ───────────────────────────────────────────────────────────────────
 

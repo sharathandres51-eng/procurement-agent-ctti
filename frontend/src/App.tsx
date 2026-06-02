@@ -7,7 +7,7 @@ import Layout from './components/Layout'
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
 import AuditLog from './pages/AuditLog'
-import SobreA from './pages/SobreA'
+import SobreA, { admittedSupplierIds } from './pages/SobreA'
 import SobreC from './pages/SobreC'
 import Spinner from './components/Spinner'
 import type { EvaluationResults, ScoreMap, SobreAState, TenderEvalState } from './types'
@@ -40,6 +40,16 @@ export default function App() {
     },
     [evalState, activeTenderId],
   )
+
+  // Suppliers that proceed to Sobre B / C: once Sobre A is locked, only the
+  // admitted suppliers; before locking, all suppliers (so the pages aren't
+  // empty while the user is still reviewing).
+  const evalTender = useMemo(() => {
+    if (!activeTender) return activeTender
+    if (!activeEval.sobreALocked) return activeTender
+    const ids = new Set(admittedSupplierIds(activeEval.sobreA, activeTender.suppliers))
+    return { ...activeTender, suppliers: activeTender.suppliers.filter(s => ids.has(s.id)) }
+  }, [activeTender, activeEval.sobreALocked, activeEval.sobreA])
 
   // Prefetch Sobre C and Audit data as soon as the active tender is known so
   // navigating to those tabs is instant even on first visit.
@@ -138,7 +148,7 @@ export default function App() {
           path="/sobre-b"
           element={
             <Dashboard
-              tender={activeTender}
+              tender={evalTender ?? activeTender}
               evalState={activeEval}
               onEvalUpdate={handleEvalUpdate}
               onResultUpdate={(updater) => handleResultsUpdate(activeTenderId, updater)}
@@ -150,7 +160,7 @@ export default function App() {
           path="/sobre-c"
           element={
             <SobreC
-              tender={activeTender}
+              tender={evalTender ?? activeTender}
               evalState={activeEval}
             />
           }

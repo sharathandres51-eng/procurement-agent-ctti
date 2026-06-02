@@ -51,6 +51,10 @@ class EvaluationPlanResponse(BaseModel):
 
 class EvaluationRequest(BaseModel):
     language: str = "en"
+    # Optional list of supplier IDs to evaluate. When omitted or empty, all
+    # suppliers in the tender are evaluated. Used to skip suppliers that did
+    # not pass Sobre A (administrative qualification).
+    supplier_ids: list[str] | None = None
 
 
 class CriterionResult(BaseModel):
