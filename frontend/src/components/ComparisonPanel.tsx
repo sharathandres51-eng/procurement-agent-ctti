@@ -30,9 +30,9 @@ const mdComponents: React.ComponentProps<typeof ReactMarkdown>['components'] = {
   h1:     ({ children }) => <h1 className="text-base font-bold text-gray-800 mt-3 mb-1">{children}</h1>,
   h2:     ({ children }) => <h2 className="text-sm font-bold text-gray-800 mt-3 mb-1">{children}</h2>,
   h3:     ({ children }) => <h3 className="text-sm font-semibold text-gray-700 mt-2 mb-1">{children}</h3>,
-  ul:     ({ children }) => <ul className="list-disc list-inside space-y-0.5 mb-2 text-sm text-gray-700">{children}</ul>,
-  ol:     ({ children }) => <ol className="list-decimal list-inside space-y-0.5 mb-2 text-sm text-gray-700">{children}</ol>,
-  li:     ({ children }) => <li className="leading-relaxed">{children}</li>,
+  ul:     ({ children }) => <ul className="list-disc list-outside pl-5 space-y-1 mb-2 text-sm text-gray-700 marker:text-[#A81B0F]">{children}</ul>,
+  ol:     ({ children }) => <ol className="list-decimal list-outside pl-5 space-y-1 mb-2 text-sm text-gray-700 marker:text-[#A81B0F]">{children}</ol>,
+  li:     ({ children }) => <li className="leading-relaxed [&>p]:mb-0">{children}</li>,
   code:   ({ children }) => <code className="bg-blue-100 text-blue-800 text-xs font-mono px-1 py-0.5 rounded">{children}</code>,
   hr:     () => <hr className="border-blue-200 my-3" />,
 }
